@@ -1,6 +1,23 @@
 # Charity Sphere
 
-## Userflow Diagram
+## Functional Requirements
+
+#### 1. Authentication and Authorization
+
+- [ ] Register an account (Roles: Donor, Institution, Volunteer)
+- [ ] Show error messages on unsuccessful login
+- [ ] Redirect to dashboard on successful login
+- [ ] Redirect to login page on logout
+- [ ] Register with Google/Facebook OAuth
+
+#### 9. Profile and Settings
+
+- [ ] View profile
+- [ ] Update username and profile picture
+- [ ] Donation History
+- [ ] Delete account
+
+## User-Flow Diagram
 
 ```mermaid
 flowchart TD
@@ -25,25 +42,7 @@ flowchart TD
     mod_fund --> mod_pay{{Payments}}
 ```
 
-## Requirements
-
-#### 1. Authentication and Authorization
-
-- [ ] Register an account (Roles: Donor, Institution, Volunteer)
-- [ ] Show error messages on unsuccessful login
-- [ ] Redirect to dashboard on successful login
-- [ ] Redirect to login page on logout
-
-- [ ] Register with Google/Facebook OAuth
-
-#### 9. Profile and Settings
-
-- [ ] View profile
-- [ ] Update username and profile picture
-- [ ] Donation History
-- [ ] Delete account
-
-## 🆕 Initializing Project
+## Initializing Project
 
 ### Step 1: Clone the project
 
