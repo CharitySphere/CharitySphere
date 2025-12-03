@@ -5,7 +5,7 @@
 ### Step 1: Clone the project
 
 ```sh
-git clone git@github.com:charity-sphere/charity-sphere.git
+git clone git@github.com:CharitySphere/CharitySphere.git
 ```
 
 ### Step 2: Initialize Virtual Environment (Recommended)
@@ -76,10 +76,10 @@ Open [http://localhost:8000](http://localhost:8000) or [http://127.0.0.1:8000](h
 
 ```sh
 pip install Django
-mkdir charity-sphere
-django-admin startproject app charity-sphere
+mkdir CharitySphere
+django-admin startproject app CharitySphere
 
-git remote add origin git@github.com:charity-sphere/charity-sphere.git
+git remote add origin git@github.com:CharitySphere/CharitySphere.git
 git add .
 git commit -m "init: Initialized Django"
 git push -u origin master
