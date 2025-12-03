@@ -1,6 +1,6 @@
 # Charity Sphere
 
-## Module Connection Diagram
+## Userflow Diagram
 
 ```mermaid
 flowchart TD
