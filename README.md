@@ -17,8 +17,7 @@
 - [ ] Donation History
 - [ ] Delete account
 
-## User-Flow Diagram
-
+## Module Architecture
 ```mermaid
 flowchart TD
     app --> mod_auth{{Authentication}}
