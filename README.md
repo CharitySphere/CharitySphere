@@ -117,8 +117,8 @@ Open [http://localhost:8000](http://localhost:8000) or [http://127.0.0.1:8000](h
 
 ```sh
 pip install Django
-mkdir CharitySphere
-django-admin startproject app CharitySphere
+mkdir CharitySphere && cd CharitySphere
+django-admin startproject config .
 
 git remote add origin git@github.com:CharitySphere/CharitySphere.git
 git add .
