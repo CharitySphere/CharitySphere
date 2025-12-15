@@ -1,4 +1,4 @@
-# Charity Sphere
+![CharitySphere Banner](./.assets/banner.png)
 
 ## Functional Requirements
 
@@ -18,6 +18,7 @@
 - [ ] Delete account
 
 ## Module Architecture
+
 ```mermaid
 flowchart TD
     app --> mod_auth{{Authentication}}
@@ -115,13 +116,25 @@ Open [http://localhost:8000](http://localhost:8000) or [http://127.0.0.1:8000](h
 
 ## Command History
 
+Starting a project
+
 ```sh
 pip install Django
 mkdir CharitySphere && cd CharitySphere
 django-admin startproject config .
+```
 
+Setting up Git
+
+```sh
 git remote add origin git@github.com:CharitySphere/CharitySphere.git
 git add .
 git commit -m "init: Initialized Django"
 git push -u origin master
+```
+
+Apps setup
+
+```sh
+python manage.py startapp mod_authentication
 ```
