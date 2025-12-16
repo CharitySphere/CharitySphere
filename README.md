@@ -4,6 +4,8 @@
 
 ### Step 0: Requirements
 
+Make sure you have installed the following tools:
+
 - [Git](https://git-scm.com/install/windows)
 - [Python](https://www.python.org/downloads/)
 
@@ -43,7 +45,13 @@ source ENV/bin/activate.fish
 pip install -r requirements.txt
 ```
 
-### Step 5: Create Admin Account (optional)
+### Step 5: Migrate Database
+
+```sh
+python manage.py migrate
+```
+
+### Step 6: Create Admin Account (optional)
 
 ```sh
 python manage.py createsuperuser
