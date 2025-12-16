@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,12 +32,16 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # =========================== [ CUSTOM APPS ] =========================== #
+    'mod_authentication',
+    # ============================= [ DEFAULT ] ============================= #
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # ======================================================================= #
 ]
 
 MIDDLEWARE = [
@@ -120,4 +125,9 @@ STATIC_URL = 'static/'
 
 # =========================== [ CUSTOM SETTINGS ] =========================== #
 
-LOGIN_REDIRECT_URL = "dashboard" # Redirect to dashboard after login
+# Redirect to dashboard after login
+LOGIN_REDIRECT_URL = "dashboard"
+
+# Remove password validation during development
+if DEBUG:
+    AUTH_PASSWORD_VALIDATORS = []

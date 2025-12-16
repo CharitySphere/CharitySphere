@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Register as Institution{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-lg">
+        <div class="card-body p-5">
+          <div class="text-center mb-4">
+            <i class="bi bi-building text-warning" style="font-size: 3rem;"></i>
+            <h2 class="mt-3">Register as Institution</h2>
+            <p class="text-muted">Connect with donors and volunteers</p>
+          </div>
+
+          <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+            <div class="mb-3">
+              <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+              {{ form.username }}
+              {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors }}</div>{% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+              {{ form.email }}
+              {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.organization_name.id_for_label }}" class="form-label">Organization Name</label>
+              {{ form.organization_name }}
+              {% if form.organization_name.errors %}
+                <div class="text-danger small">{{ form.organization_name.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.registration_number.id_for_label }}" class="form-label">Registration Number</label>
+              {{ form.registration_number }}
+              {% if form.registration_number.errors %}
+                <div class="text-danger small">{{ form.registration_number.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.password1.id_for_label }}" class="form-label">Password</label>
+              {{ form.password1 }}
+              {% if form.password1.errors %}<div class="text-danger small">{{ form.password1.errors }}</div>{% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
+              {{ form.password2 }}
+              {% if form.password2.errors %}<div class="text-danger small">{{ form.password2.errors }}</div>{% endif %}
+            </div>
+
+            <div class="d-grid gap-2 mb-3">
+              <button type="submit" class="btn btn-warning btn-lg">
+                <i class="bi bi-building"></i> Register as Institution
+              </button>
+            </div>
+          </form>
+
+          <div class="text-center">
+            <p>
+              Already have an account? <a href="{% url 'login' %}">Login here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]').forEach(field => {
+      field.classList.add('form-control');
+    });
+  </script>
+{% endblock %}
