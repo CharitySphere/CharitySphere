@@ -12,7 +12,7 @@ Make sure you have installed the following tools:
 ### Step 1: Clone the project
 
 ```sh
-git clone git@github.com:CharitySphere/CharitySphere.git
+git clone https://github.com/CharitySphere/CharitySphere
 cd CharitySphere
 ```
 
