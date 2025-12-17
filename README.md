@@ -13,6 +13,7 @@ Make sure you have installed the following tools:
 
 ```sh
 git clone git@github.com:CharitySphere/CharitySphere.git
+cd CharitySphere
 ```
 
 ### Step 2: Initialize Virtual Environment (Recommended)
