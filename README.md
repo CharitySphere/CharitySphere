@@ -59,7 +59,7 @@ Or run server manually by doing the following steps:
 Using the command based on your current shell
 
 ```sh
-.\ENV\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1
 ```
 
 ### Step 2: Run Server
