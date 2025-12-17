@@ -27,17 +27,8 @@ python -m venv venv
 
 ### Step 3: Activate Virtual Environment
 
-Using the command based on your current shell
-
 ```sh
-# Powershell
 .\ENV\Scripts\Activate.ps1
-# CMD
-ENV\Scripts\activate.bat
-# Bash and Zsh
-source ENV/bin/activate
-# Fish
-source ENV/bin/activate.fish
 ```
 
 ### Step 4: Install Requirements
@@ -60,7 +51,7 @@ python manage.py createsuperuser
 
 ## 🏃 Running Project
 
-Execute `runserver.bat` if you are on Windows. <br>
+Execute `runserver.bat`. <br>
 Or run server manually by doing the following steps:
 
 ### Step 1: Activate Virtual Environment
@@ -68,14 +59,7 @@ Or run server manually by doing the following steps:
 Using the command based on your current shell
 
 ```sh
-# CMD
-ENV\Scripts\activate.bat
-# Powershell
 .\ENV\Scripts\Activate.ps1
-# Bash and Zsh
-source ENV/bin/activate
-# Fish
-source ENV/bin/activate.fish
 ```
 
 ### Step 2: Run Server
