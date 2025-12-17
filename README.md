@@ -28,7 +28,7 @@ python -m venv venv
 ### Step 3: Activate Virtual Environment
 
 ```sh
-.\ENV\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1
 ```
 
 ### Step 4: Install Requirements
