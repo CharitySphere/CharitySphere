@@ -370,9 +370,15 @@
               <a class="nav-link" href="#about">About</a>
             </li>
             <li class="nav-item btn btn-primary btn-sm ms-4">
-              <a class="nav-link text-white" href="{% url 'login' %}">
+              {% if user.is_authenticated %}
+              <a class="btn btn-primary" href="{% url 'dashboard' %}">
+                <i class="bi bi-speedometer2"></i> Dashboard
+              </a>
+              {% else %}
+              <a class="btn btn-primary" href="{% url 'login' %}">
                 <i class="bi bi-box-arrow-in-right"></i> Login
               </a>
+              {% endif %}
             </li>
           </ul>
         </div>
