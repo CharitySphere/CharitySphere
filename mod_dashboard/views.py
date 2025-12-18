@@ -10,7 +10,6 @@ from mod_authentication.models import (Donor, Institution, UserProfile,
 def dashboard(request):
     """Redirect to appropriate dashboard based on user type"""
     try:
-        print(f"request.user: {request.user}, {request.user.username}, {request.user.id}")
         user_profile = UserProfile.objects.get(user=request.user)
         user_type = user_profile.user_type
 
@@ -57,7 +56,7 @@ def donor_dashboard(request):
             "recent_activities": recent_activities,
         }
 
-        return render(request, "mod_dashboard/donor_dashboard.html", context)
+        return render(request, "donor_dashboard.html", context)
 
     except (UserProfile.DoesNotExist, Donor.DoesNotExist):
         messages.error(request, "Donor profile not found.")
@@ -96,7 +95,7 @@ def volunteer_dashboard(request):
             "recent_opportunities": recent_opportunities,
         }
 
-        return render(request, "mod_dashboard/volunteer_dashboard.html", context)
+        return render(request, "volunteer_dashboard.html", context)
 
     except (UserProfile.DoesNotExist, Volunteer.DoesNotExist):
         messages.error(request, "Volunteer profile not found.")
@@ -135,7 +134,7 @@ def institution_dashboard(request):
             "recent_activities": recent_activities,
         }
 
-        return render(request, "mod_dashboard/institution_dashboard.html", context)
+        return render(request, "institution_dashboard.html", context)
 
     except (UserProfile.DoesNotExist, Institution.DoesNotExist):
         messages.error(request, "Institution profile not found.")
@@ -166,10 +165,14 @@ def profile_settings(request):
 
             # Update type-specific info
             if user_profile.user_type == "volunteer":
+                # HACK: Duplication for LSP static typing :/
+                type_profile = Volunteer.objects.get(user_profile=user_profile)
                 type_profile.skills = request.POST.get("skills", "")
                 type_profile.availability = request.POST.get("availability", "")
                 type_profile.save()
             elif user_profile.user_type == "institution":
+                # HACK: Duplication for LSP static typing :/
+                type_profile = Institution.objects.get(user_profile=user_profile)
                 type_profile.organization_name = request.POST.get(
                     "organization_name", ""
                 )
@@ -183,7 +186,7 @@ def profile_settings(request):
             "type_profile": type_profile,
         }
 
-        return render(request, "mod_dashboard/profile_settings.html", context)
+        return render(request, "profile_settings.html", context)
 
     except UserProfile.DoesNotExist:
         messages.error(request, "Profile not found.")
