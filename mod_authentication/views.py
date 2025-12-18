@@ -1,5 +1,4 @@
 from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from .forms import (DonorRegistrationForm, InstitutionRegistrationForm,
@@ -45,20 +44,3 @@ def register_institution(request):
     else:
         form = InstitutionRegistrationForm()
     return render(request, "register_institution.html", {"form": form})
-
-
-# TODO: Move this to a separate app
-@login_required
-def dashboard(request):
-    """Redirect to appropriate dashboard based on user type"""
-    if hasattr(request.user, "profile"):
-        user_type = request.user.profile.user_type
-        if user_type == "donor":
-            return redirect("donor_dashboard")
-        elif user_type == "volunteer":
-            return redirect("volunteer_dashboard")
-        elif user_type == "institution":
-            return redirect("institution_dashboard")
-        elif user_type == "admin":  # redirect to django admin dashboard
-            return redirect("admin:index")
-    return redirect("login")

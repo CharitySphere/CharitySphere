@@ -15,5 +15,4 @@ urlpatterns = [
     path(
         "register/institution/", views.register_institution, name="register_institution"
     ),
-    path("dashboard/", views.dashboard, name="dashboard"),
 ]
