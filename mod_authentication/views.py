@@ -7,7 +7,7 @@ from .forms import (DonorRegistrationForm, InstitutionRegistrationForm,
 
 def logout_view(request):
     logout(request)
-    return redirect("login")
+    return redirect("homepage")
 
 
 def register_donor(request):
