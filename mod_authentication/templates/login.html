@@ -52,18 +52,10 @@
           <hr class="my-4">
 
           <div class="text-center">
-            <p class="mb-3">Don't have an account? Register as:</p>
-            <div class="d-grid gap-2">
-              <a href="{% url 'register_donor' %}" class="btn btn-outline-success">
-                <i class="bi bi-gift"></i> Donor
-              </a>
-              <a href="{% url 'register_volunteer' %}" class="btn btn-outline-info">
-                <i class="bi bi-people"></i> Volunteer
-              </a>
-              <a href="{% url 'register_institution' %}" class="btn btn-outline-warning">
-                <i class="bi bi-building"></i> Institution
-              </a>
-            </div>
+            <p class="mb-3">
+              Don't have an account?
+              <a href="{% url 'signup_step_1' %}">Register a new account</a>
+            </p>
           </div>
         </div>
       </div>

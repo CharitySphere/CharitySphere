@@ -10,6 +10,11 @@ urlpatterns = [
         name="login",
     ),
     path("logout/", views.logout_view, name="logout"),
+
+    path("signup/", views.signup_step_1, name="signup_step_1"), # Role
+    path("signup/step-2/", views.signup_step_2, name="signup_step_2"), # Account
+    path("signup/step-3/", views.signup_step_3, name="signup_step_3"), # Details
+
     path("register/donor/", views.register_donor, name="register_donor"),
     path("register/volunteer/", views.register_volunteer, name="register_volunteer"),
     path(

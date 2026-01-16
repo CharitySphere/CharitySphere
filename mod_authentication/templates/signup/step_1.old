@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Signup - Join{% endblock %}
+{% block content %}
+
+<form method="post">
+  {% csrf_token %}
+  <h3>Join as a...</h3>
+  <button type="submit" name="user_type" value="donor" class="btn btn-outline-primary">Donor</button>
+  <button type="submit" name="user_type" value="volunteer" class="btn btn-outline-success">Volunteer</button>
+  <button type="submit" name="user_type" value="institution" class="btn btn-outline-warning">Institution</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Signup - Complete Registration{% endblock %}
+{% block content %}
+
+<style>
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in { animation: fadeInUp 0.6s ease-out; }
+  .card-hover:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important; }
+</style>
+
+<main class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+
+      <!-- Progress Indicator -->
+      <section class="mb-4 animate-in">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="flex-fill text-center">
+            <div class="bg-light border border-2 text-muted rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+              <strong>1</strong>
+            </div>
+            <div class="small text-muted mt-2">Choose Type</div>
+          </div>
+          <div class="flex-fill">
+            <hr class="border-2 opacity-25">
+          </div>
+          <div class="flex-fill text-center">
+            <div class="bg-light border border-2 text-muted rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+              <strong>2</strong>
+            </div>
+            <div class="small text-muted mt-2">Account Info</div>
+          </div>
+          <div class="flex-fill">
+            <hr class="border-2 opacity-25">
+          </div>
+          <div class="flex-fill text-center">
+            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+              <strong>3</strong>
+            </div>
+            <div class="small fw-semibold text-primary mt-2">Final Details</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Card -->
+      <section class="card border-0 shadow-lg animate-in" style="animation-delay: 0.1s;">
+        <div class="card-body p-4 p-md-5">
+          <div class="text-center mb-4">
+            <h3 class="fw-bold mb-2">Almost there!</h3>
+          </div>
+
+          <form method="post">
+            {% csrf_token %}
+
+            {% if user_type == "donor" %}
+            <p class="text-muted">Click the button below to complete your registration</p>
+
+            {% elif user_type == "volunteer" %}
+            <label class="form-label fw-semibold">Your Skills</label>
+            <textarea name="skills" class="form-control"></textarea>
+            <label class="form-label fw-semibold">Availability</label>
+            <input type="text" name="availability" class="form-control">
+
+            {% elif user_type == "institution" %}
+            <label class="form-label fw-semibold">Organization Name</label>
+            <input type="text" name="organization_name" class="form-control input-group input-group-lg">
+            <label class="form-label fw-semibold">Registration Number</label>
+            <input type="text" name="registration_number" class="form-control input-group input-group-lg">
+            {% endif %}
+
+            <button type="submit" class="btn btn-success mt-3">Complete Registration</button>
+          </form>
+
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+{% endblock %}

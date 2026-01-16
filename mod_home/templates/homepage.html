@@ -408,19 +408,20 @@
               institutions through transparency and technology
             </p>
             <div class="hero-buttons">
-              <a
-                href="/auth/register/donor/"
-                class="btn-custom btn-custom-white me-3 mb-3"
-              >
-                <i class="bi bi-gift me-2"></i>Start Donating
+              {% if user.is_authenticated %}
+              <a href="{% url 'dashboard' %}" class="btn-custom btn-custom-white me-3 mb-3">
+                <i class="bi bi-speedometer2"></i> Go to Dashboard
               </a>
-              <a
-                href="/auth/register/volunteer/"
-                class="btn-custom btn-custom-outline mb-3"
-              >
-                <i class="bi bi-people me-2"></i>Become a Volunteer
+              {% else %}
+              <a href="/auth/login/" class="btn-custom btn-custom-white me-3 mb-3">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Login
+              </a>
+              {% endif %}
+              <a href="/auth/signup/" class="btn-custom btn-custom-outline mb-3">
+                <i class="bi bi-people me-2"></i>Create New Account
               </a>
             </div>
+
           </div>
         </div>
       </div>
