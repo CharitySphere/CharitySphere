@@ -92,7 +92,8 @@ git push -u origin master
 Apps setup
 
 ```sh
-python manage.py startapp mod_authentication
 python manage.py startapp mod_home
+python manage.py startapp mod_authentication
 python manage.py startapp mod_dashboard
+python manage.py startapp mod_donations
 ```
