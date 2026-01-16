@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'mod_donations',
     'mod_volunteering',
     'mod_emergency',
+    'mod_reputation',
     # ============================= [ DEFAULT ] ============================= #
     'django.contrib.admin',
     'django.contrib.auth',
