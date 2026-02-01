@@ -19,7 +19,7 @@
                 </p>
               </div>
               <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <a href="#" class="btn btn-light btn-lg"><i class="bi bi-plus-circle me-2"></i>Make a Donation</a>
+                <a href="{% url 'donations:campaign_list' %}" class="btn btn-light btn-lg"><i class="bi bi-plus-circle me-2"></i>Make a Donation</a>
               </div>
             </div>
           </div>
@@ -81,8 +81,8 @@
                   <div class="list-group-item border-0 px-0">
                     <div class="d-flex justify-content-between align-items-center">
                       <div>
-                        <h6 class="mb-1">{{ activity.title }}</h6>
-                        <small class="text-muted">{{ activity.date }}</small>
+                        <h6 class="mb-1">{{ activity.campaign.title|default:activity.title }}</h6>
+                        <small class="text-muted">{{ activity.timestamp|date:"d M, Y"|default:activity.date }}</small>
                       </div>
                       <span class="badge bg-success">₹{{ activity.amount }}</span>
                     </div>
@@ -93,7 +93,7 @@
               <div class="text-center py-5 text-muted">
                 <i class="bi bi-inbox" style="font-size: 3rem;"></i>
                 <p class="mt-3">No donations yet. Start making a difference today!</p>
-                <a href="#" class="btn btn-success">Browse Campaigns</a>
+                <a href="{% url 'donations:campaign_list' %}" class="btn btn-success">Browse Campaigns</a>
               </div>
             {% endif %}
           </div>
