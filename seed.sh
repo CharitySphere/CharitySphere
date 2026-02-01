@@ -27,12 +27,16 @@ mkdir -p mod_authentication/fixtures
 
 # ACTION: Fixtures
 echo "--- Generating Test Fixtures ---"
-python scripts/gen_donors.py
-python manage.py loaddata donors.json
-python scripts/gen_volunteers.py
-python manage.py loaddata volunteers.json
-python scripts/gen_institutions.py
-python manage.py loaddata institutions.json
+# These match the filenames provided in the previous step
+python scripts/gen_auth.py
+python scripts/gen_donations.py
+python scripts/gen_volunteering.py
+
+echo "--- Loading Data ---"
+# Loading auth first is mandatory to satisfy foreign key constraints
+python manage.py loaddata fixtures/auth_data.json
+python manage.py loaddata fixtures/donations_data.json
+python manage.py loaddata fixtures/volunteering_data.json
 
 # ACTION: Create admin user
 echo "Creating admin user..."

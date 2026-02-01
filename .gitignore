@@ -1,7 +1,5 @@
 ### Generated Fixtures ###
-mod_authentication/fixtures/donors.json
-mod_authentication/fixtures/institutions.json
-mod_authentication/fixtures/volunteers.json
+fixtures/
 
 ### Django ###
 *.log
