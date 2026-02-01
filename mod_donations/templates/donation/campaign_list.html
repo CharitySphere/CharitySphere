@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Donation Campaigns - CharitySphere{% endblock %}
+
+{% block content %}
+  <div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <h2><i class="bi bi-gift me-2"></i>Donation Campaigns</h2>
+        <p class="text-muted">Support campaigns that matter to you</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Category Sidebar -->
+      <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white border-0 pt-4 pb-3">
+            <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Categories</h5>
+          </div>
+          <div class="list-group list-group-flush">
+            <a href="{% url 'donations:campaign_list' %}" class="list-group-item list-group-item-action {% if not selected_category %}active{% endif %}">
+              <i class="bi bi-grid me-2"></i>All Categories
+            </a>
+            {% for code, name in categories %}
+              <a href="?category={{ code }}" class="list-group-item list-group-item-action {% if selected_category == code %}active{% endif %}">
+                {% if code == 'food' %}<i class="bi bi-basket me-2"></i>
+                {% elif code == 'clothes' %}<i class="bi bi-bag me-2"></i>
+                {% elif code == 'hygiene' %}<i class="bi bi-droplet me-2"></i>
+                {% elif code == 'medicine' %}<i class="bi bi-heart-pulse me-2"></i>
+                {% elif code == 'funds' %}<i class="bi bi-cash-coin me-2"></i>
+                {% endif %}
+                {{ name }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Campaign List -->
+      <div class="col-md-9">
+        {% if campaigns %}
+          <div class="row g-4">
+            {% for campaign in campaigns %}
+              <div class="col-md-6">
+                <div class="card shadow-sm border-0 h-100 {% if campaign.is_urgent %}border-danger border-2{% endif %}">
+                  {% if campaign.is_urgent %}
+                    <div class="badge bg-danger position-absolute top-0 end-0 m-3">
+                      <i class="bi bi-exclamation-triangle me-1"></i>URGENT
+                    </div>
+                  {% endif %}
+                  <div class="card-body">
+                    <h5 class="card-title">{{ campaign.title }}</h5>
+                    <p class="text-muted small mb-2">
+                      <i class="bi bi-building me-1"></i>{{ campaign.institution.organization_name }}
+                    </p>
+                    <p class="card-text text-muted">{{ campaign.description|truncatewords:20 }}</p>
+
+                    <!-- Progress Bar -->
+                    <div class="mb-3">
+                      <div class="d-flex justify-content-between mb-1">
+                        <small class="text-muted">Raised: ₹{{ campaign.current_amount|floatformat:2 }}</small>
+                        <small class="text-muted">Goal: ₹{{ campaign.goal_amount|floatformat:2 }}</small>
+                      </div>
+                      <div class="progress" style="height: 10px;">
+                        {% widthratio campaign.current_amount campaign.goal_amount 100 as progress %}
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%"></div>
+                      </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="badge bg-primary">{{ campaign.get_category_display }}</span>
+                      <a href="{% url 'donations:campaign_detail' campaign.id %}" class="btn btn-sm btn-success">
+                        <i class="bi bi-hand-heart me-1"></i>Donate Now
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+              <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+              <p class="mt-3 text-muted">No campaigns found in this category.</p>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
