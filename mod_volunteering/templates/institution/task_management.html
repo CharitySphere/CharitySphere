@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Tasks - CharitySphere{% endblock %}
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h2><i class="bi bi-list-task me-2"></i>Tasks: {{ campaign.title }}</h2>
+            <p class="text-muted">Manage tasks for this campaign</p>
+          </div>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+            <i class="bi bi-plus-circle me-2"></i>Add Task
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            {% if tasks %}
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Task Name</th>
+                      <th>Date</th>
+                      <th>Location</th>
+                      <th>Type</th>
+                      <th>Assigned To</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for task in tasks %}
+                      <tr>
+                        <td>
+                          <strong>{{ task.title }}</strong>
+                          <br>
+                          <small class="text-muted">{{ task.description|truncatewords:10 }}</small>
+                        </td>
+                        <td>{{ task.date }}</td>
+                        <td>{{ task.location }}</td>
+                        <td><span class="badge bg-info">{{ task.task_type }}</span></td>
+                        <td>
+                          {% if task.assigned_volunteer %}
+                            {{ task.assigned_volunteer.user_profile.user.username }}
+                          {% else %}
+                            <span class="text-muted">Unassigned</span>
+                          {% endif %}
+                        </td>
+                        <td>
+                          <span class="badge bg-{% if task.status == 'completed' %}success{% elif task.status == 'in_progress' %}primary{% else %}secondary{% endif %}">
+                            {{ task.get_status_display }}
+                          </span>
+                        </td>
+                        <td>
+                          {% if task.assigned_volunteer %}
+                            <form method="post" action="{% url 'volunteering:remove_volunteer_from_task' task.id %}">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-sm btn-warning">
+                                <i class="bi bi-person-x me-1"></i>Remove
+                              </button>
+                            </form>
+                          {% else %}
+                            -
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="text-center py-5">
+                <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+                <p class="mt-3 text-muted">No tasks created yet.</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-12">
+        <a href="{% url 'volunteering:institution_campaigns' %}" class="btn btn-secondary">
+          <i class="bi bi-arrow-left me-2"></i>Back to Campaigns
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Task Modal -->
+  <div class="modal fade" id="addTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Task</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="post" action="{% url 'volunteering:add_task' campaign.id %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Title</label>
+              <input type="text" class="form-control" name="title" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" name="description" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Date</label>
+              <input type="date" class="form-control" name="date" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Location</label>
+              <input type="text" class="form-control" name="location" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Task Type</label>
+              <input type="text" class="form-control" name="task_type" placeholder="e.g., Food Distribution" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Add Task</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

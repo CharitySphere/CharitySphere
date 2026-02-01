@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Volunteer Directory - CharitySphere{% endblock %}
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="row mb-4">
+      <div class="col-12">
+        <h2><i class="bi bi-people me-2"></i>Volunteer Directory</h2>
+        <p class="text-muted">Find and invite volunteers to your organization</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            {% if volunteers %}
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Skills</th>
+                      <th>Availability</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for volunteer in volunteers %}
+                      <tr>
+                        <td><strong>{{ volunteer.user_profile.user.get_full_name|default:volunteer.user_profile.user.username }}</strong></td>
+                        <td>{{ volunteer.skills|default:"Not specified"|truncatewords:10 }}</td>
+                        <td>{{ volunteer.availability|default:"Not specified" }}</td>
+                        <td>
+                          {% if volunteer.id in invited_volunteer_ids %}
+                            <button class="btn btn-sm btn-secondary" disabled>
+                              <i class="bi bi-check-circle me-1"></i>Invited
+                            </button>
+                          {% else %}
+                            <form method="post" action="{% url 'volunteering:send_org_invitation' %}">
+                              {% csrf_token %}
+                              <input type="hidden" name="volunteer_id" value="{{ volunteer.id }}">
+                              <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="bi bi-envelope me-1"></i>Invite
+                              </button>
+                            </form>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="text-center py-5">
+                <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+                <p class="mt-3 text-muted">No volunteers available.</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

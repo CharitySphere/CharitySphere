@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Volunteer Tasks - CharitySphere{% endblock %}
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="row mb-4">
+      <div class="col-12">
+        <h2><i class="bi bi-list-task me-2"></i>Volunteer Tasks</h2>
+        <p class="text-muted">Find tasks to volunteer for</p>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <form method="get" class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label">Task Type</label>
+                <input type="text" class="form-control" name="task_type" value="{{ selected_task_type }}" placeholder="e.g., Food Distribution">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Location</label>
+                <input type="text" class="form-control" name="location" value="{{ selected_location }}" placeholder="e.g., Delhi">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-control" name="date" value="{{ selected_date }}">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="bi bi-filter me-2"></i>Filter
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Tasks -->
+    {% if my_tasks %}
+      <div class="row mb-4">
+        <div class="col-12">
+          <h4 class="mb-3"><i class="bi bi-bookmark-check me-2"></i>My Tasks</h4>
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Task Name</th>
+                      <th>Institution</th>
+                      <th>Date</th>
+                      <th>Location</th>
+                      <th>Type</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for task in my_tasks %}
+                      <tr>
+                        <td><strong>{{ task.title }}</strong></td>
+                        <td>{{ task.institution.organization_name }}</td>
+                        <td>{{ task.date }}</td>
+                        <td>{{ task.location }}</td>
+                        <td><span class="badge bg-info">{{ task.task_type }}</span></td>
+                        <td><span class="badge bg-{% if task.status == 'completed' %}success{% else %}primary{% endif %}">{{ task.get_status_display }}</span></td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Available Tasks -->
+    <div class="row">
+      <div class="col-12">
+        <h4 class="mb-3"><i class="bi bi-search me-2"></i>Available Tasks</h4>
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            {% if tasks %}
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Task Name</th>
+                      <th>Institution</th>
+                      <th>Date</th>
+                      <th>Location</th>
+                      <th>Type</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for task in tasks %}
+                      <tr>
+                        <td>
+                          <strong>{{ task.title }}</strong>
+                          <br>
+                          <small class="text-muted">{{ task.description|truncatewords:10 }}</small>
+                        </td>
+                        <td>{{ task.institution.organization_name }}</td>
+                        <td>{{ task.date }}</td>
+                        <td>{{ task.location }}</td>
+                        <td><span class="badge bg-info">{{ task.task_type }}</span></td>
+                        <td><span class="badge bg-success">{{ task.get_status_display }}</span></td>
+                        <td>
+                          <a href="{% url 'volunteering:volunteer_for_task' task.id %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-hand-thumbs-up me-1"></i>Volunteer
+                          </a>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="text-center py-5">
+                <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+                <p class="mt-3 text-muted">No tasks available matching your criteria.</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

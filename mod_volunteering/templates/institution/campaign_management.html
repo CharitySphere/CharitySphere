@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Campaigns - CharitySphere{% endblock %}
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h2><i class="bi bi-megaphone me-2"></i>Manage Campaigns</h2>
+            <p class="text-muted">Create and manage your volunteer campaigns</p>
+          </div>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCampaignModal">
+            <i class="bi bi-plus-circle me-2"></i>Create Campaign
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Campaigns Kanban Board -->
+    <div class="row g-4">
+      {% for status_code, status_name in campaigns.model.STATUS_CHOICES %}
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-header bg-{% if status_code == 'active' %}success{% elif status_code == 'pending' %}warning{% else %}secondary{% endif %} text-white">
+              <h5 class="mb-0">{{ status_name }}</h5>
+            </div>
+            <div class="card-body" style="min-height: 400px;">
+              {% for campaign in campaigns %}
+                {% if campaign.status == status_code %}
+                  <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                      <h6 class="card-title">{{ campaign.title }}</h6>
+                      <p class="card-text small text-muted">{{ campaign.description|truncatewords:15 }}</p>
+                      <small class="text-muted d-block mb-2">Created: {{ campaign.created_at|date:"M d, Y" }}</small>
+
+                      <div class="btn-group w-100" role="group">
+                        <a href="{% url 'volunteering:campaign_applications' campaign.id %}" class="btn btn-sm btn-outline-primary" title="Applications">
+                          <i class="bi bi-people"></i>
+                        </a>
+                        <a href="{% url 'volunteering:manage_tasks' campaign.id %}" class="btn btn-sm btn-outline-info" title="Tasks">
+                          <i class="bi bi-list-task"></i>
+                        </a>
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editModal{{ campaign.id }}" title="Edit">
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ campaign.id }}" title="Delete">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Edit Modal -->
+                  <div class="modal fade" id="editModal{{ campaign.id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Edit Campaign</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form method="post" action="{% url 'volunteering:update_campaign' campaign.id %}">
+                          {% csrf_token %}
+                          <div class="modal-body">
+                            <div class="mb-3">
+                              <label class="form-label">Title</label>
+                              <input type="text" class="form-control" name="title" value="{{ campaign.title }}" required>
+                            </div>
+                            <div class="mb-3">
+                              <label class="form-label">Description</label>
+                              <textarea class="form-control" name="description" rows="3" required>{{ campaign.description }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                              <label class="form-label">Status</label>
+                              <select class="form-select" name="status">
+                                {% for code, name in campaigns.model.STATUS_CHOICES %}
+                                  <option value="{{ code }}" {% if campaign.status == code %}selected{% endif %}>{{ name }}</option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Delete Modal -->
+                  <div class="modal fade" id="deleteModal{{ campaign.id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Confirm Delete</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                          <p>Are you sure you want to delete <strong>{{ campaign.title }}</strong>?</p>
+                          <p class="text-danger small">This action cannot be undone. Campaign can only be deleted if there are no active tasks.</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <form method="post" action="{% url 'volunteering:delete_campaign' campaign.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Create Campaign Modal -->
+  <div class="modal fade" id="createCampaignModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create New Campaign</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="post" action="{% url 'volunteering:create_campaign' %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Title</label>
+              <input type="text" class="form-control" name="title" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" name="description" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Status</label>
+              <select class="form-select" name="status">
+                <option value="pending">Pending</option>
+                <option value="active" selected>Active</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Campaign</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

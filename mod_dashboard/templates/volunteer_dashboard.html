@@ -132,11 +132,11 @@
           </div>
           <div class="card-body">
             <div class="d-grid gap-2">
-              <a href="#" class="btn btn-info text-white">
+              <a href="{% url 'volunteering:task_list' %}" class="btn btn-info text-white">
                 <i class="bi bi-search me-2"></i>Find Opportunities
               </a>
-              <a href="#" class="btn btn-outline-primary">
-                <i class="bi bi-calendar-check me-2"></i>My Schedule
+              <a href="{% url 'volunteering:org_invitations' %}" class="btn btn-outline-primary">
+                <i class="bi bi-envelope me-2"></i>Volunteering Invitations
               </a>
               <a href="{% url 'profile_settings' %}" class="btn btn-outline-secondary">
                 <i class="bi bi-gear me-2"></i>Settings

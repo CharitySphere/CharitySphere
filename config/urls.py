@@ -24,4 +24,5 @@ urlpatterns = [
     path("auth/", include("mod_authentication.urls")),
     path("dashboard/", include("mod_dashboard.urls")),
     path('donations/', include('mod_donations.urls')),
+    path('volunteering/', include('mod_volunteering.urls')),
 ]
