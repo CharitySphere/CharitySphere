@@ -1,137 +1,80 @@
 {% extends 'base.html' %}
-{% block title %}Signup - Join{% endblock %}
+{% block title %}Step 1 - Role Selection{% endblock %}
 {% block content %}
 
-<style>
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-in { animation: fadeInUp 0.6s ease-out; }
-  .card-hover:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important; }
-</style>
+  <section class="vh-100 d-flex align-items-center justify-content-center">
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+          <div class="card shadow-sm border-0 p-3">
+            <div class="card-body">
+              <div class="mb-4">
+                <div class="progress mb-3" style="height: 5px;">
+                  <div class="progress-bar w-33" role="progressbar"></div>
+                </div>
+                <h2 class="h4 fw-bold">Select Your Role</h2>
+                <p class="text-muted small">Step 1 of 3: How do you want to help?</p>
+              </div>
 
-<main class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-8 col-xl-7">
+              <form method="post" class="d-grid gap-3">
+                {% csrf_token %}
 
-      <!-- Progress Indicator -->
-      <section class="mb-4 animate-in">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <div class="flex-fill text-center">
-            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-              <strong>1</strong>
+                <!-- Donor -->
+                <input type="radio" class="btn-check" name="user_type" id="donor" value="donor">
+                <label for="donor"
+                       class="btn btn-outline-primary p-3 text-start d-flex align-items-center justify-content-between role-option">
+                  <div>
+                    <i class="bi bi-gift fs-4 me-3"></i>
+                    <strong>Donor</strong>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                </label>
+
+                <!-- Volunteer -->
+                <input type="radio" class="btn-check" name="user_type" id="volunteer" value="volunteer">
+                <label for="volunteer"
+                       class="btn btn-outline-success p-3 text-start d-flex align-items-center justify-content-between role-option">
+                  <div>
+                    <i class="bi bi-people fs-4 me-3"></i>
+                    <strong>Volunteer</strong>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                </label>
+
+                <!-- Institution -->
+                <input type="radio" class="btn-check" name="user_type" id="institution" value="institution">
+                <label for="institution"
+                       class="btn btn-outline-warning p-3 text-start d-flex align-items-center justify-content-between role-option">
+                  <div>
+                    <i class="bi bi-building fs-4 me-3"></i>
+                    <strong>Institution</strong>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                </label>
+
+                <!-- Next -->
+                <div class="d-grid gap-2">
+                  <button type="submit" class="btn btn-primary btn-lg" disabled id="nextBtn">Next: Create Account</button>
+                  <a href="{% url 'homepage' %}" class="btn btn-link btn-sm text-muted">Go Back</a>
+                </div>
+              </form>
             </div>
-            <div class="small fw-semibold text-primary mt-2">Choose Type</div>
-          </div>
-          <div class="flex-fill">
-            <hr class="border-2 opacity-25">
-          </div>
-          <div class="flex-fill text-center">
-            <div class="bg-light border border-2 text-muted rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-              <strong>2</strong>
-            </div>
-            <div class="small text-muted mt-2">Account Info</div>
-          </div>
-          <div class="flex-fill">
-            <hr class="border-2 opacity-25">
-          </div>
-          <div class="flex-fill text-center">
-            <div class="bg-light border border-2 text-muted rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-              <strong>3</strong>
-            </div>
-            <div class="small text-muted mt-2">Final Details</div>
           </div>
         </div>
-      </section>
-
-      <!-- Main Card -->
-      <section class="card border-0 shadow-lg animate-in" style="animation-delay: 0.1s;">
-        <div class="card-body p-4 p-md-5">
-
-          <div class="text-center mb-4">
-            <h2 class="fw-bold mb-2">Join Our Community</h2>
-            <p class="text-muted">Choose how you'd like to make a difference</p>
-          </div>
-
-          <form method="post">
-            {% csrf_token %}
-
-            <div class="d-grid gap-3">
-
-              <!-- Donor Option -->
-              <button type="submit" name="user_type" value="donor"
-                      class="btn btn-outline-primary btn-lg text-start p-4 card-hover position-relative border-2 transition-all"
-                      style="transition: all 0.3s ease;">
-                <div class="d-flex align-items-center">
-                  <div class="bg-primary bg-opacity-10 rounded-3 p-3 me-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-heart-fill text-primary" viewBox="0 0 16 16">
-                      <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
-                    </svg>
-                  </div>
-                  <div class="flex-grow-1">
-                    <h5 class="mb-1 fw-bold">Donor</h5>
-                    <p class="mb-0 text-muted small">Support causes with financial contributions</p>
-                  </div>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
-                  </svg>
-                </div>
-              </button>
-
-              <!-- Volunteer Option -->
-              <button type="submit" name="user_type" value="volunteer"
-                      class="btn btn-outline-success btn-lg text-start p-4 card-hover position-relative border-2"
-                      style="transition: all 0.3s ease;">
-                <div class="d-flex align-items-center">
-                  <div class="bg-success bg-opacity-10 rounded-3 p-3 me-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-people-fill text-success" viewBox="0 0 16 16">
-                      <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
-                    </svg>
-                  </div>
-                  <div class="flex-grow-1">
-                    <h5 class="mb-1 fw-bold">Volunteer</h5>
-                    <p class="mb-0 text-muted small">Contribute your time and skills to help others</p>
-                  </div>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
-                  </svg>
-                </div>
-              </button>
-
-              <!-- Institution Option -->
-              <button type="submit" name="user_type" value="institution"
-                      class="btn btn-outline-warning btn-lg text-start p-4 card-hover position-relative border-2"
-                      style="transition: all 0.3s ease;">
-                <div class="d-flex align-items-center">
-                  <div class="bg-warning bg-opacity-10 rounded-3 p-3 me-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-building text-warning" viewBox="0 0 16 16">
-                      <path d="M4 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
-                      <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm11 0H3v14h3v-2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V15h3z"/>
-                    </svg>
-                  </div>
-                  <div class="flex-grow-1">
-                    <h5 class="mb-1 fw-bold">Institution</h5>
-                    <p class="mb-0 text-muted small">Register your organization to receive support</p>
-                  </div>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
-                  </svg>
-                </div>
-              </button>
-
-            </div>
-          </form>
-
-          <div class="text-center mt-4">
-            <p class="text-muted small mb-0">Already have an account? <a href="#" class="text-decoration-none fw-semibold">Sign in</a></p>
-          </div>
-
-        </div>
-      </section>
-
+      </div>
     </div>
-  </div>
-</main>
+  </section>
+
+
+  <script>
+    const radios = document.querySelectorAll('input[name="user_type"]');
+    const nextBtn = document.getElementById('nextBtn');
+
+    radios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        nextBtn.disabled = false;
+      });
+    });
+  </script>
 
 {% endblock %}

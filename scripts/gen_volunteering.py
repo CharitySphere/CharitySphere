@@ -18,7 +18,7 @@ INSTITUTION_PKS = [3] + list(range(30, 40))
 VOLUNTEER_PKS = [2] + list(range(20, 30))
 
 # 1. Volunteer Campaigns
-for i in range(1, 11):
+for i in range(1, 80):
     fixtures.append({
         "model": "mod_volunteering.volunteercampaign",
         "pk": i,
@@ -32,7 +32,7 @@ for i in range(1, 11):
     })
 
     # 2. Tasks for each campaign
-    for t in range(1, 4):
+    for t in range(1, 7):
         fixtures.append({
             "model": "mod_volunteering.volunteertask",
             "fields": {
@@ -61,7 +61,7 @@ for i in range(20):
     })
 
 # 4. Org Invitations
-for i in range(10):
+for i in range(60):
     fixtures.append({
         "model": "mod_volunteering.orginvitation",
         "fields": {
