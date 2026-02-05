@@ -3,7 +3,7 @@
 {% block title %}Donor Dashboard - CharitySphere{% endblock %}
 
 {% block content %}
-  <div class="container-fluid">
+  <div class="container-fluid py-5">
     <!-- Welcome Banner -->
     <div class="row mb-4">
       <div class="col-12">
@@ -12,7 +12,7 @@
             <div class="row align-items-center">
               <div class="col-md-8">
                 <h2 class="mb-2">
-                  <i class="bi bi-gift me-2"></i>Welcome back, {{ user.first_name|default:user.username }}!
+                  <i class="bi bi-gift me-2"></i>Welcome, {{ user.first_name|default:user.username }}!
                 </h2>
                 <p class="mb-0 opacity-90">
                   Thank you for being a generous donor. Your contributions make a real difference in our community.
