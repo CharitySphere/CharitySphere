@@ -1,3 +1,5 @@
+# CharitySphere
+
 ![CharitySphere Banner](./.assets/banner.png)
 
 ## 🚀 Initializing Project
