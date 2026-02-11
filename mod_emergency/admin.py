@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import EmergencyAlert
+
+
+@admin.register(EmergencyAlert)
+class EmergencyAlertAdmin(admin.ModelAdmin):
+    list_display = ("title", "region", "severity", "is_active")
+    list_filter = ("severity", "is_active", "region")
+    search_fields = ("title", "description", "region")
