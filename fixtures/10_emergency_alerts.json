@@ -1,0 +1,67 @@
+[
+  {
+    "model": "mod_emergency.emergencyalert",
+    "pk": 1,
+    "fields": {
+      "region": "Wayanad District",
+      "title": "Severe Flooding - Immediate Evacuation Required",
+      "description": "Heavy rainfall has caused severe flooding in Wayanad district. Low-lying areas near Kabini River are at high risk. Residents are advised to evacuate immediately to designated relief camps.",
+      "latitude": 11.6854,
+      "longitude": 76.1320,
+      "is_active": true,
+      "severity": "Critical"
+    }
+  },
+  {
+    "model": "mod_emergency.emergencyalert",
+    "pk": 2,
+    "fields": {
+      "region": "Idukki District",
+      "title": "Landslide Warning - Hill Areas",
+      "description": "Continuous heavy rainfall has triggered multiple landslides in hilly regions of Idukki. Tourists and residents in mountainous areas should stay alert and avoid travel.",
+      "latitude": 9.9188,
+      "longitude": 77.1025,
+      "is_active": true,
+      "severity": "High"
+    }
+  },
+  {
+    "model": "mod_emergency.emergencyalert",
+    "pk": 3,
+    "fields": {
+      "region": "Alappuzha",
+      "title": "Flood Relief Camp Established",
+      "description": "Relief camp operational at Alappuzha Municipal Town Hall for flood-affected families. Medical aid, food, and shelter available. Contact: 0477-2253334",
+      "latitude": 9.4981,
+      "longitude": 76.3388,
+      "is_active": true,
+      "severity": "Medium"
+    }
+  },
+  {
+    "model": "mod_emergency.emergencyalert",
+    "pk": 4,
+    "fields": {
+      "region": "Kottayam District",
+      "title": "Water Level Rising - Stay Alert",
+      "description": "Water levels in Meenachil River rising due to dam release. Residents along riverbanks advised to stay alert and move to higher ground if necessary.",
+      "latitude": 9.5916,
+      "longitude": 76.5222,
+      "is_active": true,
+      "severity": "High"
+    }
+  },
+  {
+    "model": "mod_emergency.emergencyalert",
+    "pk": 5,
+    "fields": {
+      "region": "Thiruvananthapuram",
+      "title": "Cyclone Alert - Coastal Areas",
+      "description": "Cyclonic storm approaching Kerala coast. Fishermen advised not to venture into sea. Coastal residents should take necessary precautions.",
+      "latitude": 8.5241,
+      "longitude": 76.9366,
+      "is_active": false,
+      "severity": "High"
+    }
+  }
+]

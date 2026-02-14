@@ -1,0 +1,83 @@
+[
+  {
+    "model": "mod_reputation.reputationscore",
+    "pk": 1,
+    "fields": {
+      "user_profile": 1,
+      "score": 85,
+      "reviews_count": 3
+    }
+  },
+  {
+    "model": "mod_reputation.reputationscore",
+    "pk": 2,
+    "fields": {
+      "user_profile": 2,
+      "score": 92,
+      "reviews_count": 5
+    }
+  },
+  {
+    "model": "mod_reputation.reputationscore",
+    "pk": 3,
+    "fields": {
+      "user_profile": 3,
+      "score": 78,
+      "reviews_count": 2
+    }
+  },
+  {
+    "model": "mod_reputation.reputationscore",
+    "pk": 4,
+    "fields": {
+      "user_profile": 4,
+      "score": 88,
+      "reviews_count": 4
+    }
+  },
+  {
+    "model": "mod_reputation.reputationscore",
+    "pk": 5,
+    "fields": {
+      "user_profile": 5,
+      "score": 95,
+      "reviews_count": 12
+    }
+  },
+  {
+    "model": "mod_reputation.reputationscore",
+    "pk": 6,
+    "fields": {
+      "user_profile": 6,
+      "score": 90,
+      "reviews_count": 8
+    }
+  },
+  {
+    "model": "mod_reputation.reputationscore",
+    "pk": 7,
+    "fields": {
+      "user_profile": 7,
+      "score": 72,
+      "reviews_count": 1
+    }
+  },
+  {
+    "model": "mod_reputation.reputationscore",
+    "pk": 8,
+    "fields": {
+      "user_profile": 8,
+      "score": 94,
+      "reviews_count": 6
+    }
+  },
+  {
+    "model": "mod_reputation.reputationscore",
+    "pk": 9,
+    "fields": {
+      "user_profile": 9,
+      "score": 87,
+      "reviews_count": 7
+    }
+  }
+]

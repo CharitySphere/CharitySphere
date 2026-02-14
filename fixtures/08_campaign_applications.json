@@ -1,0 +1,62 @@
+[
+  {
+    "model": "mod_volunteering.campaignapplication",
+    "pk": 1,
+    "fields": {
+      "campaign": 1,
+      "volunteer": 1,
+      "status": "accepted",
+      "applied_at": "2024-08-16T10:00:00Z"
+    }
+  },
+  {
+    "model": "mod_volunteering.campaignapplication",
+    "pk": 2,
+    "fields": {
+      "campaign": 1,
+      "volunteer": 3,
+      "status": "accepted",
+      "applied_at": "2024-08-16T11:30:00Z"
+    }
+  },
+  {
+    "model": "mod_volunteering.campaignapplication",
+    "pk": 3,
+    "fields": {
+      "campaign": 2,
+      "volunteer": 2,
+      "status": "accepted",
+      "applied_at": "2024-09-02T09:15:00Z"
+    }
+  },
+  {
+    "model": "mod_volunteering.campaignapplication",
+    "pk": 4,
+    "fields": {
+      "campaign": 2,
+      "volunteer": 4,
+      "status": "pending",
+      "applied_at": "2024-09-10T14:20:00Z"
+    }
+  },
+  {
+    "model": "mod_volunteering.campaignapplication",
+    "pk": 5,
+    "fields": {
+      "campaign": 3,
+      "volunteer": 1,
+      "status": "pending",
+      "applied_at": "2024-10-05T16:30:00Z"
+    }
+  },
+  {
+    "model": "mod_volunteering.campaignapplication",
+    "pk": 6,
+    "fields": {
+      "campaign": 3,
+      "volunteer": 4,
+      "status": "accepted",
+      "applied_at": "2024-10-06T10:45:00Z"
+    }
+  }
+]

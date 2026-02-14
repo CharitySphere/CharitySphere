@@ -1,0 +1,82 @@
+
+[
+    {
+        "model": "auth.user",
+        "pk": 13,
+        "fields": {
+            "username": "donor",
+            "password": "pbkdf2_sha256$1200000$YoN5xWVxto2ksp84e4oHoh$KilOfJ4memrgomUG7FoHW8QvTtZCrgVYXit8/fdGdyE=",
+            "email": "donor@charitysphere.org",
+            "is_active": true
+        }
+    },
+    {
+        "model": "mod_authentication.userprofile",
+        "pk": 13,
+        "fields": {
+            "user": 13,
+            "user_type": "donor"
+        }
+    },
+    {
+        "model": "mod_authentication.donor",
+        "pk": 13,
+        "fields": {
+            "user_profile": 13
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 14,
+        "fields": {
+            "username": "volunteer",
+            "password": "pbkdf2_sha256$1200000$DO0E8dJjAivdDB4IaII5JQ$K9aZaBt02J8dvOOX7zMwzplBwivv8NjzFQH23pjWw3o=",
+            "email": "volunteer@charitysphere.org",
+            "is_active": true
+        }
+    },
+    {
+        "model": "mod_authentication.userprofile",
+        "pk": 14,
+        "fields": {
+            "user": 14,
+            "user_type": "volunteer"
+        }
+    },
+    {
+        "model": "mod_authentication.volunteer",
+        "pk": 14,
+        "fields": {
+            "user_profile": 14,
+            "skills": "Logistics, First Aid",
+            "availability": "Weekends"
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 15,
+        "fields": {
+            "username": "institution",
+            "password": "pbkdf2_sha256$1200000$zKUA8GXckPBm3X3VyNQIS7$28JydjjfRzGBuH8B14EkWTeM07jfegPxD/TX3r2whLo=",
+            "email": "admin@charitysphere.org",
+            "is_active": true
+        }
+    },
+    {
+        "model": "mod_authentication.userprofile",
+        "pk": 15,
+        "fields": {
+            "user": 15,
+            "user_type": "institution"
+        }
+    },
+    {
+        "model": "mod_authentication.institution",
+        "pk": 15,
+        "fields": {
+            "user_profile": 15,
+            "organization_name": "CharitySphere HQ",
+            "registration_number": "ee-414"
+        }
+    }
+]

@@ -1,0 +1,97 @@
+[
+  {
+    "model": "mod_authentication.donor",
+    "pk": 1,
+    "fields": {
+      "user_profile": 1,
+      "donation_amount": "45000.00"
+    }
+  },
+  {
+    "model": "mod_authentication.donor",
+    "pk": 2,
+    "fields": {
+      "user_profile": 3,
+      "donation_amount": "75000.00"
+    }
+  },
+  {
+    "model": "mod_authentication.donor",
+    "pk": 3,
+    "fields": {
+      "user_profile": 7,
+      "donation_amount": "25000.00"
+    }
+  },
+  {
+    "model": "mod_authentication.donor",
+    "pk": 4,
+    "fields": {
+      "user_profile": 11,
+      "donation_amount": "120000.00"
+    }
+  },
+  {
+    "model": "mod_authentication.volunteer",
+    "pk": 1,
+    "fields": {
+      "user_profile": 2,
+      "skills": "Medical assistance, First aid, Community organizing",
+      "availability": "Weekends and evenings"
+    }
+  },
+  {
+    "model": "mod_authentication.volunteer",
+    "pk": 2,
+    "fields": {
+      "user_profile": 4,
+      "skills": "Teaching, Child care, Event management",
+      "availability": "Flexible - Full time available"
+    }
+  },
+  {
+    "model": "mod_authentication.volunteer",
+    "pk": 3,
+    "fields": {
+      "user_profile": 8,
+      "skills": "Food distribution, Logistics, Driving",
+      "availability": "Weekdays 9am-5pm"
+    }
+  },
+  {
+    "model": "mod_authentication.volunteer",
+    "pk": 4,
+    "fields": {
+      "user_profile": 10,
+      "skills": "Social work, Counseling, Translation (Malayalam, English)",
+      "availability": "Weekends"
+    }
+  },
+  {
+    "model": "mod_authentication.institution",
+    "pk": 1,
+    "fields": {
+      "user_profile": 5,
+      "organization_name": "Kerala Flood Relief Trust",
+      "registration_number": "KL/TVM/2018/12345"
+    }
+  },
+  {
+    "model": "mod_authentication.institution",
+    "pk": 2,
+    "fields": {
+      "user_profile": 6,
+      "organization_name": "Trivandrum Children's Orphanage",
+      "registration_number": "KL/TVM/2005/67890"
+    }
+  },
+  {
+    "model": "mod_authentication.institution",
+    "pk": 3,
+    "fields": {
+      "user_profile": 9,
+      "organization_name": "Kochi Medical Relief Center",
+      "registration_number": "KL/EKM/2015/54321"
+    }
+  }
+]

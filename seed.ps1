@@ -1,6 +1,10 @@
 # Stop the script on any error
 $ErrorActionPreference = "Stop"
 
+param(
+    [string]$args
+)
+
 # REQUIREMENT: manage.py from Django
 if (-not (Test-Path "manage.py")) {
     Write-Host "manage.py not found. Exiting..."
@@ -28,16 +32,36 @@ if (-not (Test-Path $fixturesPath)) {
 }
 
 # ACTION: Fixtures
-Write-Host "--- Generating Test Fixtures ---"
-python scripts/gen_auth.py
-python scripts/gen_donations.py
-python scripts/gen_volunteering.py
+# These match the filenames provided in the previous step
+if ($args -eq "--random") {
+  Write-Host "--- Generating Test Fixtures ---"
+  python scripts/gen_auth.py
+  python scripts/gen_donations.py
+  python scripts/gen_volunteering.py
 
-Write-Host "--- Loading Data ---"
-# Loading auth first is mandatory to satisfy foreign key constraints
-python manage.py loaddata fixtures/auth_data.json
-python manage.py loaddata fixtures/donations_data.json
-python manage.py loaddata fixtures/volunteering_data.json
+  Write-Host "--- Loading Data ---"
+  # Loading auth first is mandatory to satisfy foreign key constraints
+  python manage.py loaddata fixtures/auth_data.json
+  python manage.py loaddata fixtures/donations_data.json
+  python manage.py loaddata fixtures/volunteering_data.json
+  Write-Host "--- Success: Database populated with random data ---"
+} else {
+  Write-Host "--- Loading Data ---"
+  python manage.py loaddata fixtures/00_test_users.json
+  python manage.py loaddata fixtures/01_users.json
+  python manage.py loaddata fixtures/02_profiles.json
+  python manage.py loaddata fixtures/03_donors_volunteers_institutions.json
+  python manage.py loaddata fixtures/04_donation_campaigns.json
+  python manage.py loaddata fixtures/05_donation_records.json
+  python manage.py loaddata fixtures/06_volunteer_campaigns.json
+  python manage.py loaddata fixtures/07_volunteer_tasks.json
+  python manage.py loaddata fixtures/08_campaign_applications.json
+  python manage.py loaddata fixtures/09_org_invitations.json
+  python manage.py loaddata fixtures/10_emergency_alerts.json
+  python manage.py loaddata fixtures/11_reputation_scores.json
+  python manage.py loaddata fixtures/12_reviews.json
+  Write-Host "--- Success: Database populated with custom data ---"
+}
 
 # ACTION: Create admin user
 Write-Host "Creating admin user..."
@@ -49,5 +73,3 @@ if not User.objects.filter(username='admin').exists():
 else:
     print('Admin user already exists.')
 "@
-
-Write-Host "--- Success: Database populated with test users and random data ---"

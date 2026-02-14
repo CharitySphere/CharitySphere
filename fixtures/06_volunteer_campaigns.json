@@ -1,0 +1,46 @@
+[
+  {
+    "model": "mod_volunteering.volunteercampaign",
+    "pk": 1,
+    "fields": {
+      "title": "Flood Relief Operations Wayanad",
+      "institution": 1,
+      "description": "Urgent volunteer mobilization for flood relief work in Wayanad district. Tasks include rescue operations support, relief material distribution, setting up temporary shelters, and providing medical assistance.",
+      "status": "active",
+      "created_at": "2024-08-15T11:00:00Z"
+    }
+  },
+  {
+    "model": "mod_volunteering.volunteercampaign",
+    "pk": 2,
+    "fields": {
+      "title": "Children's Education Support Program",
+      "institution": 2,
+      "description": "Long-term volunteer program to provide educational support to orphanage children. Looking for volunteers who can teach various subjects, conduct workshops, and mentor children.",
+      "status": "active",
+      "created_at": "2024-09-01T09:00:00Z"
+    }
+  },
+  {
+    "model": "mod_volunteering.volunteercampaign",
+    "pk": 3,
+    "fields": {
+      "title": "Mobile Medical Camp - Rural Kerala",
+      "institution": 3,
+      "description": "Monthly mobile medical camps across rural areas of Kerala. Need volunteers with medical background, pharmacy knowledge, and general support staff for patient registration and crowd management.",
+      "status": "active",
+      "created_at": "2024-10-01T08:30:00Z"
+    }
+  },
+  {
+    "model": "mod_volunteering.volunteercampaign",
+    "pk": 4,
+    "fields": {
+      "title": "Beach Cleanup Drive - Kovalam",
+      "institution": 1,
+      "description": "Environmental initiative to clean Kovalam beach and surrounding areas. Promote awareness about plastic pollution and sustainable tourism.",
+      "status": "completed",
+      "created_at": "2024-07-10T07:00:00Z"
+    }
+  }
+]

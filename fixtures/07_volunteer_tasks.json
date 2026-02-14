@@ -1,0 +1,122 @@
+[
+  {
+    "model": "mod_volunteering.volunteertask",
+    "pk": 1,
+    "fields": {
+      "campaign": 1,
+      "title": "Relief Material Distribution Coordinator",
+      "institution": 1,
+      "date": "2024-08-25",
+      "location": "Wayanad District Relief Camp, Sulthan Bathery",
+      "task_type": "Logistics",
+      "status": "completed",
+      "description": "Coordinate distribution of food packets, water bottles, and essential supplies to 500+ families at the relief camp.",
+      "assigned_volunteer": 3
+    }
+  },
+  {
+    "model": "mod_volunteering.volunteertask",
+    "pk": 2,
+    "fields": {
+      "campaign": 1,
+      "title": "Medical Support Team Member",
+      "institution": 1,
+      "date": "2024-08-28",
+      "location": "Flood Affected Areas, Kalpetta",
+      "task_type": "Medical",
+      "status": "in_progress",
+      "description": "Provide first aid support and assist medical professionals in treating minor injuries and illnesses among flood victims.",
+      "assigned_volunteer": 1
+    }
+  },
+  {
+    "model": "mod_volunteering.volunteertask",
+    "pk": 3,
+    "fields": {
+      "campaign": 1,
+      "title": "Temporary Shelter Setup Assistant",
+      "institution": 1,
+      "date": "2024-08-30",
+      "location": "Community Hall, Mananthavady",
+      "task_type": "Infrastructure",
+      "status": "open",
+      "description": "Help set up temporary shelters with tents, bedding, and basic amenities for displaced families.",
+      "assigned_volunteer": null
+    }
+  },
+  {
+    "model": "mod_volunteering.volunteertask",
+    "pk": 4,
+    "fields": {
+      "campaign": 2,
+      "title": "Mathematics Tutor for Class 8-10",
+      "institution": 2,
+      "date": "2024-09-15",
+      "location": "Trivandrum Children's Orphanage, Pettah",
+      "task_type": "Education",
+      "status": "in_progress",
+      "description": "Conduct mathematics classes twice a week for students in classes 8-10. Help with homework and exam preparation.",
+      "assigned_volunteer": 2
+    }
+  },
+  {
+    "model": "mod_volunteering.volunteertask",
+    "pk": 5,
+    "fields": {
+      "campaign": 2,
+      "title": "Art and Craft Workshop Facilitator",
+      "institution": 2,
+      "date": "2024-10-05",
+      "location": "Trivandrum Children's Orphanage, Pettah",
+      "task_type": "Recreation",
+      "status": "open",
+      "description": "Organize weekly art and craft workshops to develop creative skills among children aged 6-14.",
+      "assigned_volunteer": null
+    }
+  },
+  {
+    "model": "mod_volunteering.volunteertask",
+    "pk": 6,
+    "fields": {
+      "campaign": 3,
+      "title": "Patient Registration Volunteer",
+      "institution": 3,
+      "date": "2024-11-15",
+      "location": "Perumbavoor Community Center",
+      "task_type": "Administrative",
+      "status": "open",
+      "description": "Manage patient registration, maintain records, and guide patients through the medical camp process.",
+      "assigned_volunteer": null
+    }
+  },
+  {
+    "model": "mod_volunteering.volunteertask",
+    "pk": 7,
+    "fields": {
+      "campaign": 3,
+      "title": "Pharmacy Support Assistant",
+      "institution": 3,
+      "date": "2024-11-15",
+      "location": "Perumbavoor Community Center",
+      "task_type": "Medical",
+      "status": "in_progress",
+      "description": "Assist pharmacist in organizing medicines, dispensing prescriptions, and maintaining inventory.",
+      "assigned_volunteer": 4
+    }
+  },
+  {
+    "model": "mod_volunteering.volunteertask",
+    "pk": 8,
+    "fields": {
+      "campaign": null,
+      "title": "Food Distribution - Sunday Community Kitchen",
+      "institution": 2,
+      "date": "2024-11-20",
+      "location": "Trivandrum Central Station Area",
+      "task_type": "Food Service",
+      "status": "open",
+      "description": "Help prepare and distribute free meals to homeless individuals and daily wage workers every Sunday morning.",
+      "assigned_volunteer": null
+    }
+  }
+]

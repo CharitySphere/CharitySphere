@@ -1,0 +1,148 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "username": "admin2",
+      "password": "pbkdf2_sha256$1200000$zKUA8GXckPBm3X3VyNQIS7$28JydjjfRzGBuH8B14EkWTeM07jfegPxD/TX3r2whLo=",
+      "email": "admin@charitysphere.org",
+      "first_name": "Admin",
+      "last_name": "User",
+      "is_staff": true,
+      "is_superuser": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "username": "rajesh_kumar",
+      "password": "pbkdf2_sha256$1200000$YoN5xWVxto2ksp84e4oHoh$KilOfJ4memrgomUG7FoHW8QvTtZCrgVYXit8/fdGdyE=",
+      "email": "rajesh.kumar@gmail.com",
+      "first_name": "Rajesh",
+      "last_name": "Kumar",
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+      "username": "priya_menon",
+      "password": "pbkdf2_sha256$1200000$DO0E8dJjAivdDB4IaII5JQ$K9aZaBt02J8dvOOX7zMwzplBwivv8NjzFQH23pjWw3o=",
+      "email": "priya.menon@gmail.com",
+      "first_name": "Priya",
+      "last_name": "Menon",
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 4,
+    "fields": {
+      "username": "suresh_pillai",
+      "password": "pbkdf2_sha256$1200000$YoN5xWVxto2ksp84e4oHoh$KilOfJ4memrgomUG7FoHW8QvTtZCrgVYXit8/fdGdyE=",
+      "email": "suresh.pillai@yahoo.com",
+      "first_name": "Suresh",
+      "last_name": "Pillai",
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 5,
+    "fields": {
+      "username": "anitha_nair",
+      "password": "pbkdf2_sha256$1200000$DO0E8dJjAivdDB4IaII5JQ$K9aZaBt02J8dvOOX7zMwzplBwivv8NjzFQH23pjWw3o=",
+      "email": "anitha.nair@gmail.com",
+      "first_name": "Anitha",
+      "last_name": "Nair",
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 6,
+    "fields": {
+      "username": "kerala_flood_relief",
+      "password": "pbkdf2_sha256$1200000$zKUA8GXckPBm3X3VyNQIS7$28JydjjfRzGBuH8B14EkWTeM07jfegPxD/TX3r2whLo=",
+      "email": "contact@keralafloodrelief.org",
+      "first_name": "Kerala Flood",
+      "last_name": "Relief Trust",
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 7,
+    "fields": {
+      "username": "tvm_orphanage",
+      "password": "pbkdf2_sha256$1200000$zKUA8GXckPBm3X3VyNQIS7$28JydjjfRzGBuH8B14EkWTeM07jfegPxD/TX3r2whLo=",
+      "email": "info@tvmorphanage.org",
+      "first_name": "Trivandrum",
+      "last_name": "Orphanage",
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 8,
+    "fields": {
+      "username": "lakshmi_das",
+      "password": "pbkdf2_sha256$1200000$YoN5xWVxto2ksp84e4oHoh$KilOfJ4memrgomUG7FoHW8QvTtZCrgVYXit8/fdGdyE=",
+      "email": "lakshmi.das@gmail.com",
+      "first_name": "Lakshmi",
+      "last_name": "Das",
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 9,
+    "fields": {
+      "username": "arun_krishnan",
+      "password": "pbkdf2_sha256$1200000$DO0E8dJjAivdDB4IaII5JQ$K9aZaBt02J8dvOOX7zMwzplBwivv8NjzFQH23pjWw3o=",
+      "email": "arun.krishnan@hotmail.com",
+      "first_name": "Arun",
+      "last_name": "Krishnan",
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 10,
+    "fields": {
+      "username": "kochi_medical_center",
+      "password": "pbkdf2_sha256$1200000$zKUA8GXckPBm3X3VyNQIS7$28JydjjfRzGBuH8B14EkWTeM07jfegPxD/TX3r2whLo=",
+      "email": "admin@kochimedical.org",
+      "first_name": "Kochi Medical",
+      "last_name": "Relief Center",
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 11,
+    "fields": {
+      "username": "meera_varma",
+      "password": "pbkdf2_sha256$1200000$DO0E8dJjAivdDB4IaII5JQ$K9aZaBt02J8dvOOX7zMwzplBwivv8NjzFQH23pjWw3o=",
+      "email": "meera.varma@gmail.com",
+      "first_name": "Meera",
+      "last_name": "Varma",
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 12,
+    "fields": {
+      "username": "vineeth_thomas",
+      "password": "pbkdf2_sha256$1200000$YoN5xWVxto2ksp84e4oHoh$KilOfJ4memrgomUG7FoHW8QvTtZCrgVYXit8/fdGdyE=",
+      "email": "vineeth.thomas@gmail.com",
+      "first_name": "Vineeth",
+      "last_name": "Thomas",
+      "is_active": true
+    }
+  }
+]

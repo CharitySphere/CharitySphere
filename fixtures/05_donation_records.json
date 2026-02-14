@@ -1,0 +1,112 @@
+[
+  {
+    "model": "mod_donations.donationrecord",
+    "pk": 1,
+    "fields": {
+      "donor": 1,
+      "campaign": 1,
+      "amount": "25000.00",
+      "item_details": "",
+      "timestamp": "2024-08-16T12:30:00Z"
+    }
+  },
+  {
+    "model": "mod_donations.donationrecord",
+    "pk": 2,
+    "fields": {
+      "donor": 2,
+      "campaign": 1,
+      "amount": "50000.00",
+      "item_details": "",
+      "timestamp": "2024-08-18T14:15:00Z"
+    }
+  },
+  {
+    "model": "mod_donations.donationrecord",
+    "pk": 3,
+    "fields": {
+      "donor": 4,
+      "campaign": 1,
+      "amount": "100000.00",
+      "item_details": "",
+      "timestamp": "2024-08-20T09:45:00Z"
+    }
+  },
+  {
+    "model": "mod_donations.donationrecord",
+    "pk": 4,
+    "fields": {
+      "donor": 1,
+      "campaign": 2,
+      "amount": "15000.00",
+      "item_details": "Rice (50kg), Dal (20kg), Vegetables",
+      "timestamp": "2024-09-02T10:20:00Z"
+    }
+  },
+  {
+    "model": "mod_donations.donationrecord",
+    "pk": 5,
+    "fields": {
+      "donor": 3,
+      "campaign": 2,
+      "amount": "10000.00",
+      "item_details": "Fruits and dairy products",
+      "timestamp": "2024-09-05T11:00:00Z"
+    }
+  },
+  {
+    "model": "mod_donations.donationrecord",
+    "pk": 6,
+    "fields": {
+      "donor": 2,
+      "campaign": 3,
+      "amount": "20000.00",
+      "item_details": "40 winter jackets, 50 blankets",
+      "timestamp": "2024-10-12T15:30:00Z"
+    }
+  },
+  {
+    "model": "mod_donations.donationrecord",
+    "pk": 7,
+    "fields": {
+      "donor": 4,
+      "campaign": 4,
+      "amount": "75000.00",
+      "item_details": "",
+      "timestamp": "2024-11-06T13:45:00Z"
+    }
+  },
+  {
+    "model": "mod_donations.donationrecord",
+    "pk": 8,
+    "fields": {
+      "donor": 1,
+      "campaign": 5,
+      "amount": "5000.00",
+      "item_details": "20 hygiene kits",
+      "timestamp": "2024-08-22T16:10:00Z"
+    }
+  },
+  {
+    "model": "mod_donations.donationrecord",
+    "pk": 9,
+    "fields": {
+      "donor": 3,
+      "campaign": 5,
+      "amount": "15000.00",
+      "item_details": "50 hygiene kits with additional sanitary products",
+      "timestamp": "2024-08-25T09:30:00Z"
+    }
+  },
+  {
+    "model": "mod_donations.donationrecord",
+    "pk": 10,
+    "fields": {
+      "donor": 4,
+      "campaign": 6,
+      "amount": "20000.00",
+      "item_details": "",
+      "timestamp": "2024-09-18T11:20:00Z"
+    }
+  }
+]

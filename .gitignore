@@ -1,5 +1,18 @@
 ### Generated Fixtures ###
-fixtures/
+fixtures/*
+!fixtures/00_test_users.json
+!fixtures/01_users.json
+!fixtures/02_profiles.json
+!fixtures/03_donors_volunteers_institutions.json
+!fixtures/04_donation_campaigns.json
+!fixtures/05_donation_records.json
+!fixtures/06_volunteer_campaigns.json
+!fixtures/07_volunteer_tasks.json
+!fixtures/08_campaign_applications.json
+!fixtures/09_org_invitations.json
+!fixtures/10_emergency_alerts.json
+!fixtures/11_reputation_scores.json
+!fixtures/12_reviews.json
 
 ### Django ###
 *.log
