@@ -3,32 +3,28 @@
     "model": "mod_authentication.donor",
     "pk": 1,
     "fields": {
-      "user_profile": 1,
-      "donation_amount": "45000.00"
+      "user_profile": 1
     }
   },
   {
     "model": "mod_authentication.donor",
     "pk": 2,
     "fields": {
-      "user_profile": 3,
-      "donation_amount": "75000.00"
+      "user_profile": 3
     }
   },
   {
     "model": "mod_authentication.donor",
     "pk": 3,
     "fields": {
-      "user_profile": 7,
-      "donation_amount": "25000.00"
+      "user_profile": 7
     }
   },
   {
     "model": "mod_authentication.donor",
     "pk": 4,
     "fields": {
-      "user_profile": 11,
-      "donation_amount": "120000.00"
+      "user_profile": 11
     }
   },
   {
