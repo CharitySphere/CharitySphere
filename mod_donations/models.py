@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Sum
+
 from mod_authentication.models import Donor, Institution
 
 
@@ -15,9 +17,19 @@ class DonationCampaign(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     description = models.TextField()
     goal_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    current_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     is_urgent = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    # Explicit typing
+    donationrecord_set: models.Manager["DonationRecord"]
+
+    @property
+    def current_amount(self):
+        # Calculates sum of all records for this campaign
+        return self.donationrecord_set.aggregate(total=Sum("amount"))["total"] or 0
+
+    def __str__(self):
+        return self.title
 
 
 class DonationRecord(models.Model):

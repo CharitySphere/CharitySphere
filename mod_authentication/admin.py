@@ -12,7 +12,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Donor)
 class DonorAdmin(admin.ModelAdmin):
-    list_display = ("user_profile", "donation_amount")
+    list_display = ("user_profile",)
     search_fields = ("user_profile__user__username",)
 
 

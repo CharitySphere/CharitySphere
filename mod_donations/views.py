@@ -1,15 +1,18 @@
 from django.contrib import messages
+from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
 
-from mod_authentication.models import Donor, Institution, UserProfile
+from mod_authentication.models import Donor, UserProfile
 from .models import DonationCampaign, DonationRecord
 
 
 @login_required
 def campaign_list(request):
     """List all active donation campaigns"""
-    campaigns = DonationCampaign.objects.all().order_by('-is_urgent', '-created_at')
+    campaigns = DonationCampaign.objects.annotate(
+        calc_current=Sum('donationrecord__amount')
+    ).order_by('-is_urgent', '-created_at')
 
     # Filter by category if specified
     category = request.GET.get('category')
@@ -61,66 +64,34 @@ def make_donation(request, campaign_id):
 
         if request.method == 'POST':
             donation_type = request.POST.get('donation_type')
+            amount = 0
+            details = ""
 
             if donation_type == 'money':
                 amount = float(request.POST.get('amount', 0))
-
-                if amount <= 0:
-                    messages.error(request, "Please enter a valid amount.")
-                    return redirect('campaign_detail', campaign_id=campaign_id)
-
-                # Mock payment processing
                 payment_method = request.POST.get('payment_method')
-
-                # Create donation record
-                donation = DonationRecord.objects.create(
-                    donor=donor,
-                    campaign=campaign,
-                    amount=amount,
-                    item_details=f"Payment via {payment_method}"
-                )
-
-                # Update campaign and donor totals
-                campaign.current_amount += amount
-                campaign.save()
-
-                donor.donation_amount += amount
-                donor.save()
-
-                messages.success(request, f"Thank you! Your donation of ₹{amount} has been processed successfully.")
-
+                details = f"Payment via {payment_method}"
             elif donation_type == 'items':
-                item_description = request.POST.get('item_description')
-                estimated_value = float(request.POST.get('estimated_value', 0))
+                amount = float(request.POST.get('estimated_value', 0))
+                details = request.POST.get('item_description')
 
-                if not item_description:
-                    messages.error(request, "Please describe the items you're donating.")
-                    return redirect('campaign_detail', campaign_id=campaign_id)
+            if amount <= 0:
+                messages.error(request, "Please enter a valid amount or value.")
+                return redirect('donations:campaign_detail', campaign_id=campaign_id)
 
-                # Create donation record
-                donation = DonationRecord.objects.create(
-                    donor=donor,
-                    campaign=campaign,
-                    amount=estimated_value,
-                    item_details=item_description
-                )
+            DonationRecord.objects.create(
+                donor=donor,
+                campaign=campaign,
+                amount=amount,
+                item_details=details
+            )
 
-                # Update campaign total
-                campaign.current_amount += estimated_value
-                campaign.save()
-
-                donor.donation_amount += estimated_value
-                donor.save()
-
-                messages.success(request, "Thank you! Your item donation has been recorded successfully.")
-
-            return redirect('campaign_detail', campaign_id=campaign_id)
+            messages.success(request, f"Thank you! Your donation has been processed successfully.")
+            return redirect('donations:campaign_detail', campaign_id=campaign_id)
 
     except (UserProfile.DoesNotExist, Donor.DoesNotExist):
         messages.error(request, "Donor profile not found.")
-        return redirect('campaign_detail', campaign_id=campaign_id)
-
-    return redirect('campaign_detail', campaign_id=campaign_id)
+    return redirect('donations:campaign_detail', campaign_id=campaign_id)
 
 
 @login_required

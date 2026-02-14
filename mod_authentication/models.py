@@ -18,8 +18,6 @@ class UserProfile(models.Model):
 
 class Donor(models.Model):
     user_profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
-    # Donor-specific fields
-    donation_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
 
 class Volunteer(models.Model):
