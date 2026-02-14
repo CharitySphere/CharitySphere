@@ -7,7 +7,9 @@
     <!-- Header -->
     <div class="row mb-4">
       <div class="col-12">
-        <h2><i class="bi bi-gift me-2"></i>Donation Campaigns</h2>
+        <h2>
+          <i class="bi bi-gift me-2"></i>Donation Campaigns
+        </h2>
         <p class="text-muted">Support campaigns that matter to you</p>
       </div>
     </div>
@@ -17,19 +19,28 @@
       <div class="col-md-3">
         <div class="card shadow-sm border-0">
           <div class="card-header bg-white border-0 pt-4 pb-3">
-            <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Categories</h5>
+            <h5 class="mb-0">
+              <i class="bi bi-funnel me-2"></i>Categories
+            </h5>
           </div>
           <div class="list-group list-group-flush">
-            <a href="{% url 'donations:campaign_list' %}" class="list-group-item list-group-item-action {% if not selected_category %}active{% endif %}">
+            <a href="{% url 'donations:campaign_list' %}"
+               class="list-group-item list-group-item-action {% if not selected_category %}active{% endif %}">
               <i class="bi bi-grid me-2"></i>All Categories
             </a>
             {% for code, name in categories %}
-              <a href="?category={{ code }}" class="list-group-item list-group-item-action {% if selected_category == code %}active{% endif %}">
-                {% if code == 'food' %}<i class="bi bi-basket me-2"></i>
-                {% elif code == 'clothes' %}<i class="bi bi-bag me-2"></i>
-                {% elif code == 'hygiene' %}<i class="bi bi-droplet me-2"></i>
-                {% elif code == 'medicine' %}<i class="bi bi-heart-pulse me-2"></i>
-                {% elif code == 'funds' %}<i class="bi bi-cash-coin me-2"></i>
+              <a href="?category={{ code }}"
+                 class="list-group-item list-group-item-action {% if selected_category == code %}active{% endif %}">
+                {% if code == 'food' %}
+                  <i class="bi bi-basket me-2"></i>
+                {% elif code == 'clothes' %}
+                  <i class="bi bi-bag me-2"></i>
+                {% elif code == 'hygiene' %}
+                  <i class="bi bi-droplet me-2"></i>
+                {% elif code == 'medicine' %}
+                  <i class="bi bi-heart-pulse me-2"></i>
+                {% elif code == 'funds' %}
+                  <i class="bi bi-cash-coin me-2"></i>
                 {% endif %}
                 {{ name }}
               </a>
@@ -60,7 +71,7 @@
                     <!-- Progress Bar -->
                     <div class="mb-3">
                       <div class="d-flex justify-content-between mb-1">
-                        <small class="text-muted">Raised: ₹{{ campaign.current_amount|floatformat:2 }}</small>
+                        <p>Raised: ₹{{ campaign.calc_current|default:0|floatformat:2 }} / ₹{{ campaign.goal_amount|floatformat:2 }}</p>
                         <small class="text-muted">Goal: ₹{{ campaign.goal_amount|floatformat:2 }}</small>
                       </div>
                       <div class="progress" style="height: 10px;">

@@ -81,8 +81,8 @@
                   <div class="list-group-item border-0 px-0">
                     <div class="d-flex justify-content-between align-items-center">
                       <div>
-                        <h6 class="mb-1">{{ activity.campaign.title|default:activity.title }}</h6>
-                        <small class="text-muted">{{ activity.timestamp|date:"d M, Y"|default:activity.date }}</small>
+                        <h6 class="mb-1">{{ activity.campaign.title }}</h6>
+                        <small class="text-muted">{{ activity.timestamp|date:"d M, Y" }}</small>
                       </div>
                       <span class="badge bg-success">₹{{ activity.amount }}</span>
                     </div>
@@ -137,15 +137,15 @@
             <div class="mb-3">
               <div class="d-flex justify-content-between mb-2">
                 <span><i class="bi bi-basket me-2"></i>Meals Provided</span>
-                <strong>0</strong>
+                <strong>{{ meals_count }}</strong>
               </div>
               <div class="d-flex justify-content-between mb-2">
                 <span><i class="bi bi-bag-heart me-2"></i>Clothes Donated</span>
-                <strong>0</strong>
+                <strong>{{ clothes_count }}</strong>
               </div>
               <div class="d-flex justify-content-between mb-2">
-                <span><i class="bi bi-heart-pulse me-2"></i>Lives Impacted</span>
-                <strong>0</strong>
+                <span><i class="bi bi-heart-pulse me-2"></i>Total Contributions</span>
+                <strong>{{ recent_activities.count }}</strong>
               </div>
             </div>
             <div class="alert alert-info mb-0">

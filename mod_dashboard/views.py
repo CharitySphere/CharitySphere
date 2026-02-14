@@ -1,9 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.db.models import Sum
+from django.shortcuts import redirect, render, get_object_or_404
 
 from mod_authentication.models import (Donor, Institution, UserProfile,
                                        Volunteer)
+from mod_donations.models import DonationCampaign, DonationRecord
+from mod_reputation.models import ReputationScore
 
 
 @login_required
@@ -28,39 +31,39 @@ def dashboard(request):
 
 @login_required
 def donor_dashboard(request):
-    """Dashboard for donors"""
-    try:
-        user_profile = UserProfile.objects.get(user=request.user)
+    user_profile = get_object_or_404(UserProfile, user=request.user)
+    donor = get_object_or_404(Donor, user_profile=user_profile)
 
-        # Verify user is a donor
-        if user_profile.user_type != "donor":
-            messages.error(request, "Access denied. This dashboard is for donors only.")
-            return redirect("dashboard")
+    total_donations = (
+        DonationRecord.objects.filter(donor=donor).aggregate(Sum("amount"))[
+            "amount__sum"
+        ]
+        or 0
+    )
+    active_campaigns = DonationCampaign.objects.count()
+    rep, _ = ReputationScore.objects.get_or_create(user_profile=user_profile)
+    impact_score = rep.score
+    recent_activities = DonationRecord.objects.filter(donor=donor).order_by(
+        "-timestamp"
+    )[:5]
 
-        donor = Donor.objects.get(user_profile=user_profile)
+    # Impact Metrics (Simple Logic)
+    meals = DonationRecord.objects.filter(
+        donor=donor, campaign__category="food"
+    ).count()
+    clothes = DonationRecord.objects.filter(
+        donor=donor, campaign__category="clothes"
+    ).count()
 
-        # Calculate statistics
-        total_donations = donor.donation_amount
-        active_campaigns = 0  # Placeholder - implement when you add campaigns
-        impact_score = int(total_donations / 10) if total_donations > 0 else 0
-
-        # Recent activities (placeholder)
-        recent_activities = []
-
-        context = {
-            "user_profile": user_profile,
-            "donor": donor,
-            "total_donations": total_donations,
-            "active_campaigns": active_campaigns,
-            "impact_score": impact_score,
-            "recent_activities": recent_activities,
-        }
-
-        return render(request, "donor_dashboard.html", context)
-
-    except (UserProfile.DoesNotExist, Donor.DoesNotExist):
-        messages.error(request, "Donor profile not found.")
-        return redirect("dashboard")
+    context = {
+        "total_donations": total_donations,
+        "active_campaigns": active_campaigns,
+        "impact_score": impact_score,
+        "recent_activities": recent_activities,
+        "meals_count": meals,
+        "clothes_count": clothes,
+    }
+    return render(request, "donor_dashboard.html", context)
 
 
 @login_required
