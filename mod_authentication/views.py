@@ -1,15 +1,16 @@
-from django.contrib.auth import login, logout
-from django.shortcuts import redirect, render
 from django.contrib import messages
+from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-from django.contrib.auth import login
 from django.db import transaction
-from .models import UserProfile, Donor, Volunteer, Institution
-from .forms import (
-    DonorRegistrationForm,
-    InstitutionRegistrationForm,
-    VolunteerRegistrationForm,
-)
+from django.shortcuts import redirect, render
+
+from .forms import (DonorRegistrationForm, InstitutionRegistrationForm,
+                    VolunteerRegistrationForm)
+from .models import Donor, Institution, UserProfile, Volunteer
+
+
+def auth(request):
+    return render(request, "auth.html")
 
 
 def logout_view(request):
