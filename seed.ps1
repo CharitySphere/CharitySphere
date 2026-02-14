@@ -1,9 +1,9 @@
-# Stop the script on any error
-$ErrorActionPreference = "Stop"
-
 param(
     [string]$args
 )
+
+# Stop the script on any error
+$ErrorActionPreference = "Stop"
 
 # REQUIREMENT: manage.py from Django
 if (-not (Test-Path "manage.py")) {
