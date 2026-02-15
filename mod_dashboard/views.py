@@ -1,12 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 
 from mod_authentication.models import (Donor, Institution, UserProfile,
                                        Volunteer)
 from mod_donations.models import DonationCampaign, DonationRecord
 from mod_reputation.models import ReputationScore
+from mod_volunteering.models import VolunteerCampaign, CampaignApplication, OrgInvitation
 
 
 @login_required
@@ -120,21 +121,42 @@ def institution_dashboard(request):
 
         institution = Institution.objects.get(user_profile=user_profile)
 
-        # Calculate statistics
-        active_campaigns = 0  # Placeholder
-        active_volunteers = 0  # Placeholder
-        funds_raised = 0  # Placeholder
+        # Metrics
+        v_campaigns = VolunteerCampaign.objects.filter(
+            institution=institution, status="active"
+        )
+        d_campaigns = DonationCampaign.objects.filter(institution=institution)
+        active_campaigns_count = v_campaigns.count() + d_campaigns.count()
 
-        # Recent activity (placeholder)
-        recent_activities = []
+        # Total funds raised across all donation campaigns
+        funds_raised = (
+            DonationRecord.objects.filter(campaign__institution=institution).aggregate(
+                Sum("amount")
+            )["amount__sum"]
+            or 0
+        )
+
+        # Unique active volunteers (Accepted applications OR Accepted invitations)
+        active_volunteers = Volunteer.objects.filter(
+            campaignapplication__campaign__institution=institution,
+            campaignapplication__status='accepted'
+        ).distinct().count()
+
+        # Notification Badges
+        pending_apps = CampaignApplication.objects.filter(campaign__institution=institution, status='pending').count()
+        pending_invites = OrgInvitation.objects.filter(institution=institution, status='pending').count()
+
+        recent_donations = DonationRecord.objects.filter(campaign__institution=institution).order_by('-timestamp')[:5]
 
         context = {
-            "user_profile": user_profile,
             "institution": institution,
-            "active_campaigns": active_campaigns,
+            "active_campaigns": active_campaigns_count,
             "active_volunteers": active_volunteers,
             "funds_raised": funds_raised,
-            "recent_activities": recent_activities,
+            "pending_apps": pending_apps,
+            "pending_invites": pending_invites,
+            "recent_donations": recent_donations,
+            "v_campaigns": v_campaigns[:3], # Show a few active volunteer campaigns
         }
 
         return render(request, "institution_dashboard.html", context)

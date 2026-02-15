@@ -28,36 +28,40 @@
 
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-4">
-            <div class="mb-3" style="font-size: 3rem; color: #fb93c8;">
-              <i class="bi bi-bullseye"></i>
-            </div>
-            <h3 class="display-5 fw-bold mb-2" style="color: #f5576c;">{{ active_campaigns }}</h3>
-            <p class="text-muted mb-0">Active Campaigns</p>
+          <div class="card-body text-center p-3">
+            <h3 class="display-6 fw-bold text-danger mb-1">{{ active_campaigns }}</h3>
+            <p class="text-muted small mb-0">Active Campaigns</p>
           </div>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-4">
-            <div class="mb-3" style="font-size: 3rem; color: #4facfe;">
-              <i class="bi bi-people"></i>
-            </div>
-            <h3 class="display-5 fw-bold text-primary mb-2">{{ active_volunteers }}</h3>
-            <p class="text-muted mb-0">Active Volunteers</p>
+      <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100 position-relative">
+          {% if pending_apps %}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark">
+              {{ pending_apps }}<span class="visually-hidden">pending apps</span>
+            </span>
+          {% endif %}
+          <div class="card-body text-center p-3">
+            <h3 class="display-6 fw-bold text-primary mb-1">{{ active_volunteers }}</h3>
+            <p class="text-muted small mb-0">Total Volunteers</p>
           </div>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-4">
-            <div class="mb-3" style="font-size: 3rem; color: #11998e;">
-              <i class="bi bi-cash-stack"></i>
-            </div>
-            <h3 class="display-5 fw-bold text-success mb-2">₹{{ funds_raised|floatformat:2 }}</h3>
-            <p class="text-muted mb-0">Funds Raised</p>
+          <div class="card-body text-center p-3">
+            <h3 class="display-6 fw-bold text-success mb-1">₹{{ funds_raised|floatformat:0 }}</h3>
+            <p class="text-muted small mb-0">Funds Raised</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body text-center p-3">
+            <h3 class="display-6 fw-bold text-info mb-1">{{ pending_invites }}</h3>
+            <p class="text-muted small mb-0">Pending Invites</p>
           </div>
         </div>
       </div>
@@ -118,17 +122,20 @@
           <div class="card-body">
             <div class="d-grid gap-2">
               <a href="{% url 'volunteering:institution_campaigns' %}" class="btn btn-warning">
-                <i class="bi bi-plus-circle me-2"></i>Manage Campaigns
+                <i class="bi bi-person-walking me-2"></i>Volunteer Campaigns
+              </a>
+              <a href="{% url 'donations:institution_donation_campaigns' %}" class="btn btn-success">
+                <i class="bi bi-cash-stack me-2"></i>Donation Campaigns
               </a>
               <a href="{% url 'volunteering:volunteer_directory' %}" class="btn btn-outline-primary">
                 <i class="bi bi-people-fill me-2"></i>Volunteer Directory
               </a>
-              <a href="#" class="btn btn-outline-danger">
+              <!-- <a href="#" class="btn btn-outline-danger">
                 <i class="bi bi-exclamation-triangle me-2"></i>Emergency Alert
               </a>
               <a href="#" class="btn btn-outline-secondary">
                 <i class="bi bi-graph-up me-2"></i>View Reports
-              </a>
+              </a> -->
               <a href="{% url 'profile_settings' %}" class="btn btn-outline-secondary">
                 <i class="bi bi-gear me-2"></i>Settings
               </a>
@@ -138,13 +145,29 @@
 
         <!-- Recent Donations -->
         <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-white border-0 pt-4 pb-3">
+          <div class="card-header bg-white border-0 pt-4 pb-1">
             <h5 class="mb-0">
               <i class="bi bi-gift me-2"></i>Recent Donations
             </h5>
           </div>
           <div class="card-body">
-            <p class="text-muted text-center py-3">No recent donations</p>
+            {% if recent_donations %}
+              <ul class="list-group list-group-flush small">
+                {% for donation in recent_donations %}
+                  <li class="list-group-item px-0">
+                    <div class="d-flex justify-content-between">
+                      <span>{{ donation.donor.user_profile.user.username }}</span>
+                      <span class="text-success fw-bold">₹{{ donation.amount }}</span>
+                    </div>
+                    <div class="text-muted" style="font-size: 0.75rem;">
+                      {{ donation.timestamp|date:"d M" }} • {{ donation.campaign.title|truncatechars:20 }}
+                    </div>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="text-muted text-center py-3">No recent donations</p>
+            {% endif %}
           </div>
         </div>
 
