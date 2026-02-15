@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CHARITYSPHERE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Segoe UI, sans-serif;
+      }
+
+      body {
+        background: #0f172a;
+        color: white;
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px 10%;
+        background: #111827;
+      }
+
+      nav a {
+        color: white;
+        text-decoration: none;
+        margin-left: 20px;
+      }
+
+      nav a:hover {
+        color: #00f5c4;
+      }
+
+      .hero {
+        height: 90vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+      }
+
+      .hero h1 {
+        font-size: 50px;
+        margin-bottom: 20px;
+      }
+
+      .hero p {
+        max-width: 700px;
+        margin: auto;
+        font-size: 18px;
+        color: #cbd5e1;
+      }
+
+      .btn {
+        display: inline-block;
+        margin-top: 30px;
+        padding: 14px 35px;
+        background: #00f5c4;
+        color: #0f172a;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: bold;
+      }
+
+      .btn:hover {
+        background: #38bdf8;
+      }
+
+      footer {
+        text-align: center;
+        padding: 20px;
+        background: #0b1120;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <nav>
+      <h2>CHARITYSPHERE</h2>
+      <div>
+        <a href="/">Home</a>
+        <a href="{% url 'signup_step_1' %}">Sign Up</a>
+        <a href="{% url 'login' %}">Login</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div>
+        <h1>Welcome to CHARITYSPHERE</h1>
+        <p>
+          Building Trust. Connecting Hearts. Empowering Change.
+          A next-generation digital charity ecosystem transforming
+          how communities give and grow.
+        </p>
+
+        <!-- GOES TO NEXT PAGE -->
+        <a href="{% url 'homepage2' %}" class="btn">Get Started</a>
+      </div>
+    </section>
+
+    <footer>
+      © 2026 CHARITYSPHERE | Building Trust • Connecting Hearts • Empowering Change
+    </footer>
+
+  </body>
+</html>

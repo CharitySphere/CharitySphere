@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Why Choose CHARITYSPHERE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family:
+          Segoe UI,
+          sans-serif;
+      }
+
+      body {
+        background: #111827;
+        color: white;
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px 10%;
+        background: #0f172a;
+      }
+
+      nav a {
+        color: white;
+        text-decoration: none;
+        margin-left: 20px;
+      }
+
+      nav a:hover {
+        color: #00f5c4;
+      }
+
+      .features {
+        padding: 80px 10%;
+        text-align: center;
+      }
+
+      .features h2 {
+        font-size: 40px;
+        margin-bottom: 50px;
+      }
+
+      .feature-box {
+        background: #1e293b;
+        padding: 30px;
+        margin: 20px 0;
+        border-radius: 15px;
+        transition: 0.3s;
+      }
+
+      .feature-box:hover {
+        background: #334155;
+        transform: translateY(-5px);
+      }
+
+      .feature-box h3 {
+        color: #00f5c4;
+        margin-bottom: 10px;
+      }
+
+      .cta {
+        padding: 80px 10%;
+        text-align: center;
+        background: #0f172a;
+      }
+
+      .cta h2 {
+        font-size: 35px;
+        margin-bottom: 20px;
+      }
+
+      .cta p {
+        margin-bottom: 30px;
+        color: #cbd5e1;
+      }
+
+      .btn {
+        padding: 12px 30px;
+        background: #00f5c4;
+        color: #0f172a;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: bold;
+      }
+
+      .btn:hover {
+        background: #38bdf8;
+      }
+
+      footer {
+        text-align: center;
+        padding: 20px;
+        background: #0b1120;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav>
+      <h2>CHARITYSPHERE</h2>
+      <div>
+        <a href="/">Home</a>
+        <a href="{% url 'signup_step_1' %}">Sign Up</a>
+        <a href="{% url 'login' %}">Login</a>
+      </div>
+    </nav>
+
+    <section class="features">
+      <h2>Why Choose CHARITYSPHERE?</h2>
+
+      <div class="feature-box">
+        <h3>Transparent Giving</h3>
+        <p>Track every donation in real-time with complete accountability.</p>
+      </div>
+
+      <div class="feature-box">
+        <h3>Smart Technology</h3>
+        <p>AI-powered tools ensure secure and efficient charity management.</p>
+      </div>
+
+      <div class="feature-box">
+        <h3>Global Community</h3>
+        <p>Connect donors, volunteers and institutions worldwide.</p>
+      </div>
+
+      <div class="feature-box">
+        <h3>Impact Driven</h3>
+        <p>Measure real social impact with credibility scoring systems.</p>
+      </div>
+    </section>
+
+    <section class="cta">
+      <h2>Be Part of the Change</h2>
+      <p>Join thousands who are making a difference through technology-driven compassion.</p>
+      <a href="{% url 'auth' %}" class="btn">Join Now</a>
+    </section>
+
+    <footer>© 2026 CHARITYSPHERE | Building Trust • Connecting Hearts • Empowering Change</footer>
+  </body>
+</html>
