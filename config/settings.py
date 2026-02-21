@@ -131,6 +131,7 @@ STATIC_URL = 'static/'
 
 # =========================== [ CUSTOM SETTINGS ] =========================== #
 
+LOGIN_URL = '/auth/login/'
 # Redirect to dashboard after login
 LOGIN_REDIRECT_URL = "dashboard"
 
