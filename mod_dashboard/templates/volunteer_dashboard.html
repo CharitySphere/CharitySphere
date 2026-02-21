@@ -27,39 +27,45 @@
 
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">
-      <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-4">
-            <div class="mb-3" style="font-size: 3rem; color: #4facfe;">
-              <i class="bi bi-clock"></i>
+      {% if hours_volunteered != 0 %}
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center p-4">
+              <div class="mb-3" style="font-size: 3rem; color: #4facfe;">
+                <i class="bi bi-clock"></i>
+              </div>
+              <h3 class="display-5 fw-bold text-info mb-2">{{ hours_volunteered }}</h3>
+              <p class="text-muted mb-0">Hours Volunteered</p>
             </div>
-            <h3 class="display-5 fw-bold text-info mb-2">{{ hours_volunteered }}</h3>
-            <p class="text-muted mb-0">Hours Volunteered</p>
           </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-4">
-            <div class="mb-3" style="font-size: 3rem; color: #667eea;">
-              <i class="bi bi-calendar3"></i>
+
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center p-4">
+              <div class="mb-3" style="font-size: 3rem; color: #667eea;">
+                <i class="bi bi-calendar3"></i>
+              </div>
+              <h3 class="display-5 fw-bold text-primary mb-2">{{ upcoming_events }}</h3>
+              <p class="text-muted mb-0">Upcoming Events</p>
             </div>
-            <h3 class="display-5 fw-bold text-primary mb-2">{{ upcoming_events }}</h3>
-            <p class="text-muted mb-0">Upcoming Events</p>
           </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-4">
-            <div class="mb-3" style="font-size: 3rem; color: #feca57;">
-              <i class="bi bi-star-fill"></i>
+      {% endif %}
+
+      {% if completed_projects != 0 %}
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center p-4">
+              <div class="mb-3" style="font-size: 3rem; color: #feca57;">
+                <i class="bi bi-star-fill"></i>
+              </div>
+              <h3 class="display-5 fw-bold text-warning mb-2">{{ completed_projects }}</h3>
+              <p class="text-muted mb-0">Completed Projects</p>
             </div>
-            <h3 class="display-5 fw-bold text-warning mb-2">{{ completed_projects }}</h3>
-            <p class="text-muted mb-0">Completed Projects</p>
           </div>
         </div>
-      </div>
+      {% endif %}
     </div>
 
     <!-- Main Content Row -->
