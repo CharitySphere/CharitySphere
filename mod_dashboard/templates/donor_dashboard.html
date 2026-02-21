@@ -29,39 +29,45 @@
 
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">
-      <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-4">
-            <div class="mb-3" style="font-size: 3rem; color: #11998e;">
-              <i class="bi bi-cash-coin"></i>
+      {% if total_donations != 0 %}
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center p-4">
+              <div class="mb-3" style="font-size: 3rem; color: #11998e;">
+                <i class="bi bi-cash-coin"></i>
+              </div>
+              <h3 class="display-5 fw-bold text-success mb-2">₹{{ total_donations|floatformat:2 }}</h3>
+              <p class="text-muted mb-0">Total Donations</p>
             </div>
-            <h3 class="display-5 fw-bold text-success mb-2">₹{{ total_donations|floatformat:2 }}</h3>
-            <p class="text-muted mb-0">Total Donations</p>
           </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-4">
-            <div class="mb-3" style="font-size: 3rem; color: #667eea;">
-              <i class="bi bi-calendar-check"></i>
+
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center p-4">
+              <div class="mb-3" style="font-size: 3rem; color: #667eea;">
+                <i class="bi bi-calendar-check"></i>
+              </div>
+              <h3 class="display-5 fw-bold text-primary mb-2">{{ active_campaigns }}</h3>
+              <p class="text-muted mb-0">Active Campaigns</p>
             </div>
-            <h3 class="display-5 fw-bold text-primary mb-2">{{ active_campaigns }}</h3>
-            <p class="text-muted mb-0">Active Campaigns</p>
           </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-4">
-            <div class="mb-3" style="font-size: 3rem; color: #f5576c;">
-              <i class="bi bi-heart-fill"></i>
+      {% endif %}
+
+      {% if impact_score != 0 %}
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center p-4">
+              <div class="mb-3" style="font-size: 3rem; color: #f5576c;">
+                <i class="bi bi-heart-fill"></i>
+              </div>
+              <h3 class="display-5 fw-bold text-danger mb-2">{{ impact_score }}</h3>
+              <p class="text-muted mb-0">Impact Score</p>
             </div>
-            <h3 class="display-5 fw-bold text-danger mb-2">{{ impact_score }}</h3>
-            <p class="text-muted mb-0">Impact Score</p>
           </div>
         </div>
-      </div>
+      {% endif %}
     </div>
 
     <!-- Main Content Row -->
@@ -135,18 +141,26 @@
           </div>
           <div class="card-body">
             <div class="mb-3">
-              <div class="d-flex justify-content-between mb-2">
-                <span><i class="bi bi-basket me-2"></i>Meals Provided</span>
-                <strong>{{ meals_count }}</strong>
-              </div>
-              <div class="d-flex justify-content-between mb-2">
-                <span><i class="bi bi-bag-heart me-2"></i>Clothes Donated</span>
-                <strong>{{ clothes_count }}</strong>
-              </div>
-              <div class="d-flex justify-content-between mb-2">
-                <span><i class="bi bi-heart-pulse me-2"></i>Total Contributions</span>
-                <strong>{{ recent_activities.count }}</strong>
-              </div>
+              {% if meals_count != 0 %}
+                <div class="d-flex justify-content-between mb-2">
+                  <span><i class="bi bi-basket me-2"></i>Meals Provided</span>
+                  <strong>{{ meals_count }}</strong>
+                </div>
+              {% endif %}
+
+              {% if clothes_count != 0 %}
+                <div class="d-flex justify-content-between mb-2">
+                  <span><i class="bi bi-bag-heart me-2"></i>Clothes Donated</span>
+                  <strong>{{ clothes_count }}</strong>
+                </div>
+              {% endif %}
+
+              {% if recent_activities.count != 0 %}
+                <div class="d-flex justify-content-between mb-2">
+                  <span><i class="bi bi-heart-pulse me-2"></i>Total Contributions</span>
+                  <strong>{{ recent_activities.count }}</strong>
+                </div>
+              {% endif %}
             </div>
             <div class="alert alert-info mb-0">
               <small><i class="bi bi-info-circle me-2"></i>Keep donating to increase your impact!</small>
