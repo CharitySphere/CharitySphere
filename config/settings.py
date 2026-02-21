@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'mod_volunteering',
     'mod_emergency',
     'mod_reputation',
+    'mod_chatbot',
     # ============================= [ DEFAULT ] ============================= #
     'django.contrib.admin',
     'django.contrib.auth',

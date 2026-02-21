@@ -25,4 +25,5 @@ urlpatterns = [
     path("dashboard/", include("mod_dashboard.urls")),
     path('donations/', include('mod_donations.urls')),
     path('volunteering/', include('mod_volunteering.urls')),
+    path('chatbot/', include('mod_chatbot.urls')),
 ]

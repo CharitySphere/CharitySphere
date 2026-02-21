@@ -57,8 +57,11 @@
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     {% if messages %}
-    <script>
-      {% for message in messages %}
+      <script>
+        {
+          %
+          for message in messages %
+        }
         Toastify({
           text: '{{ message|escapejs }}',
           duration: 3000,
@@ -68,8 +71,10 @@
           backgroundColor: '{% if message.tags == "success" %}#40a02b{% elif message.tags == "error" %}#F44336{% elif message.tags == "warning" %}#FF9800{% else %}#2196F3{% endif %}',
           stopOnFocus: true
         }).showToast();
-      {% endfor %}
-    </script>
+        {
+          % endfor %
+        }
+      </script>
     {% endif %}
 
     <!-- Main Content -->
@@ -78,6 +83,11 @@
         {% block content %}<!-- Page content goes here -->{% endblock %}
       </div>
     </main>
+
+    <!-- Chatbot Widget Inclusion -->
+    {% if user.is_authenticated %}
+      {% include 'chatbot/widget.html' %}
+    {% endif %}
 
     <!-- Footer -->
     <!-- <footer class="fixed-bottom py-3 bg-white border-top">

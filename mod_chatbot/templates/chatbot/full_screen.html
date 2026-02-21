@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}CharitySphere AI Assistant{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center py-4">
+    <div class="col-md-10">
+      <div class="card shadow">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Full Conversation History</h5>
+          <a href="javascript:history.back()" class="btn btn-outline-light btn-sm">Go Back</a>
+        </div>
+        <div class="card-body bg-white" style="height: 60vh; overflow-y: scroll">
+          {% for chat in history %}
+            <div class="mb-4">
+              <div class="d-flex justify-content-end mb-2">
+                <div class="bg-light p-3 rounded shadow-sm w-75">
+                  <strong>You:</strong>
+                  <p class="mb-0">{{ chat.user_message }}</p>
+                  <small class="text-muted">{{ chat.timestamp|date:"H:i" }} | Lang: {{ chat.language }}</small>
+                </div>
+              </div>
+              <div class="d-flex justify-content-start">
+                <div class="bg-primary text-white p-3 rounded shadow-sm w-75">
+                  <strong>AI:</strong>
+                  <p class="mb-0">{{ chat.bot_response }}</p>
+                  <hr class="my-1" />
+                  <small style="opacity: 0.8">Sentiment: {{ chat.sentiment }}</small>
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <p class="text-center text-muted">No conversation history yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
