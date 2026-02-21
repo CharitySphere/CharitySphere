@@ -1,6 +1,6 @@
 ## Functional Requirements
 
-#### 1. Authentication and Authorization
+### 1. Authentication and Authorization
 
 - [x] Register an account (Roles: Donor, Institution, Volunteer)
 - [x] Show error messages on unsuccessful login
@@ -8,36 +8,49 @@
 - [x] Redirect to login page on logout
 - [ ] Register with Google/Facebook OAuth
 
-3. Donation Interface (Money + Items)
-Layout:
-Left Column: Category menu (Food, Clothes, Hygiene, Medicines, Funds).
-Center Panel:
-Item/Amount selection.
-Payment Gateway integration.
-Right Sidebar: Donation summary + real-time tracker.
-Side-by-side donation and tracking view (bigger space than mobile).
+### 3. Donation Interface (Money + Items)
 
-4. Volunteer Management Dashboard
-Layout:
-Table View: List of available volunteer tasks.
-Columns → Task Name | Institution | Date | Location | Status | Action.
-Top Bar: Filter by Date, Location, Task Type.
-Easy to show large lists with sorting & filtering (Excel-like view).
+- [x] Category menu (Food, Clothes, Hygiene, Medicines, Funds).
+- [x] Item/Amount selection.
+- [x] Donation summary + real-time tracker.
+- [ ] Payment Gateway integration (Needs business reg + PAN)
 
-5. Institution Management Screen
-Layout:
-Left Sidebar: Institution options (Post Request, Track Donations, Volunteer Management).
-Main Panel:
-“Post a Request” form with dropdowns.
-Requests displayed in a Kanban Board (Pending, In Progress, Fulfilled).
-Large board view to manage multiple requests simultaneously.
+### 4. Volunteer Management Dashboard
 
-#### 9. Profile and Settings
+- [x] Table View: List of available volunteer tasks.
+- [x] Columns → Task Name | Institution | Date | Location | Status | Action.
+- [x] Filter by Date, Location, Task Type.
+
+### 2. Home Dashboard
+
+- [x] Logo, Search bar, Notification Bell, Profile Icon.
+- [x] Quick links (Home, Donate, Volunteer, Institutions, Analytics, Settings).
+- [x] Banner with urgent alerts (flood relief, food drive).
+- [ ] Cards showing nearby donation requests.
+- [ ] Carousel with featured causes.
+- [x] Can display multiple donation campaigns in 3-column grid format.
+
+### 9. Profile and Settings
 
 - [x] View profile
 - [x] Update Name and details
 - [x] Delete account
-- [ ] Donation History
+- [x] Donation History
+
+### 5. Institution Management Screen
+
+- [x] Institution options (Post Request, Track Donations, Volunteer Management).
+- [x] “Post a Request” form with dropdowns.
+- [x] Requests displayed in a Kanban Board (Pending, In Progress, Fulfilled).
+- [x] Large board view to manage multiple requests simultaneously.
+
+### 7. AI Chatbot Panel
+
+- [ ] Chatbot opens in bottom-right corner popup (like support bots on websites).
+- [ ] Can switch to full-screen conversational view if needed.
+- [ ] Text input.
+- [ ] Multilingual switch (English, Hindi, Tamil, Malayalam).
+- [ ] Sentiment detection (shows alert if message sounds urgent).
 
 ## Module Architecture
 
@@ -47,23 +60,22 @@ flowchart TD
     mod_auth --> logi(🟢 Login) & regi(🟢 Registration)
     regi <--> logi --> dash(🟢 Dashboard)
 
-    dash --> dona(🔴 Donate 🪙)
-    dash --> voln(🔴 Volunteer 👤)
-    dash --> inst(🔴 Institutions 🏢)
-    dash --> anal[[🔴 Analytics]]
-    dash --> prof(🔴 Profile)
+    dash --> dona(🟢 Donate)
+    dash --> voln(🟢 Volunteer)
+    dash --> inst(🟢 Institutions)
+    dash --> anal[[🟡 Analytics]]
+    dash --> prof(🟢 Profile)
     dash --> mod_emerg{{🔴 Emergency Mode 🗺️}}
     dash --> mod_ai{{🔴 AI Chatbot ✨}}
 
-    prof --> dono(👤 Donors 🔴) & inst & voln
+    prof --> dono(🟢 Donors) & inst & voln
 
     inst --CRUD--> voln
-    inst --CRUD--> mod_fund{{🔴 Fundraise}}
-    inst --CRUD--> mod_task{{🔴 Tasks}} --> voln
+    inst --CRUD--> mod_fund{{🟢 Fundraise}}
+    inst --CRUD--> mod_task{{🟢 Tasks}} --> voln
     dono & inst & voln --> dona --> mod_fund
-    mod_fund --> mod_pay{{🔴 Payments}}
+    mod_fund --> mod_pay{{🟢 Payments}}
 ```
-
 
 ## Raw Data
 
