@@ -1,0 +1,99 @@
+<!-- Floating Chat Widget UI -->
+<div id="chat-widget-container"
+     style="position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 350px"
+     class="d-flex justify-content-center align-items-end flex-column">
+  <!-- Chat Toggle Button -->
+  <button id="chat-toggle" class="btn btn-primary rounded-circle shadow-lg" style="width: 60px; height: 60px">
+    <i class="bi bi-chat-dots-fill fs-4"></i>
+  </button>
+
+  <!-- Chat Box -->
+  <div id="chat-box" class="card shadow-lg d-none mt-2" style="height: 450px; display: flex; flex-direction: column">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <span>CharitySphere Assistant</span>
+      <div>
+        <select id="chat-lang" class="form-select form-select-sm d-inline-block w-auto py-0" style="font-size: 0.7rem">
+          <option value="English">EN</option>
+          <option value="Hindi">HI</option>
+          <option value="Tamil">TA</option>
+          <option value="Malayalam">ML</option>
+        </select>
+        <button type="button" class="btn-close btn-close-white" id="close-chat"></button>
+      </div>
+    </div>
+    <div class="card-body overflow-auto" id="chat-messages" style="flex-grow: 1; font-size: 0.9rem">
+      <div class="text-muted small mb-2 text-center">How can I help you today?</div>
+    </div>
+    <div class="card-footer bg-white border-top-0">
+      <div class="input-group">
+        <input type="text" id="chat-input" class="form-control" placeholder="Ask anything..." />
+        <button class="btn btn-primary" id="chat-send">
+          <i class="bi bi-send"></i>
+        </button>
+      </div>
+      <div class="text-center mt-1">
+        <a href="{% url 'chatbot:full_screen' %}" class="text-decoration-none x-small" style="font-size: 0.7rem">Open Full View</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const chatToggle = document.getElementById("chat-toggle");
+  const chatBox = document.getElementById("chat-box");
+  const closeChat = document.getElementById("close-chat");
+  const chatInput = document.getElementById("chat-input");
+  const chatSend = document.getElementById("chat-send");
+  const chatMessages = document.getElementById("chat-messages");
+  const chatLang = document.getElementById("chat-lang");
+
+  chatToggle.onclick = () => chatBox.classList.toggle("d-none");
+  closeChat.onclick = () => chatBox.classList.add("d-none");
+
+  function addMessage(text, sender, sentiment = null) {
+    const div = document.createElement("div");
+    div.className = `mb-2 p-2 rounded ${sender === "user" ? "bg-light text-end ms-5" : "bg-primary text-white me-5"}`;
+    let sentimentHtml = sentiment ?
+      `<br><small style="font-size:0.6rem; opacity:0.8">Detected: ${sentiment}</small>` :
+      "";
+    div.innerHTML = `<strong>${sender === "user" ? "You" : "AI"}:</strong><br>${text}${sentimentHtml}`;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    addMessage(message, "user");
+    chatInput.value = "";
+
+    try {
+      const response = await fetch("{% url 'chatbot:send_message' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: message,
+          language: chatLang.value,
+        }),
+      });
+      const data = await response.json();
+      if (data.status === "success") {
+        addMessage(data.response, "bot", data.sentiment);
+      }
+    } catch (e) {
+      addMessage("Service unavailable.", "bot");
+    }
+  }
+
+  chatSend.onclick = sendMessage;
+  chatInput.onkeypress = (e) => {
+    if (e.key === "Enter") sendMessage();
+  };
+</script>

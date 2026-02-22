@@ -6,4 +6,5 @@ app_name = 'chatbot'
 urlpatterns = [
     path('full/', views.chat_full_screen, name='full_screen'),
     path('send/', views.process_chat, name='send_message'),
+    path('clear/', views.clear_history, name='clear_history'),
 ]
