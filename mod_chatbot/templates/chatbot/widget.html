@@ -305,7 +305,7 @@
         </button>
       </div>
       <div class="footer-links">
-        <a href="{% url 'chatbot:full_screen' %}">Open full conversation ↗</a>
+        <a id="widget-full-link" href="{% url 'chatbot:full_screen' %}">Open full conversation ↗</a>
       </div>
     </div>
   </div>
@@ -340,6 +340,7 @@
     const sendBtn = document.getElementById('widget-send');
     const messages = document.getElementById('widget-messages');
     const chatIcon = document.getElementById('chat-icon');
+    const fullLink = document.getElementById('widget-full-link');
 
     // ── Toggle ──────────────────────────────────────────────────────
     toggleBtn.onclick = () => {
@@ -347,6 +348,12 @@
       chatIcon.className = chatBox.classList.contains('d-none') ? 'bi bi-stars' : 'bi bi-x-lg';
     };
     closeBtn.onclick = () => {
+      chatBox.classList.add('d-none');
+      chatIcon.className = 'bi bi-stars';
+    };
+
+    // UX - auto close mini-chat on enabling full chat
+    fullLink.onclick = e => {
       chatBox.classList.add('d-none');
       chatIcon.className = 'bi bi-stars';
     };
