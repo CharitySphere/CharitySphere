@@ -1,14 +1,15 @@
 import os
 import json
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from .models import ChatHistory
 
-genai.configure(api_key=os.environ['GEMINI_API_KEY'])
-model = genai.GenerativeModel('gemini-3-flash-preview')
+client = genai.Client(api_key=os.environ.get('CS_API_KEY'))
+MODEL_ID = 'gemini-3-flash-preview'
 
 APP_CONTEXT = """
 You are 'CharitySphere AI', the warm and knowledgeable official assistant for CharitySphere — a transparent NGO platform.
@@ -107,10 +108,19 @@ def process_chat(request):
     prompt = f"{APP_CONTEXT}{history_text}\n\nUser Language: {language}\nUser Message: {user_message}"
 
     try:
-        response = model.generate_content(prompt)
-        clean_text = clean_gemini_response(response.text)
-        result = json.loads(clean_text)
+        response = client.models.generate_content(
+            model=MODEL_ID,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                # This ensures the model returns raw JSON without ```json tags
+                response_mime_type='application/json',
+                temperature=0.7,
+            )
+        )
 
+        result = {}
+        if response.text:
+            result = json.loads(response.text)
         bot_text = result.get("response", "I'm having trouble understanding. Could you rephrase that?")
         sentiment = result.get("sentiment", "Neutral")
 
