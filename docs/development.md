@@ -66,7 +66,7 @@ flowchart TD
     dash --> anal[[🟡 Analytics]]
     dash --> prof(🟢 Profile)
     dash --> mod_emerg{{🔴 Emergency Mode 🗺️}}
-    dash --> mod_ai{{🔴 AI Chatbot ✨}}
+    dash --> mod_ai{{🟢 AI Chatbot ✨}}
 
     prof --> dono(🟢 Donors) & inst & voln
 
