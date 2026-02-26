@@ -35,6 +35,7 @@ def donor_dashboard(request):
     user_profile = get_object_or_404(UserProfile, user=request.user)
     donor = get_object_or_404(Donor, user_profile=user_profile)
 
+    donations_qs = DonationRecord.objects.filter(donor=donor)
     total_donations = (
         DonationRecord.objects.filter(donor=donor).aggregate(Sum("amount"))[
             "amount__sum"
@@ -42,19 +43,34 @@ def donor_dashboard(request):
         or 0
     )
     active_campaigns = DonationCampaign.objects.count()
-    rep, _ = ReputationScore.objects.get_or_create(user_profile=user_profile)
-    impact_score = rep.score
-    recent_activities = DonationRecord.objects.filter(donor=donor).order_by(
-        "-timestamp"
-    )[:5]
 
-    # Impact Metrics (Simple Logic)
+    # IMPACT SCORE SYSTEM
+    # ===================
+    # Base: 1 point per 10 currency units
+    base_points = float(total_donations) / 10
+
+    # Bonus: 50 points for every urgent campaign contribution
+    urgent_bonus = donations_qs.filter(campaign__is_urgent=True).count() * 50
+
+    # Bonus: 20 points for every unique organization supported
+    diversity_bonus = donations_qs.values('campaign__institution').distinct().count() * 20
+
+    impact_score = int(base_points + urgent_bonus + diversity_bonus)
+    rep, _ = ReputationScore.objects.get_or_create(user_profile=user_profile)
+    rep.score = impact_score
+    rep.save()
+
+    # IMPACT METRICS (CATEGORY BREAKDOWN)
+    # ===================================
     meals = DonationRecord.objects.filter(
         donor=donor, campaign__category="food"
     ).count()
     clothes = DonationRecord.objects.filter(
         donor=donor, campaign__category="clothes"
     ).count()
+    recent_activities = DonationRecord.objects.filter(donor=donor).order_by(
+        "-timestamp"
+    )[:5]
 
     context = {
         "total_donations": total_donations,
