@@ -56,7 +56,7 @@
       {% endif %}
 
       {% if impact_score != 0 %}
-        <div class="col-md-4">
+        <a href="{% url 'reputation:impact_detail' %}" class="col-md-4 text-decoration-none">
           <div class="card shadow-sm border-0 h-100">
             <div class="card-body text-center p-4">
               <div class="mb-3" style="font-size: 3rem; color: #f5576c;">
@@ -66,7 +66,7 @@
               <p class="text-muted mb-0">Impact Score</p>
             </div>
           </div>
-        </div>
+        </a>
       {% endif %}
     </div>
 

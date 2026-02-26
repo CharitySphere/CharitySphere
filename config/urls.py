@@ -26,4 +26,5 @@ urlpatterns = [
     path('donations/', include('mod_donations.urls')),
     path('volunteering/', include('mod_volunteering.urls')),
     path('chatbot/', include('mod_chatbot.urls')),
+    path('reputation/', include('mod_reputation.urls')),
 ]

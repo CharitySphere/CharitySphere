@@ -1,4 +1,5 @@
 from django.db import models
+
 from mod_authentication.models import UserProfile
 
 

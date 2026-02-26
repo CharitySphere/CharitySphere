@@ -8,6 +8,7 @@ from mod_authentication.models import (Donor, Institution, UserProfile,
 from mod_donations.models import DonationCampaign, DonationRecord
 from mod_reputation.models import ReputationScore
 from mod_volunteering.models import VolunteerCampaign, CampaignApplication, OrgInvitation
+from mod_reputation.utils import get_impact_score
 
 
 @login_required
@@ -35,7 +36,6 @@ def donor_dashboard(request):
     user_profile = get_object_or_404(UserProfile, user=request.user)
     donor = get_object_or_404(Donor, user_profile=user_profile)
 
-    donations_qs = DonationRecord.objects.filter(donor=donor)
     total_donations = (
         DonationRecord.objects.filter(donor=donor).aggregate(Sum("amount"))[
             "amount__sum"
@@ -43,22 +43,7 @@ def donor_dashboard(request):
         or 0
     )
     active_campaigns = DonationCampaign.objects.count()
-
-    # IMPACT SCORE SYSTEM
-    # ===================
-    # Base: 1 point per 10 currency units
-    base_points = float(total_donations) / 10
-
-    # Bonus: 50 points for every urgent campaign contribution
-    urgent_bonus = donations_qs.filter(campaign__is_urgent=True).count() * 50
-
-    # Bonus: 20 points for every unique organization supported
-    diversity_bonus = donations_qs.values('campaign__institution').distinct().count() * 20
-
-    impact_score = int(base_points + urgent_bonus + diversity_bonus)
-    rep, _ = ReputationScore.objects.get_or_create(user_profile=user_profile)
-    rep.score = impact_score
-    rep.save()
+    impact_score = get_impact_score(donor)["total_score"]
 
     # IMPACT METRICS (CATEGORY BREAKDOWN)
     # ===================================
