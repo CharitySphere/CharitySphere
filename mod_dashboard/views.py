@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from mod_authentication.models import (Donor, Institution, UserProfile,
                                        Volunteer)
 from mod_donations.models import DonationCampaign, DonationRecord
-from mod_reputation.models import ReputationScore
 from mod_volunteering.models import VolunteerCampaign, CampaignApplication, OrgInvitation
 from mod_reputation.utils import get_impact_score
 

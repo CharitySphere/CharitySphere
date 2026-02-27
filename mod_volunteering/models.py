@@ -1,11 +1,22 @@
 from django.db import models
 from mod_authentication.models import Volunteer, Institution
+from mod_donations.models import DonationCampaign
 
 
 class VolunteerCampaign(models.Model):
     STATUS_CHOICES = [("pending", "Pending"), ("active", "Active"), ("completed", "Completed")]
     title = models.CharField(max_length=200)
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE, related_name="campaigns")
+
+    # Link to parent Donation Campaign
+    donation_campaign = models.ForeignKey(
+        DonationCampaign,
+        on_delete=models.CASCADE,
+        related_name="volunteer_campaigns",
+        null=True,
+        help_text="Volunteer campaigns must be associated with a donation campaign."
+    )
+
     description = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)

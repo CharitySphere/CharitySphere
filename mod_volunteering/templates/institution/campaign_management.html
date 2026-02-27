@@ -8,7 +8,9 @@
       <div class="col-12">
         <div class="d-flex justify-content-between align-items-center">
           <div>
-            <h2><i class="bi bi-megaphone me-2"></i>Manage Campaigns</h2>
+            <h2>
+              <i class="bi bi-megaphone me-2"></i>Manage Campaigns
+            </h2>
             <p class="text-muted">Create and manage your volunteer campaigns</p>
           </div>
           <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCampaignModal">
@@ -36,16 +38,24 @@
                       <small class="text-muted d-block mb-2">Created: {{ campaign.created_at|date:"M d, Y" }}</small>
 
                       <div class="btn-group w-100" role="group">
-                        <a href="{% url 'volunteering:campaign_applications' campaign.id %}" class="btn btn-sm btn-outline-primary" title="Applications">
+                        <a href="{% url 'volunteering:campaign_applications' campaign.id %}"
+                           class="btn btn-sm btn-outline-primary"
+                           title="Applications">
                           <i class="bi bi-people"></i>
                         </a>
                         <a href="{% url 'volunteering:manage_tasks' campaign.id %}" class="btn btn-sm btn-outline-info" title="Tasks">
                           <i class="bi bi-list-task"></i>
                         </a>
-                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editModal{{ campaign.id }}" title="Edit">
+                        <button class="btn btn-sm btn-outline-secondary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editModal{{ campaign.id }}"
+                                title="Edit">
                           <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ campaign.id }}" title="Delete">
+                        <button class="btn btn-sm btn-outline-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal{{ campaign.id }}"
+                                title="Delete">
                           <i class="bi bi-trash"></i>
                         </button>
                       </div>
@@ -98,8 +108,12 @@
                           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
-                          <p>Are you sure you want to delete <strong>{{ campaign.title }}</strong>?</p>
-                          <p class="text-danger small">This action cannot be undone. Campaign can only be deleted if there are no active tasks.</p>
+                          <p>
+                            Are you sure you want to delete <strong>{{ campaign.title }}</strong>?
+                          </p>
+                          <p class="text-danger small">
+                            This action cannot be undone. Campaign can only be deleted if there are no active tasks.
+                          </p>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -138,6 +152,15 @@
             <div class="mb-3">
               <label class="form-label">Description</label>
               <textarea class="form-control" name="description" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Link to Donation Campaign</label>
+              <select name="donation_campaign_id" class="form-select" required>
+                <option value="">Select Parent Campaign</option>
+                {% for dc in d_campaigns %}
+                  <option value="{{ dc.id }}">{{ dc.title }} (Goal: ₹{{ dc.goal_amount }})</option>
+                {% endfor %}
+              </select>
             </div>
             <div class="mb-3">
               <label class="form-label">Status</label>

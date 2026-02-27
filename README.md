@@ -100,6 +100,11 @@ python manage.py startapp mod_dashboard
 python manage.py startapp mod_donations
 python manage.py startapp mod_volunteering
 python manage.py startapp mod_emergency 🟡
-python manage.py startapp mod_reputation 🟡
+python manage.py startapp mod_reputation
 python manage.py startapp mod_chatbot
+```
+
+Taking Schema:
+```sh
+sqlite3 db.sqlite3 .dump > db.sql
 ```

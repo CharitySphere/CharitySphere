@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
 
 from mod_authentication.models import Volunteer, Institution, UserProfile
-from .models import VolunteerCampaign, VolunteerTask, CampaignApplication, OrgInvitation
+from .models import VolunteerCampaign, VolunteerTask, CampaignApplication, OrgInvitation, DonationCampaign
 
 
 # ========== VOLUNTEER VIEWS ==========
@@ -20,10 +20,8 @@ def volunteer_campaigns(request):
 
         volunteer = Volunteer.objects.get(user_profile=user_profile)
 
-        # Get all active campaigns
-        campaigns = VolunteerCampaign.objects.filter(status='active').order_by('-created_at')
+        campaigns = VolunteerCampaign.objects.filter(status='active').select_related('donation_campaign').order_by('-created_at')
 
-        # Get campaigns the volunteer has applied to
         applied_campaign_ids = CampaignApplication.objects.filter(
             volunteer=volunteer
         ).values_list('campaign_id', flat=True)
@@ -193,10 +191,12 @@ def institution_campaigns(request):
 
         institution = Institution.objects.get(user_profile=user_profile)
         campaigns = VolunteerCampaign.objects.filter(institution=institution).order_by('-created_at')
+        d_campaigns = DonationCampaign.objects.filter(institution=institution)
 
         context = {
             'campaigns': campaigns,
             'institution': institution,
+            "d_campaigns": d_campaigns, # for 'Create Volunteer Campaign' dropdown
         }
         return render(request, 'institution/campaign_management.html', context)
 
@@ -215,15 +215,19 @@ def create_campaign(request):
         if request.method == 'POST':
             title = request.POST.get('title')
             description = request.POST.get('description')
+            donation_campaign_id = request.POST.get('donation_campaign_id')
             status = request.POST.get('status', 'pending')
 
             if not title or not description:
                 messages.error(request, "Title and description are required.")
                 return redirect('volunteering:institution_campaigns')
 
+            donation_campaign = get_object_or_404(DonationCampaign, id=donation_campaign_id, institution=institution)
+
             VolunteerCampaign.objects.create(
                 title=title,
                 institution=institution,
+                donation_campaign=donation_campaign,
                 description=description,
                 status=status
             )
