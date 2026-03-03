@@ -113,32 +113,14 @@
             <div class="tab-content">
               <!-- Money Donation -->
               <div class="tab-pane fade show active" id="money-tab">
-                <form method="post" action="{% url 'donations:make_donation' campaign.id %}">
+                <form id="money-donation-form">
                   {% csrf_token %}
                   <input type="hidden" name="donation_type" value="money">
-
                   <div class="mb-3">
                     <label class="form-label">Amount (₹)</label>
-                    <input type="number" class="form-control" name="amount" min="1" step="0.01" required>
+                    <input type="number" class="form-control" id="donation-amount" name="amount" min="1" required>
                   </div>
-
-                  <div class="mb-3">
-                    <label class="form-label">Payment Method</label>
-                    <select class="form-select" name="payment_method" required>
-                      <option value="">Choose...</option>
-                      <option value="Credit Card">Credit Card</option>
-                      <option value="Debit Card">Debit Card</option>
-                      <option value="UPI">UPI</option>
-                      <option value="Net Banking">Net Banking</option>
-                    </select>
-                  </div>
-
-                  <div class="alert alert-info small">
-                    <i class="bi bi-info-circle me-1"></i>
-                    This is a mock payment gateway. No actual payment will be processed.
-                  </div>
-
-                  <button type="submit" class="btn btn-success w-100">
+                  <button type="submit" class="btn btn-success w-100" id="pay-btn">
                     <i class="bi bi-credit-card me-2"></i>Donate Now
                   </button>
                 </form>
@@ -149,20 +131,15 @@
                 <form method="post" action="{% url 'donations:make_donation' campaign.id %}">
                   {% csrf_token %}
                   <input type="hidden" name="donation_type" value="items">
-
                   <div class="mb-3">
                     <label class="form-label">Item Description</label>
-                    <textarea class="form-control" name="item_description" rows="3" required placeholder="Describe the items you're donating..."></textarea>
+                    <textarea class="form-control" name="item_description" rows="3" required></textarea>
                   </div>
-
                   <div class="mb-3">
                     <label class="form-label">Estimated Value (₹)</label>
-                    <input type="number" class="form-control" name="estimated_value" min="0" step="0.01" required>
+                    <input type="number" class="form-control" name="estimated_value" min="0" required>
                   </div>
-
-                  <button type="submit" class="btn btn-success w-100">
-                    <i class="bi bi-box-seam me-2"></i>Submit Donation
-                  </button>
+                  <button type="submit" class="btn btn-success w-100">Submit Items</button>
                 </form>
               </div>
             </div>
@@ -171,4 +148,81 @@
       </div>
     </div>
   </div>
+
+
+  <!-- Razorpay Script -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    document.getElementById('money-donation-form').onsubmit = function(e) {
+      e.preventDefault();
+
+      const amount = document.getElementById('donation-amount').value;
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      // Step 1: Create Order on Server
+      fetch("{% url 'donations:make_donation' campaign.id %}", {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrfToken,
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: new URLSearchParams({
+            "donation_type": "money",
+            "amount": amount
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            alert(data.error);
+            return;
+          }
+
+          // Step 2: Open Razorpay Checkout
+          var options = {
+            "key": data.key_id,
+            "amount": data.amount * 100,
+            "currency": "INR",
+            "name": "CharitySphere",
+            "description": "Donation for " + data.campaign_title,
+            "order_id": data.order_id,
+            "handler": function(response) {
+              // Step 3: Verify Payment on Server
+              verifyPayment(response, data.amount);
+            },
+            "prefill": {
+              "email": data.user_email,
+              "contact": data.user_contact
+            },
+            "theme": {
+              "color": "#198754"
+            }
+          };
+          var rzp1 = new Razorpay(options);
+          rzp1.open();
+        });
+    };
+
+    function verifyPayment(rzpResponse, amount) {
+      const formData = new FormData();
+      formData.append('razorpay_order_id', rzpResponse.razorpay_order_id);
+      formData.append('razorpay_payment_id', rzpResponse.razorpay_payment_id);
+      formData.append('razorpay_signature', rzpResponse.razorpay_signature);
+      formData.append('campaign_id', "{{ campaign.id }}");
+      formData.append('amount', amount);
+
+      fetch("{% url 'donations:verify_payment' %}", {
+          method: "POST",
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "success") {
+            window.location.reload(); // Refresh to show success message and new donation
+          } else {
+            alert("Payment verification failed.");
+          }
+        });
+    }
+  </script>
 {% endblock %}
