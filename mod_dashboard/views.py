@@ -203,6 +203,11 @@ def profile_settings(request):
                 )
                 type_profile.save()
 
+            user_profile.address = request.POST.get("address")
+            user_profile.latitude = request.POST.get("latitude") or None
+            user_profile.longitude = request.POST.get("longitude") or None
+            user_profile.save()
+
             messages.success(request, "Profile updated successfully!")
             return redirect("profile_settings")
 

@@ -7,7 +7,7 @@
     <div class="row">
       <div class="col-lg-8 mx-auto">
         <div class="card shadow-sm border-0">
-          <div class="card-header bg-white border-0 pt-4 pb-3">
+          <div class="card-header border-0 pt-4 pb-3">
             <h3 class="mb-0">
               <i class="bi bi-person-circle me-2"></i>Profile Settings
             </h3>
@@ -100,19 +100,27 @@
               <h5 class="mb-3">Location & Address</h5>
               <div class="mb-3">
                 <label class="form-label">Default Physical Address (for item pickups)</label>
-                <textarea class="form-control" name="address" rows="2">{{ user_profile.address }}</textarea>
+                <textarea class="form-control" name="address" rows="2" placeholder="Street, City, State, Zip">{{ user_profile.address }}</textarea>
               </div>
+
+              <div class="mb-3">
+                <label class="form-label">Pin Your Location</label>
+                <div id="map-selector" style="height: 300px;" class="rounded shadow-sm mb-4"></div>
+                <p class="small text-muted">
+                  <i class="bi bi-info-circle me-1"></i> Click on the map or drag the marker to set your precise coordinates.
+                </p>
+              </div>
+
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Latitude</label>
-                  <input type="text" class="form-control" name="latitude" value="{{ user_profile.latitude|default:'' }}">
+                  <label for="id_lat" class="form-label">Latitude</label>
+                  <input type="text" class="form-control" id="id_lat" name="latitude" value="{{ user_profile.latitude|default:'' }}" readonly>
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Longitude</label>
-                  <input type="text" class="form-control" name="longitude" value="{{ user_profile.longitude|default:'' }}">
+                  <label for="id_lng" class="form-label">Longitude</label>
+                  <input type="text" class="form-control" id="id_lng" name="longitude" value="{{ user_profile.longitude|default:'' }}" readonly>
                 </div>
               </div>
-              <small class="text-muted">Providing coordinates helps institutions find you on the map for volunteer tasks or item pickups.</small>
 
               <hr class="my-4">
 
@@ -146,4 +154,49 @@
       </div>
     </div>
   </div>
+
+  <!-- Leaflet JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initial coordinates: user's saved loc or default (Center of India)
+      const savedLat = parseFloat("{{ user_profile.latitude }}") || 20.5937;
+      const savedLng = parseFloat("{{ user_profile.longitude }}") || 78.9629;
+      const hasSavedLoc = "{{ user_profile.latitude }}" !== "None" && "{{ user_profile.latitude }}" !== "";
+
+      const map = L.map('map-selector').setView([savedLat, savedLng], hasSavedLoc ? 15 : 5);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Marker logic
+      let marker = L.marker([savedLat, savedLng], {
+        draggable: true
+      }).addTo(map);
+
+      function updateFields(lat, lng) {
+        document.getElementById('id_lat').value = lat.toFixed(6);
+        document.getElementById('id_lng').value = lng.toFixed(6);
+      }
+
+      // Update on marker drag
+      marker.on('dragend', function(e) {
+        const position = marker.getLatLng();
+        updateFields(position.lat, position.lng);
+      });
+
+      // Update on map click
+      map.on('click', function(e) {
+        marker.setLatLng(e.latlng);
+        updateFields(e.latlng.lat, e.latlng.lng);
+      });
+
+      // Initialize fields if they are empty
+      if (!hasSavedLoc) {
+        updateFields(savedLat, savedLng);
+      }
+    });
+  </script>
 {% endblock %}
