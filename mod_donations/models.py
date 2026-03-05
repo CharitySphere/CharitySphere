@@ -28,6 +28,13 @@ class DonationCampaign(models.Model):
         # Calculates sum of all records for this campaign
         return self.donationrecord_set.aggregate(total=Sum("amount"))["total"] or 0
 
+    @property
+    def get_percentage(self):
+        if not self.goal_amount or self.goal_amount <= 0:
+            return 0
+        percentage = (self.current_amount / self.goal_amount) * 100
+        return min(int(percentage), 100)
+
     def __str__(self):
         return self.title
 
