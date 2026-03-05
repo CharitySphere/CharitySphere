@@ -3,155 +3,160 @@
 {% block title %}Profile Settings - CharitySphere{% endblock %}
 
 {% block content %}
-  <div class="container-fluid">
+  <div class="container-fluid py-5">
+    <a href="{% url 'donor_dashboard' %}" class="btn btn-secondary float-end mb-3">Back</a>
+    <!-- Header -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <h2>
+          <i class="bi bi-person-circle me-2"></i>Profile Settings
+        </h2>
+        <p class="text-muted">Update your profile information</p>
+      </div>
+    </div>
+
     <div class="row">
-      <div class="col-lg-8 mx-auto">
-        <div class="card shadow-sm border-0">
-          <div class="card-header border-0 pt-4 pb-3">
-            <h3 class="mb-0">
-              <i class="bi bi-person-circle me-2"></i>Profile Settings
-            </h3>
-          </div>
-          <div class="card-body p-4">
-            <form method="post">
-              {% csrf_token %}
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <form method="post">
+            {% csrf_token %}
 
-              <!-- Account Type Badge -->
-              <div class="mb-4">
-                <label class="form-label">Account Type</label>
-                <div>
-                  {% if user_profile.user_type == 'donor' %}
-                    <span class="badge bg-success fs-6"><i class="bi bi-gift me-2"></i>Donor</span>
-                  {% elif user_profile.user_type == 'volunteer' %}
-                    <span class="badge bg-info fs-6"><i class="bi bi-people me-2"></i>Volunteer</span>
-                  {% elif user_profile.user_type == 'institution' %}
-                    <span class="badge bg-warning fs-6"><i class="bi bi-building me-2"></i>Institution</span>
-                  {% endif %}
-                </div>
+            <!-- Account Type Badge -->
+            <div class="mb-4">
+              <label class="form-label">Account Type</label>
+              <div>
+                {% if user_profile.user_type == 'donor' %}
+                  <span class="badge bg-success fs-6"><i class="bi bi-gift me-2"></i>Donor</span>
+                {% elif user_profile.user_type == 'volunteer' %}
+                  <span class="badge bg-info fs-6"><i class="bi bi-people me-2"></i>Volunteer</span>
+                {% elif user_profile.user_type == 'institution' %}
+                  <span class="badge bg-warning fs-6"><i class="bi bi-building me-2"></i>Institution</span>
+                {% endif %}
               </div>
+            </div>
 
-              <hr class="my-4">
+            <hr class="my-4">
 
-              <!-- Basic Information -->
-              <h5 class="mb-3">Basic Information</h5>
+            <!-- Basic Information -->
+            <h5 class="mb-3">Basic Information</h5>
 
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="first_name" class="form-label">First Name</label>
-                  <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label for="last_name" class="form-label">Last Name</label>
-                  <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
-                </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="first_name" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="username" value="{{ user.username }}" disabled>
+              <small class="text-muted">Username cannot be changed</small>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+            </div>
+
+            <hr class="my-4">
+
+            <!-- Type-Specific Fields -->
+            {% if user_profile.user_type == 'volunteer' %}
+              <h5 class="mb-3">Volunteer Information</h5>
+
+              <div class="mb-3">
+                <label for="skills" class="form-label">Skills & Expertise</label>
+                <textarea class="form-control" id="skills" name="skills" rows="3" placeholder="e.g., Teaching, Cooking, Event Management">{{ type_profile.skills }}</textarea>
               </div>
 
               <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" value="{{ user.username }}" disabled>
-                <small class="text-muted">Username cannot be changed</small>
+                <label for="availability" class="form-label">Availability</label>
+                <input type="text"
+                       class="form-control"
+                       id="availability"
+                       name="availability"
+                       value="{{ type_profile.availability }}"
+                       placeholder="e.g., Weekends, Evenings">
+              </div>
+            {% elif user_profile.user_type == 'institution' %}
+              <h5 class="mb-3">Organization Information</h5>
+
+              <div class="mb-3">
+                <label for="organization_name" class="form-label">Organization Name</label>
+                <input type="text"
+                       class="form-control"
+                       id="organization_name"
+                       name="organization_name"
+                       value="{{ type_profile.organization_name }}">
               </div>
 
               <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+                <label for="registration_number" class="form-label">Registration Number</label>
+                <input type="text" class="form-control" id="registration_number" value="{{ type_profile.registration_number }}" disabled>
+                <small class="text-muted">Registration number cannot be changed</small>
               </div>
-
               <hr class="my-4">
+            {% endif %}
 
-              <!-- Type-Specific Fields -->
-              {% if user_profile.user_type == 'volunteer' %}
-                <h5 class="mb-3">Volunteer Information</h5>
+            <h5 class="mb-3">Location & Address</h5>
+            <div class="mb-3">
+              <label class="form-label">Default Physical Address (for item pickups)</label>
+              <textarea class="form-control" name="address" rows="2" placeholder="Street, City, State, Zip">{{ user_profile.address }}</textarea>
+            </div>
 
-                <div class="mb-3">
-                  <label for="skills" class="form-label">Skills & Expertise</label>
-                  <textarea class="form-control" id="skills" name="skills" rows="3" placeholder="e.g., Teaching, Cooking, Event Management">{{ type_profile.skills }}</textarea>
-                </div>
+            <div class="mb-3">
+              <label class="form-label">Pin Your Location</label>
+              <div id="map-selector" style="height: 300px;" class="rounded shadow-sm mb-4"></div>
+              <p class="small text-muted">
+                <i class="bi bi-info-circle me-1"></i> Click on the map or drag the marker to set your precise coordinates.
+              </p>
+            </div>
 
-                <div class="mb-3">
-                  <label for="availability" class="form-label">Availability</label>
-                  <input type="text"
-                         class="form-control"
-                         id="availability"
-                         name="availability"
-                         value="{{ type_profile.availability }}"
-                         placeholder="e.g., Weekends, Evenings">
-                </div>
-              {% elif user_profile.user_type == 'institution' %}
-                <h5 class="mb-3">Organization Information</h5>
-
-                <div class="mb-3">
-                  <label for="organization_name" class="form-label">Organization Name</label>
-                  <input type="text"
-                         class="form-control"
-                         id="organization_name"
-                         name="organization_name"
-                         value="{{ type_profile.organization_name }}">
-                </div>
-
-                <div class="mb-3">
-                  <label for="registration_number" class="form-label">Registration Number</label>
-                  <input type="text" class="form-control" id="registration_number" value="{{ type_profile.registration_number }}" disabled>
-                  <small class="text-muted">Registration number cannot be changed</small>
-                </div>
-              {% endif %}
-
-              <hr class="my-4">
-              <h5 class="mb-3">Location & Address</h5>
-              <div class="mb-3">
-                <label class="form-label">Default Physical Address (for item pickups)</label>
-                <textarea class="form-control" name="address" rows="2" placeholder="Street, City, State, Zip">{{ user_profile.address }}</textarea>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="id_lat" class="form-label">Latitude</label>
+                <input type="text" class="form-control" id="id_lat" name="latitude" value="{{ user_profile.latitude|default:'' }}" readonly>
               </div>
-
-              <div class="mb-3">
-                <label class="form-label">Pin Your Location</label>
-                <div id="map-selector" style="height: 300px;" class="rounded shadow-sm mb-4"></div>
-                <p class="small text-muted">
-                  <i class="bi bi-info-circle me-1"></i> Click on the map or drag the marker to set your precise coordinates.
-                </p>
+              <div class="col-md-6 mb-3">
+                <label for="id_lng" class="form-label">Longitude</label>
+                <input type="text" class="form-control" id="id_lng" name="longitude" value="{{ user_profile.longitude|default:'' }}" readonly>
               </div>
+            </div>
 
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="id_lat" class="form-label">Latitude</label>
-                  <input type="text" class="form-control" id="id_lat" name="latitude" value="{{ user_profile.latitude|default:'' }}" readonly>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label for="id_lng" class="form-label">Longitude</label>
-                  <input type="text" class="form-control" id="id_lng" name="longitude" value="{{ user_profile.longitude|default:'' }}" readonly>
-                </div>
-              </div>
+            <hr class="my-4">
 
-              <hr class="my-4">
-
-              <!-- Action Buttons -->
-              <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">
-                  <i class="bi bi-check-circle me-2"></i>Save Changes
-                </button>
-                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
-                  <i class="bi bi-x-circle me-2"></i>Cancel
-                </a>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <!-- Danger Zone -->
-        <div class="card shadow-sm border-danger mt-4">
-          <div class="card-header bg-danger bg-opacity-10 border-0 pt-4 pb-3">
-            <h5 class="mb-0 text-danger">
-              <i class="bi bi-exclamation-triangle me-2"></i>Danger Zone
-            </h5>
-          </div>
-          <div class="card-body">
-            <p class="text-muted">Once you delete your account, there is no going back. Please be certain.</p>
-            <button class="btn btn-outline-danger">
-              <i class="bi bi-trash me-2"></i>Delete Account
-            </button>
-          </div>
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle me-2"></i>Save Changes
+              </button>
+              <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle me-2"></i>Cancel
+              </a>
+            </div>
+          </form>
         </div>
       </div>
+
+      <!-- Danger Zone -->
+      <div class="card p-0 shadow-sm border-danger mt-4">
+        <div class="card-header bg-danger bg-opacity-10 border-0 pt-2 pb-3">
+          <h5 class="mb-0 text-light">
+            <i class="bi bi-exclamation-triangle me-2"></i>Danger Zone
+          </h5>
+        </div>
+        <div class="card-body">
+          <p class="text-muted">Once you delete your account, there is no going back. Please be certain.</p>
+          <button class="btn btn-outline-danger">
+            <i class="bi bi-trash me-2"></i>Delete Account
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
