@@ -20,6 +20,16 @@ RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
 
+def get_donor_or_error(request):
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+        if user_profile.user_type != "donor":
+            return None, "Only donors can perform this action."
+        return Donor.objects.get(user_profile=user_profile), None
+    except (UserProfile.DoesNotExist, Donor.DoesNotExist):
+        return None, "Donor profile not found."
+
+
 @login_required
 def campaign_list(request):
     """List all active donation campaigns"""
@@ -67,70 +77,81 @@ def campaign_detail(request, campaign_id):
 
 @login_required
 def make_donation(request, campaign_id):
-    """Initializes payment or processes item donation"""
+    """Process donation to a campaign"""
     campaign = get_object_or_404(DonationCampaign, id=campaign_id)
 
     try:
         user_profile = UserProfile.objects.get(user=request.user)
+
         if user_profile.user_type != "donor":
-            return JsonResponse(
-                {"error": "Only donors can make donations."}, status=403
-            )
+            messages.error(request, "Only donors can make donations.")
+            return redirect("campaign_detail", campaign_id=campaign_id)
 
         donor = Donor.objects.get(user_profile=user_profile)
 
         if request.method == "POST":
             donation_type = request.POST.get("donation_type")
+            amount = 0
+            details = ""
 
-            # --- HANDLE ITEM DONATIONS (Same as before) ---
-            if donation_type == "items":
+            if donation_type == "money":
+                amount = float(request.POST.get("amount", 0))
+                payment_method = request.POST.get("payment_method")
+                details = f"Payment via {payment_method}"
+
+            elif donation_type == "items":
                 amount = float(request.POST.get("estimated_value", 0))
                 details = request.POST.get("item_description")
-                if amount <= 0:
-                    messages.error(request, "Invalid value.")
-                    return redirect(
-                        "donations:campaign_detail", campaign_id=campaign_id
-                    )
 
-                DonationRecord.objects.create(
-                    donor=donor, campaign=campaign, amount=amount, item_details=details
-                )
-                messages.success(request, "Item donation recorded!")
+            if amount <= 0:
+                messages.error(request, "Please enter a valid amount or value.")
                 return redirect("donations:campaign_detail", campaign_id=campaign_id)
 
-            # HANDLE MONEY DONATIONS (Razorpay Order)
-            elif donation_type == "money":
-                amount = float(request.POST.get("amount", 0))
-                if amount <= 0:
-                    return JsonResponse({"error": "Invalid amount"}, status=400)
+            DonationRecord.objects.create(
+                donor=donor, campaign=campaign, amount=amount, item_details=details
+            )
 
-                # Amount in paise (e.g., Rs 100 = 10000 paise)
-                razorpay_order = razorpay_client.order.create(
-                    {
-                        "amount": int(amount * 100),
-                        "currency": "INR",
-                        "payment_capture": "1",
-                    }
-                )
-
-                # Return order details to frontend to open the modal
-                return JsonResponse(
-                    {
-                        "order_id": razorpay_order["id"],
-                        "amount": amount,
-                        "key_id": RAZORPAY_KEY_ID,
-                        "campaign_title": campaign.title,
-                        "user_email": request.user.email,
-                        "user_contact": getattr(
-                            user_profile, "phone_number", "9999999999"
-                        ),
-                    }
-                )
+            messages.success(
+                request, f"Thank you! Your donation has been processed successfully."
+            )
+            return redirect("donations:campaign_detail", campaign_id=campaign_id)
 
     except (UserProfile.DoesNotExist, Donor.DoesNotExist):
-        return JsonResponse({"error": "Donor profile not found"}, status=404)
+        messages.error(request, "Donor profile not found.")
+    return redirect("donations:campaign_detail", campaign_id=campaign_id)
 
 
+@login_required
+def razorpay_create_order(request, campaign_id):
+    """API view to initialize Razorpay order"""
+    campaign = get_object_or_404(DonationCampaign, id=campaign_id)
+    donor, error = get_donor_or_error(request)
+    if error:
+        return JsonResponse({"error": error}, status=403)
+
+    try:
+        amount = float(request.POST.get("amount", 0))
+        if amount < 1:
+            return JsonResponse({"error": "Minimum donation is ₹1"}, status=400)
+
+        razorpay_order = razorpay_client.order.create(
+            {"amount": int(amount * 100), "currency": "INR", "payment_capture": "1"}
+        )
+
+        return JsonResponse(
+            {
+                "order_id": razorpay_order["id"],
+                "amount": amount,  # This is returned to frontend for the Modal
+                "key_id": RAZORPAY_KEY_ID,
+                "campaign_title": campaign.title,
+                "user_email": request.user.email,
+            }
+        )
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+
+@login_required
 @csrf_exempt
 def verify_payment(request):
     """Verifies Razorpay Signature and saves donation"""
@@ -147,25 +168,20 @@ def verify_payment(request):
         try:
             razorpay_client.utility.verify_payment_signature(params_dict)
 
-            # Signature is valid. Create the record inside a transaction
-            with transaction.atomic():
-                campaign_id = data.get("campaign_id")
-                campaign = DonationCampaign.objects.get(id=campaign_id)
-                amount = float(data.get("amount"))
+            # Signature is valid. Create the record
+            campaign_id = data.get("campaign_id")
+            campaign = DonationCampaign.objects.get(id=campaign_id)
+            amount = float(data.get("amount"))
 
-                user_profile = UserProfile.objects.get(user=request.user)
-                donor = Donor.objects.get(user_profile=user_profile)
+            user_profile = UserProfile.objects.get(user=request.user)
+            donor = Donor.objects.get(user_profile=user_profile)
 
-                DonationRecord.objects.create(
-                    donor=donor,
-                    campaign=campaign,
-                    amount=amount,
-                    item_details=f"Razorpay Payment ID: {data.get('razorpay_payment_id')}",
-                )
-
-                # Update campaign current amount
-                campaign.current_amount += amount
-                campaign.save()
+            DonationRecord.objects.create(
+                donor=donor,
+                campaign=campaign,
+                amount=amount,
+                item_details=f"Razorpay Payment ID: {data.get('razorpay_payment_id')}",
+            )
 
             messages.success(
                 request, "Payment successful! Thank you for your donation."

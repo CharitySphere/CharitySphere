@@ -108,19 +108,42 @@
                   <i class="bi bi-box me-1"></i>Items
                 </button>
               </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#razorpay-tab" type="button">
+                  <i class="bi bi-bank me-1"></i>Bank Transfer
+                </button>
+              </li>
             </ul>
 
             <div class="tab-content">
               <!-- Money Donation -->
               <div class="tab-pane fade show active" id="money-tab">
-                <form id="money-donation-form">
+                <form method="post" action="{% url 'donations:make_donation' campaign.id %}">
                   {% csrf_token %}
                   <input type="hidden" name="donation_type" value="money">
+
                   <div class="mb-3">
                     <label class="form-label">Amount (₹)</label>
-                    <input type="number" class="form-control" id="donation-amount" name="amount" min="1" required>
+                    <input type="number" class="form-control" name="amount" min="1" step="0.01" required>
                   </div>
-                  <button type="submit" class="btn btn-success w-100" id="pay-btn">
+
+                  <div class="mb-3">
+                    <label class="form-label">Payment Method</label>
+                    <select class="form-select" name="payment_method" required>
+                      <option value="">Choose...</option>
+                      <option value="Credit Card">Credit Card</option>
+                      <option value="Debit Card">Debit Card</option>
+                      <option value="UPI">UPI</option>
+                      <option value="Net Banking">Net Banking</option>
+                    </select>
+                  </div>
+
+                  <div class="alert alert-info small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    This is a mock payment gateway. No actual payment will be processed.
+                  </div>
+
+                  <button type="submit" class="btn btn-success w-100">
                     <i class="bi bi-credit-card me-2"></i>Donate Now
                   </button>
                 </form>
@@ -142,6 +165,21 @@
                   <button type="submit" class="btn btn-success w-100">Submit Items</button>
                 </form>
               </div>
+
+              <!-- Money Donation (Gateway) -->
+              <div class="tab-pane fade" id="razorpay-tab">
+                <form id="razorpay-donation-form">
+                  {% csrf_token %}
+                  <input type="hidden" name="donation_type" value="razorpay">
+                  <div class="mb-3">
+                    <label class="form-label">Amount (₹)</label>
+                    <input type="number" class="form-control" id="razorpay-amount" name="razorpay_amount" min="1" required>
+                  </div>
+                  <button type="submit" class="btn btn-success w-100" id="razorpay-btn">
+                    <i class="bi bi-credit-card me-2"></i>Donate Now
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -153,21 +191,21 @@
   <!-- Razorpay Script -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
-    document.getElementById('money-donation-form').onsubmit = function(e) {
+    document.getElementById('razorpay-donation-form').onsubmit = function(e) {
       e.preventDefault();
 
-      const amount = document.getElementById('donation-amount').value;
+      const amount = document.getElementById('razorpay-amount').value;
       const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
       // Step 1: Create Order on Server
-      fetch("{% url 'donations:make_donation' campaign.id %}", {
+      fetch("{% url 'donations:razorpay_init' campaign.id %}", {
           method: "POST",
           headers: {
             "X-CSRFToken": csrfToken,
             "Content-Type": "application/x-www-form-urlencoded"
           },
           body: new URLSearchParams({
-            "donation_type": "money",
+            "donation_type": "razorpay",
             "amount": amount
           })
         })

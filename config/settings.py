@@ -134,6 +134,10 @@ STATIC_URL = 'static/'
 
 # =========================== [ CUSTOM SETTINGS ] =========================== #
 
+STATICFILES_DIRS = [
+    BASE_DIR / "public",
+]
+
 LOGIN_URL = '/auth/login/'
 # Redirect to dashboard after login
 LOGIN_REDIRECT_URL = "dashboard"
