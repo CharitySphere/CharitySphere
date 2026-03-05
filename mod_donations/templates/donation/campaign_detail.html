@@ -27,6 +27,20 @@
             {% endif %}
 
             <h2 class="mb-3">{{ campaign.title }}</h2>
+            <p class="text-muted"><i class="bi bi-geo-alt-fill"></i> {{ campaign.location_name }}</p>
+
+            <!-- Map Implementation -->
+            {% if campaign.latitude and campaign.longitude %}
+            <div id="map" style="height: 300px;" class="rounded shadow-sm mb-4"></div>
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+            <script>
+                var map = L.map('map').setView([{{ campaign.latitude }}, {{ campaign.longitude }}], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                L.marker([{{ campaign.latitude }}, {{ campaign.longitude }}]).addTo(map)
+                    .bindPopup("{{ campaign.title }}").openPopup();
+            </script>
+            {% endif %}
 
             <div class="mb-3">
               <span class="badge bg-primary me-2">{{ campaign.get_category_display }}</span>
@@ -157,6 +171,10 @@
                   <div class="mb-3">
                     <label class="form-label">Item Description</label>
                     <textarea class="form-control" name="item_description" rows="3" required></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Current Location (For Tracking)</label>
+                    <input type="text" class="form-control" name="current_location" value="{{ user.profile.address }}" required>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Estimated Value (₹)</label>

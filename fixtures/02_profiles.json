@@ -4,7 +4,10 @@
     "pk": 1,
     "fields": {
       "user": 2,
-      "user_type": "donor"
+      "user_type": "donor",
+      "address": "TC 25/1203, Model School Junction, Thiruvananthapuram, Kerala 695001",
+      "latitude": "8.491200",
+      "longitude": "76.950200"
     }
   },
   {
@@ -12,7 +15,10 @@
     "pk": 2,
     "fields": {
       "user": 3,
-      "user_type": "volunteer"
+      "user_type": "volunteer",
+      "address": "Door No. 44/210, Banerji Rd, Kacheripady, Kochi, Kerala 682018",
+      "latitude": "9.989400",
+      "longitude": "76.283100"
     }
   },
   {
@@ -20,7 +26,10 @@
     "pk": 3,
     "fields": {
       "user": 4,
-      "user_type": "donor"
+      "user_type": "donor",
+      "address": "Flat 4B, Skyview Apartments, Mavoor Rd, Kozhikode, Kerala 673004",
+      "latitude": "11.258800",
+      "longitude": "75.780400"
     }
   },
   {
@@ -28,7 +37,10 @@
     "pk": 4,
     "fields": {
       "user": 5,
-      "user_type": "volunteer"
+      "user_type": "volunteer",
+      "address": "Green Valley, Kalpetta, Wayanad, Kerala 673121",
+      "latitude": "11.610300",
+      "longitude": "76.085600"
     }
   },
   {
@@ -36,7 +48,10 @@
     "pk": 5,
     "fields": {
       "user": 6,
-      "user_type": "institution"
+      "user_type": "institution",
+      "address": "Charity Bhavan, Near Museum, Thiruvananthapuram, Kerala 695033",
+      "latitude": "8.509900",
+      "longitude": "76.951400"
     }
   },
   {
@@ -44,7 +59,10 @@
     "pk": 6,
     "fields": {
       "user": 7,
-      "user_type": "institution"
+      "user_type": "institution",
+      "address": "Regional Office, Marine Drive, Kochi, Kerala 682031",
+      "latitude": "9.979000",
+      "longitude": "76.275500"
     }
   },
   {
@@ -52,7 +70,10 @@
     "pk": 7,
     "fields": {
       "user": 8,
-      "user_type": "donor"
+      "user_type": "donor",
+      "address": "Beach Road, Mullakkal, Alappuzha, Kerala 688011",
+      "latitude": "9.498100",
+      "longitude": "76.332900"
     }
   },
   {
@@ -60,7 +81,10 @@
     "pk": 8,
     "fields": {
       "user": 9,
-      "user_type": "volunteer"
+      "user_type": "volunteer",
+      "address": "Near Technopark Phase 1, Kazhakkoottam, Kerala 695581",
+      "latitude": "8.558100",
+      "longitude": "76.877000"
     }
   },
   {
@@ -68,7 +92,10 @@
     "pk": 9,
     "fields": {
       "user": 10,
-      "user_type": "institution"
+      "user_type": "institution",
+      "address": "Hill View Relief Center, Meppadi, Wayanad, Kerala 673577",
+      "latitude": "11.553900",
+      "longitude": "76.120500"
     }
   },
   {
@@ -76,7 +103,10 @@
     "pk": 10,
     "fields": {
       "user": 11,
-      "user_type": "volunteer"
+      "user_type": "volunteer",
+      "address": "Civil Station Ward, Alappuzha, Kerala 688001",
+      "latitude": "9.492000",
+      "longitude": "76.324500"
     }
   },
   {
@@ -84,7 +114,10 @@
     "pk": 11,
     "fields": {
       "user": 12,
-      "user_type": "donor"
+      "user_type": "donor",
+      "address": "Pala Road, Kottayam, Kerala 686001",
+      "latitude": "9.591600",
+      "longitude": "76.522100"
     }
   }
 ]

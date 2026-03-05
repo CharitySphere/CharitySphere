@@ -102,6 +102,21 @@ def make_donation(request, campaign_id):
             elif donation_type == "items":
                 amount = float(request.POST.get("estimated_value", 0))
                 details = request.POST.get("item_description")
+                location = request.POST.get("current_location", user_profile.address)
+
+                DonationRecord.objects.create(
+                    donor=donor,
+                    campaign=campaign,
+                    amount=amount,
+                    item_details=details,
+                    current_location=location,
+                    status="pending",
+                )
+
+                messages.success(
+                    request, "Donation item logged. Please arrange for shipping/pickup."
+                )
+                return redirect("donations:campaign_detail", campaign_id=campaign_id)
 
             if amount <= 0:
                 messages.error(request, "Please enter a valid amount or value.")
@@ -244,39 +259,59 @@ def institution_donation_campaigns(request):
 
 
 @login_required
+def update_donation_status(request, donation_id):
+    """Institution updates the tracking status of a donation item"""
+    donation = get_object_or_404(DonationRecord, id=donation_id)
+    user_profile = get_object_or_404(UserProfile, user=request.user)
+
+    if (
+        user_profile.user_type != "institution"
+        or donation.campaign.institution.user_profile != user_profile
+    ):
+        messages.error(request, "Unauthorized.")
+        return redirect("dashboard")
+
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+        new_location = request.POST.get("current_location")
+
+        donation.status = new_status
+        if new_location:
+            donation.current_location = new_location
+        donation.save()
+        messages.success(
+            request, f"Donation status updated to {donation.get_status_display()}."
+        )
+
+    return redirect("donations:institution_donation_campaigns")
+
+
+@login_required
 def manage_donation_campaign(request, campaign_id=None):
-    """Create or update a donation campaign"""
+    # Updated to include latitude/longitude/location_name from POST
     user_profile = get_object_or_404(UserProfile, user=request.user)
     institution = get_object_or_404(Institution, user_profile=user_profile)
 
     if request.method == "POST":
-        title = request.POST.get("title")
-        category = request.POST.get("category")
-        description = request.POST.get("description")
-        goal_amount = request.POST.get("goal_amount")
-        is_urgent = request.POST.get("is_urgent") == "on"
+        data = {
+            "title": request.POST.get("title"),
+            "category": request.POST.get("category"),
+            "description": request.POST.get("description"),
+            "goal_amount": request.POST.get("goal_amount"),
+            "is_urgent": request.POST.get("is_urgent") == "on",
+            "location_name": request.POST.get("location_name"),
+            "latitude": request.POST.get("latitude") or None,
+            "longitude": request.POST.get("longitude") or None,
+        }
 
         if campaign_id:
-            campaign = get_object_or_404(
-                DonationCampaign, id=campaign_id, institution=institution
-            )
-            campaign.title = title
-            campaign.category = category
-            campaign.description = description
-            campaign.goal_amount = goal_amount
-            campaign.is_urgent = is_urgent
-            campaign.save()
-            messages.success(request, "Donation campaign updated.")
+            DonationCampaign.objects.filter(
+                id=campaign_id, institution=institution
+            ).update(**data)
         else:
-            DonationCampaign.objects.create(
-                institution=institution,
-                title=title,
-                category=category,
-                description=description,
-                goal_amount=goal_amount,
-                is_urgent=is_urgent,
-            )
-            messages.success(request, "Donation campaign launched successfully.")
+            DonationCampaign.objects.create(institution=institution, **data)
+
+        messages.success(request, "Campaign saved.")
     return redirect("donations:institution_donation_campaigns")
 
 

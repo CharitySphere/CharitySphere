@@ -3,78 +3,96 @@
     "model": "mod_donations.donationcampaign",
     "pk": 1,
     "fields": {
-      "title": "Kerala Monsoon Flood Relief 2024",
+      "title": "Wayanad Landslide Relief 2024",
       "institution": 1,
       "category": "funds",
-      "description": "Emergency relief fund for families affected by severe flooding in Wayanad and Idukki districts. Funds will be used for temporary shelter, food supplies, and rebuilding assistance.",
+      "description": "Emergency relief and rehabilitation for families affected by the massive landslides in Chooralmala and Mundakkai. Funds are allocated for temporary housing, medical expenses, and long-term settlement of displaced survivors.",
       "goal_amount": "5000000.00",
       "is_urgent": true,
-      "created_at": "2024-08-15T10:30:00Z"
+      "created_at": "2024-07-30T10:30:00Z",
+      "location_name": "Meppadi, Wayanad",
+      "latitude": "11.553900",
+      "longitude": "76.120500"
     }
   },
   {
     "model": "mod_donations.donationcampaign",
     "pk": 2,
     "fields": {
-      "title": "Monthly Food Supply for Orphanage Children",
+      "title": "Fresh Meals for Trivandrum Children's Home",
       "institution": 2,
       "category": "food",
-      "description": "Help us provide nutritious meals for 150 children at Trivandrum Children's Orphanage. Your donation covers rice, vegetables, fruits, and protein sources for one month.",
+      "description": "Ensuring daily nutritious meals for 150 resident children. We provide balanced diets including local produce, milk, and protein to support healthy growth and development.",
       "goal_amount": "200000.00",
       "is_urgent": false,
-      "created_at": "2024-09-01T08:00:00Z"
+      "created_at": "2024-09-01T08:00:00Z",
+      "location_name": "Palayam, Thiruvananthapuram",
+      "latitude": "8.506100",
+      "longitude": "76.951500"
     }
   },
   {
     "model": "mod_donations.donationcampaign",
     "pk": 3,
     "fields": {
-      "title": "Winter Clothes Distribution Drive",
+      "title": "Monsoon Protection Wear Drive",
       "institution": 1,
       "category": "clothes",
-      "description": "Collect and distribute warm clothing for homeless individuals in Thiruvananthapuram during the winter season. Target: 500 people.",
+      "description": "Distributing high-quality raincoats, umbrellas, and waterproof footwear to homeless individuals and daily wage workers across Thiruvananthapuram city.",
       "goal_amount": "150000.00",
       "is_urgent": false,
-      "created_at": "2024-10-10T09:15:00Z"
+      "created_at": "2024-10-10T09:15:00Z",
+      "location_name": "East Fort, Thiruvananthapuram",
+      "latitude": "8.484200",
+      "longitude": "76.945500"
     }
   },
   {
     "model": "mod_donations.donationcampaign",
     "pk": 4,
     "fields": {
-      "title": "Emergency Medical Supplies for Kochi",
+      "title": "Community Medical Camp - Kochi Port",
       "institution": 3,
       "category": "medicine",
-      "description": "Urgent need for medical supplies including antibiotics, antiseptics, bandages, and basic medicines for the medical camp in Kochi serving 2000+ patients monthly.",
+      "description": "Setting up a primary healthcare camp for coastal workers. We require insulin, nebulizers, blood pressure monitors, and basic first-aid supplies.",
       "goal_amount": "300000.00",
       "is_urgent": true,
-      "created_at": "2024-11-05T14:20:00Z"
+      "created_at": "2024-11-05T14:20:00Z",
+      "location_name": "Willingdon Island, Kochi",
+      "latitude": "9.944200",
+      "longitude": "76.269000"
     }
   },
   {
     "model": "mod_donations.donationcampaign",
     "pk": 5,
     "fields": {
-      "title": "Hygiene Kits for Flood Victims",
+      "title": "Kuttanad Water Sanitation Project",
       "institution": 1,
       "category": "hygiene",
-      "description": "Provide essential hygiene kits containing soap, toothpaste, sanitary products, and towels for 1000 families displaced by recent floods in Alappuzha.",
+      "description": "Providing water purification tablets and sanitation kits to families in the low-lying regions of Alappuzha to prevent water-borne diseases during the monsoon surge.",
       "goal_amount": "250000.00",
       "is_urgent": true,
-      "created_at": "2024-08-20T11:45:00Z"
+      "created_at": "2024-08-20T11:45:00Z",
+      "location_name": "Kuttanad, Alappuzha",
+      "latitude": "9.431200",
+      "longitude": "76.438900"
     }
   },
   {
     "model": "mod_donations.donationcampaign",
     "pk": 6,
     "fields": {
-      "title": "Educational Materials for Orphanage",
+      "title": "Digital Learning for Tribal Schools",
       "institution": 2,
       "category": "funds",
-      "description": "Support education for orphanage children with books, stationery, school uniforms, and computer equipment. Help 150 children continue their studies.",
+      "description": "Equipping rural learning centers with tablets and internet connectivity to bridge the digital divide for students in the tribal belts of Wayanad and Idukki.",
       "goal_amount": "400000.00",
       "is_urgent": false,
-      "created_at": "2024-09-15T10:00:00Z"
+      "created_at": "2024-09-15T10:00:00Z",
+      "location_name": "Sultan Bathery, Wayanad",
+      "latitude": "11.666000",
+      "longitude": "76.255000"
     }
   }
 ]

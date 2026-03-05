@@ -97,6 +97,24 @@
               {% endif %}
 
               <hr class="my-4">
+              <h5 class="mb-3">Location & Address</h5>
+              <div class="mb-3">
+                <label class="form-label">Default Physical Address (for item pickups)</label>
+                <textarea class="form-control" name="address" rows="2">{{ user_profile.address }}</textarea>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Latitude</label>
+                  <input type="text" class="form-control" name="latitude" value="{{ user_profile.latitude|default:'' }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Longitude</label>
+                  <input type="text" class="form-control" name="longitude" value="{{ user_profile.longitude|default:'' }}">
+                </div>
+              </div>
+              <small class="text-muted">Providing coordinates helps institutions find you on the map for volunteer tasks or item pickups.</small>
+
+              <hr class="my-4">
 
               <!-- Action Buttons -->
               <div class="d-flex gap-2">

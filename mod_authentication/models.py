@@ -12,6 +12,11 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES)
 
+    # Location Data
+    address = models.TextField(blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+
     def __str__(self):
         return f"{self.user.username} - {self.user_type}"
 
