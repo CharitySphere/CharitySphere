@@ -15,7 +15,10 @@
         "pk": 13,
         "fields": {
             "user": 13,
-            "user_type": "donor"
+            "user_type": "donor",
+            "address": "",
+            "latitude": "8.398073",
+            "longitude": "77.084964"
         }
     },
     {
@@ -40,7 +43,10 @@
         "pk": 14,
         "fields": {
             "user": 14,
-            "user_type": "volunteer"
+            "user_type": "volunteer",
+            "address": "",
+            "latitude": "8.556567",
+            "longitude": "77.067246"
         }
     },
     {
@@ -67,7 +73,10 @@
         "pk": 15,
         "fields": {
             "user": 15,
-            "user_type": "institution"
+            "user_type": "institution",
+            "address": "",
+            "latitude": "8.556567",
+            "longitude": "77.067246"
         }
     },
     {
