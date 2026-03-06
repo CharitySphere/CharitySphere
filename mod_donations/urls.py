@@ -13,6 +13,7 @@ urlpatterns = [
     path('institution/manage/add/', views.manage_donation_campaign, name='create_donation_campaign'),
     path('institution/manage/edit/<int:campaign_id>/', views.manage_donation_campaign, name='edit_donation_campaign'),
     path('institution/manage/delete/<int:campaign_id>/', views.delete_donation_campaign, name='delete_donation_campaign'),
+    path('institution/record/<int:record_id>/status/', views.update_item_status, name='update_item_status'),
     path('campaigns/<int:campaign_id>/razorpay-init/', views.razorpay_create_order, name='razorpay_init'),
     path('payment/verify/', views.verify_payment, name='verify_payment'),
 ]

@@ -1,71 +1,179 @@
 {% extends 'base.html' %}
 {% block title %}Manage Donations - CharitySphere{% endblock %}
+
 {% block content %}
-<div class="container-fluid py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Donation Campaigns</h2>
-    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDonationModal">
-      <i class="bi bi-plus-lg me-1"></i> New Donation Campaign
-    </button>
-  </div>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-  <div class="row">
-    {% for campaign in campaigns %}
-    <div class="col-md-4 mb-4">
-      <div class="card shadow-sm border-0 h-100">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <span class="badge bg-light text-dark mb-2">{{ campaign.get_category_display }}</span>
-            {% if campaign.is_urgent %}<span class="badge bg-danger mb-2">Urgent</span>{% endif %}
-          </div>
-          <h5 class="card-title">{{ campaign.title }}</h5>
-          <div class="mt-3">
-            <div class="d-flex justify-content-between small mb-1">
-              <span>Raised: <strong>₹{{ campaign.current_amount }}</strong></span>
-              <span>Goal: ₹{{ campaign.goal_amount }}</span>
-            </div>
-            <div class="progress" style="height: 10px;">
-              <div class="progress-bar bg-success" style="width: 50%"></div> <!-- Simplified for logic -->
-            </div>
-          </div>
-        </div>
-        <div class="card-footer bg-white border-top-0 pb-3">
-          <div class="btn-group w-100">
-            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editDModal{{ campaign.id }}">Edit</button>
-            <form method="post" action="{% url 'donations:delete_donation_campaign' campaign.id %}" class="flex-grow-1">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-outline-danger w-100 ms-1" onclick="return confirm('Delete this campaign?')">Delete</button>
-            </form>
-          </div>
-        </div>
-      </div>
+  <div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Donation Campaigns</h2>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDonationModal">
+        <i class="bi bi-plus-lg me-1"></i> New Donation Campaign
+      </button>
     </div>
-    {% endfor %}
-  </div>
-</div>
 
-<!-- Modal logic for Adding Campaigns (Simplified structure) -->
-<div class="modal fade" id="addDonationModal" tabindex="-1">
-  <div class="modal-dialog">
-    <form class="modal-content" method="post" action="{% url 'donations:create_donation_campaign' %}">
-      {% csrf_token %}
-      <div class="modal-header"><h5>Launch Campaign</h5></div>
-      <div class="modal-body">
-        <input type="text" name="title" class="form-control mb-3" placeholder="Campaign Title" required>
-        <select name="category" class="form-select mb-3">
-          <option value="food">Food</option>
-          <option value="funds">Funds</option>
-          <option value="medicine">Medicines</option>
-        </select>
-        <input type="number" name="goal_amount" class="form-control mb-3" placeholder="Goal Amount (₹)" required>
-        <textarea name="description" class="form-control mb-3" placeholder="Explain the need..."></textarea>
-        <div class="form-check">
-          <input type="checkbox" name="is_urgent" class="form-check-input" id="uCheck">
-          <label class="form-check-label" for="uCheck">Mark as Urgent</label>
+    <div class="row">
+      {% for campaign in campaigns %}
+        <div class="col-md-4 mb-4">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <span class="badge bg-light text-dark mb-2">{{ campaign.get_category_display }}</span>
+                {% if campaign.is_urgent %}<span class="badge bg-danger mb-2">Urgent</span>{% endif %}
+              </div>
+              <h5 class="card-title">{{ campaign.title }}</h5>
+              <p class="small text-muted mb-1">
+                <i class="bi bi-geo-alt"></i> {{ campaign.location_name|default:"No location set" }}
+              </p>
+
+              <!-- Progress Logic -->
+              <div class="mt-3">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span>Raised: <strong>₹{{ campaign.current_amount }}</strong></span>
+                  <span>Goal: ₹{{ campaign.goal_amount }}</span>
+                </div>
+                <div class="progress" style="height: 10px;">
+                  <div class="progress-bar bg-success" style="width: {{ campaign.get_percentage }}%"></div>
+                </div>
+              </div>
+
+              <!-- Commit 2: Donation Tracking Management -->
+              <hr>
+              <h6>Physical Item Tracking</h6>
+              <div style="max-height: 150px; overflow-y: auto;">
+                {% for record in campaign.donationrecord_set.all %}
+                  {% if record.item_details and "Payment via" not in record.item_details %}
+                    <div class="border-bottom py-2 small">
+                      <form method="post" action="{% url 'donations:update_item_status' record.id %}">
+                        {% csrf_token %}
+                        <strong>{{ record.donor.user_profile.user.username }}</strong>: {{ record.item_details|truncatechars:30 }}
+                        <div class="input-group input-group-sm mt-1">
+                          <select name="status" class="form-select form-select-sm">
+                            {% for val, label in record.STATUS_CHOICES %}
+                              <option value="{{ val }}" {% if record.status == val %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                          </select>
+                          <input type="text"
+                                 name="current_location"
+                                 class="form-control"
+                                 value="{{ record.current_location }}"
+                                 placeholder="Current location">
+                          <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check"></i>
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="card-footer bg-white border-top-0 pb-3">
+              <div class="btn-group w-100">
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editDModal{{ campaign.id }}">
+                  Edit
+                </button>
+                <form method="post" action="{% url 'donations:delete_donation_campaign' campaign.id %}" class="flex-grow-1">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger w-100 ms-1" onclick="return confirm('Delete this campaign?')">
+                    Delete
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="modal-footer"><button type="submit" class="btn btn-success">Launch</button></div>
-    </form>
+      {% endfor %}
+    </div>
   </div>
-</div>
+
+  <!-- Modal logic for Adding Campaigns -->
+  <div class="modal fade" id="addDonationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <form class="modal-content" method="post" action="{% url 'donations:create_donation_campaign' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5>Launch Campaign</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <input type="text" name="title" class="form-control mb-3" placeholder="Campaign Title" required>
+              <select name="category" class="form-select mb-3">
+                {% for val, label in categories %}<option value="{{ val }}">{{ label }}</option>{% endfor %}
+              </select>
+              <input type="number" name="goal_amount" class="form-control mb-3" placeholder="Goal Amount (₹)" required>
+              <textarea name="description" class="form-control mb-3" rows="4" placeholder="Explain the need..."></textarea>
+              <div class="form-check mb-3">
+                <input type="checkbox" name="is_urgent" class="form-check-input" id="uCheck">
+                <label class="form-check-label" for="uCheck">Mark as Urgent</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold">Select Distribution/Pickup Location</label>
+              <input type="text" name="location_name" id="loc_name" class="form-control mb-2" placeholder="Building/Area Name">
+              <div id="modal-map" style="height: 250px;" class="rounded border mb-2"></div>
+              <div class="row g-2">
+                <div class="col-6">
+                  <input type="text" name="latitude" id="lat_input" class="form-control form-control-sm" placeholder="Lat" readonly>
+                </div>
+                <div class="col-6">
+                  <input type="text" name="longitude" id="lng_input" class="form-control form-control-sm" placeholder="Lng" readonly>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Launch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    let map;
+    let marker;
+
+    // Use Institution's profile coordinates as default, or center of world
+    const defaultLat = parseFloat("{{ request.user.profile.latitude|default:20.5937 }}");
+    const defaultLng = parseFloat("{{ request.user.profile.longitude|default:78.9629 }}");
+
+    const modal = document.getElementById('addDonationModal');
+    modal.addEventListener('shown.bs.modal', function() {
+      if (!map) {
+        map = L.map('modal-map').setView([defaultLat, defaultLng], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        marker = L.marker([defaultLat, defaultLng], {
+          draggable: true
+        }).addTo(map);
+
+        updateCoords(defaultLat, defaultLng);
+
+        marker.on('dragend', function(e) {
+          const pos = marker.getLatLng();
+          updateCoords(pos.lat, pos.lng);
+        });
+
+        map.on('click', function(e) {
+          marker.setLatLng(e.latlng);
+          updateCoords(e.latlng.lat, e.latlng.lng);
+        });
+      } else {
+        map.invalidateSize();
+      }
+    });
+
+    function updateCoords(lat, lng) {
+      document.getElementById('lat_input').value = lat.toFixed(6);
+      document.getElementById('lng_input').value = lng.toFixed(6);
+    }
+  </script>
 {% endblock %}

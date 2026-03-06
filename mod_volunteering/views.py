@@ -222,7 +222,11 @@ def create_campaign(request):
                 messages.error(request, "Title and description are required.")
                 return redirect('volunteering:institution_campaigns')
 
-            donation_campaign = get_object_or_404(DonationCampaign, id=donation_campaign_id, institution=institution)
+            donation_campaign = get_object_or_404(
+                DonationCampaign,
+                id=donation_campaign_id,
+                institution=institution,
+            )
 
             VolunteerCampaign.objects.create(
                 title=title,

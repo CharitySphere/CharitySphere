@@ -252,7 +252,11 @@ def institution_donation_campaigns(request):
         return render(
             request,
             "donation/institution_campaigns.html",
-            {"campaigns": campaigns, "institution": institution},
+            {
+                "campaigns": campaigns,
+                "institution": institution,
+                "categories": DonationCampaign.CATEGORY_CHOICES,
+            },
         )
     except (UserProfile.DoesNotExist, Institution.DoesNotExist):
         return redirect("dashboard")
@@ -293,25 +297,43 @@ def manage_donation_campaign(request, campaign_id=None):
     institution = get_object_or_404(Institution, user_profile=user_profile)
 
     if request.method == "POST":
-        data = {
-            "title": request.POST.get("title"),
-            "category": request.POST.get("category"),
-            "description": request.POST.get("description"),
-            "goal_amount": request.POST.get("goal_amount"),
-            "is_urgent": request.POST.get("is_urgent") == "on",
-            "location_name": request.POST.get("location_name"),
-            "latitude": request.POST.get("latitude") or None,
-            "longitude": request.POST.get("longitude") or None,
-        }
+        title = request.POST.get("title")
+        category = request.POST.get("category")
+        description = request.POST.get("description")
+        goal_amount = request.POST.get("goal_amount")
+        is_urgent = request.POST.get("is_urgent") == "on"
+
+        location_name = request.POST.get("location_name")
+        latitude = request.POST.get("latitude")
+        longitude = request.POST.get("longitude")
 
         if campaign_id:
-            DonationCampaign.objects.filter(
-                id=campaign_id, institution=institution
-            ).update(**data)
+            campaign = get_object_or_404(
+                DonationCampaign, id=campaign_id, institution=institution
+            )
+            campaign.title = title
+            campaign.category = category
+            campaign.description = description
+            campaign.goal_amount = goal_amount
+            campaign.is_urgent = is_urgent
+            campaign.location_name = location_name
+            campaign.latitude = latitude if latitude else None
+            campaign.longitude = longitude if longitude else None
+            campaign.save()
+            messages.success(request, "Donation campaign updated.")
         else:
-            DonationCampaign.objects.create(institution=institution, **data)
-
-        messages.success(request, "Campaign saved.")
+            DonationCampaign.objects.create(
+                institution=institution,
+                title=title,
+                category=category,
+                description=description,
+                goal_amount=goal_amount,
+                is_urgent=is_urgent,
+                location_name=location_name,
+                latitude=latitude if latitude else None,
+                longitude=longitude if longitude else None,
+            )
+            messages.success(request, "Donation campaign launched successfully.")
     return redirect("donations:institution_donation_campaigns")
 
 
@@ -332,5 +354,24 @@ def delete_donation_campaign(request, campaign_id):
         else:
             campaign.delete()
             messages.success(request, "Campaign removed.")
+
+    return redirect("donations:institution_donation_campaigns")
+
+
+@login_required
+def update_item_status(request, record_id):
+    """Commit 2: Institution updates the location/status of a physical donation"""
+    record = get_object_or_404(DonationRecord, id=record_id)
+    if record.campaign.institution.user_profile.user != request.user:
+        return JsonResponse({"error": "Unauthorized"}, status=403)
+
+    if request.method == "POST":
+        record.status = request.POST.get("status")
+        record.current_location = request.POST.get("current_location")
+        record.save()
+        messages.success(
+            request,
+            f"Status updated for donation from {record.donor.user_profile.user.username}",
+        )
 
     return redirect("donations:institution_donation_campaigns")
