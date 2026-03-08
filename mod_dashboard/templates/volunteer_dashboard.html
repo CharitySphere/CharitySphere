@@ -12,12 +12,16 @@
             <div class="row align-items-center">
               <div class="col-md-8">
                 <h2 class="mb-2">
-                  <i class="bi bi-people me-2"></i>Welcome, {{ user.first_name|default:user.username }}!
+                  <i class="bi bi-person-heart me-2"></i>Welcome, {{ user.first_name|default:user.username }}!
                 </h2>
-                <p class="mb-0 opacity-90">Thank you for volunteering your time and skills. Together we can make a lasting impact!</p>
+                <p class="mb-0 opacity-90">
+                  Thank you for your dedication. Check your active tasks or browse new opportunities below.
+                </p>
               </div>
               <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <a href="{% url 'volunteering:campaign_list' %}" class="btn btn-light btn-lg"><i class="bi bi-search me-2"></i>Find Opportunities</a>
+                <a href="{% url 'volunteering:campaign_list' %}" class="btn btn-light btn-lg">
+                  <i class="bi bi-search me-2"></i>Find Opportunities
+                </a>
               </div>
             </div>
           </div>
@@ -27,84 +31,121 @@
 
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">
-      {% if hours_volunteered != 0 %}
-        <div class="col-md-4">
-          <div class="card shadow-sm border-0 h-100">
-            <div class="card-body text-center p-4">
-              <div class="mb-3" style="font-size: 3rem; color: #4facfe;">
-                <i class="bi bi-clock"></i>
-              </div>
-              <h3 class="display-5 fw-bold text-info mb-2">{{ hours_volunteered }}</h3>
-              <p class="text-muted mb-0">Hours Volunteered</p>
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body text-center p-4">
+            <div class="mb-2" style="font-size: 2.5rem; color: #667eea;">
+              <i class="bi bi-calendar-check"></i>
             </div>
+            <h3 class="display-6 fw-bold text-primary mb-1">{{ upcoming_events }}</h3>
+            <p class="text-muted mb-0">Ongoing Tasks</p>
           </div>
         </div>
-
-        <div class="col-md-4">
-          <div class="card shadow-sm border-0 h-100">
-            <div class="card-body text-center p-4">
-              <div class="mb-3" style="font-size: 3rem; color: #667eea;">
-                <i class="bi bi-calendar3"></i>
-              </div>
-              <h3 class="display-5 fw-bold text-primary mb-2">{{ upcoming_events }}</h3>
-              <p class="text-muted mb-0">Upcoming Events</p>
+      </div>
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body text-center p-4">
+            <div class="mb-2" style="font-size: 2.5rem; color: #20c997;">
+              <i class="bi bi-award"></i>
             </div>
+            <h3 class="display-6 fw-bold text-success mb-1">{{ completed_projects }}</h3>
+            <p class="text-muted mb-0">Completed Projects</p>
           </div>
         </div>
-      {% endif %}
-
-      {% if completed_projects != 0 %}
-        <div class="col-md-4">
-          <div class="card shadow-sm border-0 h-100">
-            <div class="card-body text-center p-4">
-              <div class="mb-3" style="font-size: 3rem; color: #feca57;">
-                <i class="bi bi-star-fill"></i>
-              </div>
-              <h3 class="display-5 fw-bold text-warning mb-2">{{ completed_projects }}</h3>
-              <p class="text-muted mb-0">Completed Projects</p>
+      </div>
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body text-center p-4">
+            <div class="mb-2" style="font-size: 2.5rem; color: #feca57;">
+              <i class="bi bi-lightning-fill"></i>
             </div>
+            <h3 class="display-6 fw-bold text-warning mb-1">{{ impact_points }}</h3>
+            <p class="text-muted mb-0">Impact Points</p>
           </div>
         </div>
-      {% endif %}
+      </div>
     </div>
 
-    <!-- Main Content Row -->
     <div class="row g-4">
-      <!-- Available Opportunities -->
+      <!-- Main Column -->
       <div class="col-lg-8">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-header bg-white border-0 pt-4 pb-3">
+
+        <!-- My Assigned Tasks -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-white border-0 pt-4">
             <h5 class="mb-0">
-              <i class="bi bi-briefcase me-2"></i>Available Opportunities
+              <i class="bi bi-list-task me-2 text-primary"></i>My Assigned Tasks
+            </h5>
+          </div>
+          <div class="card-body">
+            {% if my_tasks %}
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Task</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for task in my_tasks %}
+                      <tr>
+                        <td>
+                          <div class="fw-bold">{{ task.title }}</div>
+                          <small class="text-muted">{{ task.campaign.title }}</small>
+                        </td>
+                        <td>{{ task.date|date:"M d, Y" }}</td>
+                        <td>
+                          <span class="badge {% if task.status == 'completed' %}bg-success{% elif task.status == 'in_progress' %}bg-info{% else %}bg-secondary{% endif %}">
+                            {{ task.get_status_display }}
+                          </span>
+                        </td>
+                        <td>
+                          <a href="{% url 'volunteering:task_list' %}" class="btn btn-sm btn-outline-primary">Details</a>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="text-center py-4 text-muted">
+                <p>You haven't been assigned to any tasks yet.</p>
+                <a href="{% url 'volunteering:task_list' %}" class="btn btn-sm btn-info text-white">Browse Tasks</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Available Opportunities -->
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white border-0 pt-4">
+            <h5 class="mb-0">
+              <i class="bi bi-megaphone me-2 text-danger"></i>New Opportunities
             </h5>
           </div>
           <div class="card-body">
             {% if recent_opportunities %}
               <div class="list-group list-group-flush">
-                {% for opportunity in recent_opportunities %}
-                  <div class="list-group-item border-0 px-0">
+                {% for campaign in recent_opportunities %}
+                  <div class="list-group-item px-0 border-0 mb-3">
                     <div class="d-flex justify-content-between align-items-center">
-                      <div class="flex-grow-1">
-                        <h6 class="mb-0">{{ opportunity.title }}</h6>
-                        <p class="small text-primary mb-1">
-                          <i class="bi bi-link-45deg"></i> Supporting: {{ opportunity.donation_campaign.title }}
-                          <span class="text-muted">(Raised: ₹{{ opportunity.donation_campaign.current_amount }})</span>
+                      <div>
+                        <h6 class="mb-1">{{ campaign.title }}</h6>
+                        <p class="small text-muted mb-1">
+                          <i class="bi bi-building me-1"></i>{{ campaign.institution.organization_name }}
                         </p>
-                        <small class="text-muted">
-                          <i class="bi bi-geo-alt me-1"></i>{{ opportunity.location|default:"Multiple Locations" }}
-                        </small>
+                        <span class="badge bg-light text-dark border">{{ campaign.donation_campaign.category|title }} Support</span>
                       </div>
-                      <a href="{% url 'volunteering:apply_to_campaign' opportunity.id %}" class="btn btn-sm btn-info text-white">Apply</a>
+                      <a href="{% url 'volunteering:apply_to_campaign' campaign.id %}" class="btn btn-sm btn-primary">Apply Now</a>
                     </div>
                   </div>
                 {% endfor %}
               </div>
             {% else %}
-              <div class="text-center py-5 text-muted">
-                <i class="bi bi-search" style="font-size: 3rem;"></i>
-                <p class="mt-3">No opportunities available right now.</p>
-                <a href="{% url 'volunteering:campaign_list' %}" class="btn btn-info text-white">Check Back Later</a>
-              </div>
+              <p class="text-center text-muted py-3">No new opportunities at the moment.</p>
             {% endif %}
           </div>
         </div>
@@ -112,56 +153,68 @@
 
       <!-- Sidebar -->
       <div class="col-lg-4">
-        <!-- Your Skills -->
+        <!-- My Applications Status -->
         <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-white border-0 pt-4 pb-3">
+          <div class="card-header bg-white border-0 pt-4">
             <h5 class="mb-0">
-              <i class="bi bi-tools me-2"></i>Your Skills
+              <i class="bi bi-file-earmark-person me-2"></i>Application Status
             </h5>
           </div>
           <div class="card-body">
-            {% if volunteer.skills %}
-              <p class="mb-3">{{ volunteer.skills }}</p>
+            {% if my_applications %}
+              {% for app in my_applications %}
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <div class="small fw-bold">{{ app.campaign.title|truncatechars:25 }}</div>
+                    <div class="text-muted" style="font-size: 0.75rem;">Applied: {{ app.applied_at|date:"M d" }}</div>
+                  </div>
+                  <span class="badge {% if app.status == 'accepted' %}bg-success{% elif app.status == 'rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                    {{ app.get_status_display }}
+                  </span>
+                </div>
+              {% endfor %}
             {% else %}
-              <p class="text-muted mb-3">No skills added yet.</p>
+              <p class="small text-muted text-center">No active applications.</p>
             {% endif %}
-            <a href="{% url 'profile_settings' %}" class="btn btn-outline-primary btn-sm w-100">
-              <i class="bi bi-pencil me-2"></i>Update Skills
-            </a>
           </div>
         </div>
 
-        <!-- Quick Actions -->
+        <!-- Available Individual Tasks -->
         <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-white border-0 pt-4 pb-3">
+          <div class="card-header bg-white border-0 pt-4">
             <h5 class="mb-0">
-              <i class="bi bi-lightning-charge me-2"></i>Quick Actions
+              <i class="bi bi-geo-alt me-2"></i>Nearby Tasks
             </h5>
           </div>
           <div class="card-body">
+            {% if available_tasks %}
+              {% for t in available_tasks %}
+                <div class="mb-3 pb-2 border-bottom">
+                  <div class="fw-bold small">{{ t.title }}</div>
+                  <div class="text-muted small">
+                    <i class="bi bi-clock me-1"></i>{{ t.date }}
+                  </div>
+                  <a href="{% url 'volunteering:volunteer_for_task' t.id %}" class="btn btn-link btn-sm p-0">Volunteer</a>
+                </div>
+              {% endfor %}
+            {% else %}
+              <p class="small text-muted text-center">No open tasks available.</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="card shadow-sm border-0 bg-light">
+          <div class="card-body">
+            <h6 class="fw-bold mb-3">Resources</h6>
             <div class="d-grid gap-2">
-              <a href="{% url 'volunteering:task_list' %}" class="btn btn-info text-white">
-                <i class="bi bi-search me-2"></i>Browse Tasks
+              <a href="{% url 'volunteering:org_invitations' %}" class="btn btn-sm btn-outline-dark text-start">
+                <i class="bi bi-envelope-open me-2"></i>View Org Invitations
               </a>
-              <a href="{% url 'volunteering:org_invitations' %}" class="btn btn-outline-primary">
-                <i class="bi bi-envelope me-2"></i>Volunteering Invitations
-              </a>
-              <a href="{% url 'profile_settings' %}" class="btn btn-outline-secondary">
-                <i class="bi bi-gear me-2"></i>Settings
+              <a href="{% url 'profile_settings' %}" class="btn btn-sm btn-outline-dark text-start">
+                <i class="bi bi-gear me-2"></i>Update Preferences
               </a>
             </div>
-          </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-white border-0 pt-4 pb-3">
-            <h5 class="mb-0">
-              <i class="bi bi-activity me-2"></i>Recent Activity
-            </h5>
-          </div>
-          <div class="card-body">
-            <p class="text-muted text-center py-3">No recent activity</p>
           </div>
         </div>
       </div>

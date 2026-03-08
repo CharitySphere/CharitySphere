@@ -6,8 +6,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from mod_authentication.models import (Donor, Institution, UserProfile,
                                        Volunteer)
 from mod_donations.models import DonationCampaign, DonationRecord
-from mod_volunteering.models import VolunteerCampaign, CampaignApplication, OrgInvitation
 from mod_reputation.utils import get_impact_score
+from mod_volunteering.models import (CampaignApplication, OrgInvitation,
+                                     VolunteerCampaign, VolunteerTask)
 
 
 @login_required
@@ -82,21 +83,43 @@ def volunteer_dashboard(request):
 
         volunteer = Volunteer.objects.get(user_profile=user_profile)
 
-        # Calculate statistics
-        hours_volunteered = 0  # Placeholder - implement when you add time tracking
-        upcoming_events = 0  # Placeholder
-        completed_projects = 0  # Placeholder
+        my_tasks = VolunteerTask.objects.filter(assigned_volunteer=volunteer).order_by(
+            "date"
+        )
 
-        # Recent opportunities (placeholder)
-        recent_opportunities = []
+        my_applications = (
+            CampaignApplication.objects.filter(volunteer=volunteer)
+            .select_related("campaign", "campaign__institution")
+            .order_by("-applied_at")
+        )
+
+        applied_campaign_ids = my_applications.values_list("campaign_id", flat=True)
+        recent_opportunities = (
+            VolunteerCampaign.objects.filter(status="active")
+            .exclude(id__in=applied_campaign_ids)
+            .order_by("-created_at")[:5]
+        )
+
+        available_tasks = VolunteerTask.objects.filter(
+            status="open", assigned_volunteer__isnull=True
+        ).order_by("date")[:5]
+
+        # Statistics
+        upcoming_events = my_tasks.filter(status="in_progress").count()
+        completed_projects = my_tasks.filter(status="completed").count()
+        # Placeholder: using completed tasks as a proxy for impact
+        impact_points = completed_projects * 10
 
         context = {
             "user_profile": user_profile,
             "volunteer": volunteer,
-            "hours_volunteered": hours_volunteered,
             "upcoming_events": upcoming_events,
             "completed_projects": completed_projects,
+            "impact_points": impact_points,
+            "my_tasks": my_tasks,
+            "my_applications": my_applications,
             "recent_opportunities": recent_opportunities,
+            "available_tasks": available_tasks,
         }
 
         return render(request, "volunteer_dashboard.html", context)
@@ -137,16 +160,26 @@ def institution_dashboard(request):
         )
 
         # Unique active volunteers (Accepted applications OR Accepted invitations)
-        active_volunteers = Volunteer.objects.filter(
-            campaignapplication__campaign__institution=institution,
-            campaignapplication__status='accepted'
-        ).distinct().count()
+        active_volunteers = (
+            Volunteer.objects.filter(
+                campaignapplication__campaign__institution=institution,
+                campaignapplication__status="accepted",
+            )
+            .distinct()
+            .count()
+        )
 
         # Notification Badges
-        pending_apps = CampaignApplication.objects.filter(campaign__institution=institution, status='pending').count()
-        pending_invites = OrgInvitation.objects.filter(institution=institution, status='pending').count()
+        pending_apps = CampaignApplication.objects.filter(
+            campaign__institution=institution, status="pending"
+        ).count()
+        pending_invites = OrgInvitation.objects.filter(
+            institution=institution, status="pending"
+        ).count()
 
-        recent_donations = DonationRecord.objects.filter(campaign__institution=institution).order_by('-timestamp')[:5]
+        recent_donations = DonationRecord.objects.filter(
+            campaign__institution=institution
+        ).order_by("-timestamp")[:5]
 
         context = {
             "institution": institution,
@@ -156,7 +189,7 @@ def institution_dashboard(request):
             "pending_apps": pending_apps,
             "pending_invites": pending_invites,
             "recent_donations": recent_donations,
-            "v_campaigns": v_campaigns[:3], # Show a few active volunteer campaigns
+            "v_campaigns": v_campaigns[:3],  # Show a few active volunteer campaigns
         }
 
         return render(request, "institution_dashboard.html", context)
