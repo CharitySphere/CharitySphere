@@ -35,43 +35,49 @@
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">
       {% if total_donations != 0 %}
-        <a href="{% url 'donations:donation_history' %}" class="col-md-4 text-decoration-none">
-          <div class="card shadow-sm border-0 h-100">
-            <div class="card-body text-center p-4">
-              <div class="mb-3" style="font-size: 3rem; color: #11998e;">
-                <i class="bi bi-cash-coin"></i>
+        <div class="col-md-4">
+          <a href="{% url 'donations:donation_history' %}" class="col-md-4 text-decoration-none">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body text-center p-4">
+                <div class="mb-3" style="font-size: 3rem; color: #11998e;">
+                  <i class="bi bi-cash-coin"></i>
+                </div>
+                <h3 class="display-5 fw-bold text-success mb-2">₹{{ total_donations|floatformat:2 }}</h3>
+                <p class="text-muted mb-0">Total Donations</p>
               </div>
-              <h3 class="display-5 fw-bold text-success mb-2">₹{{ total_donations|floatformat:2 }}</h3>
-              <p class="text-muted mb-0">Total Donations</p>
             </div>
-          </div>
-        </a>
+          </a>
+        </div>
 
-        <a href="{% url 'donations:campaign_list' %}" class="col-md-4 text-decoration-none">
-          <div class="card shadow-sm border-0 h-100">
-            <div class="card-body text-center p-4">
-              <div class="mb-3" style="font-size: 3rem; color: #667eea;">
-                <i class="bi bi-calendar-check"></i>
+        <div class="col-md-4">
+          <a href="{% url 'donations:campaign_list' %}" class="col-md-4 text-decoration-none">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body text-center p-4">
+                <div class="mb-3" style="font-size: 3rem; color: #667eea;">
+                  <i class="bi bi-calendar-check"></i>
+                </div>
+                <h3 class="display-5 fw-bold text-primary mb-2">{{ active_campaigns }}</h3>
+                <p class="text-muted mb-0">Active Campaigns</p>
               </div>
-              <h3 class="display-5 fw-bold text-primary mb-2">{{ active_campaigns }}</h3>
-              <p class="text-muted mb-0">Active Campaigns</p>
             </div>
-          </div>
-        </a>
+          </a>
+        </div>
       {% endif %}
 
       {% if impact_score != 0 %}
-        <a href="{% url 'reputation:impact_detail' %}" class="col-md-4 text-decoration-none">
-          <div class="card shadow-sm border-0 h-100">
-            <div class="card-body text-center p-4">
-              <div class="mb-3" style="font-size: 3rem; color: #f5576c;">
-                <i class="bi bi-heart-fill"></i>
+        <div class="col-md-4">
+          <a href="{% url 'reputation:impact_detail' %}" class="col-md-4 text-decoration-none">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body text-center p-4">
+                <div class="mb-3" style="font-size: 3rem; color: #f5576c;">
+                  <i class="bi bi-heart-fill"></i>
+                </div>
+                <h3 class="display-5 fw-bold text-danger mb-2">{{ impact_score }}</h3>
+                <p class="text-muted mb-0">Impact Score</p>
               </div>
-              <h3 class="display-5 fw-bold text-danger mb-2">{{ impact_score }}</h3>
-              <p class="text-muted mb-0">Impact Score</p>
             </div>
-          </div>
-        </a>
+          </a>
+        </div>
       {% endif %}
     </div>
 
@@ -79,71 +85,73 @@
     <div class="row g-4">
       <!-- Recent Donations -->
       <div class="col-lg-8">
-        {% if active_deliveries %}
-          <div class="card shadow-sm border-0 mb-4 border-start border-4 border-primary">
-            <div class="card-header bg-white border-0 pt-4 pb-0">
-              <h5 class="mb-0 text-primary">
-                <i class="bi bi-truck me-2"></i>Active Deliveries
+        <div class="card h-100 bg-color border-0">
+          {% if active_deliveries %}
+            <div class="card shadow-sm border-0 mb-4 border-start border-4 border-primary">
+              <div class="card-header bg-white border-0 pt-4 pb-0">
+                <h5 class="mb-0 text-primary">
+                  <i class="bi bi-truck me-2"></i>Active Deliveries
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row g-3">
+                  {% for item in active_deliveries %}
+                    <div class="col-md-6">
+                      <div class="p-3 border rounded bg-light">
+                        <div class="d-flex justify-content-between align-items-start">
+                          <div>
+                            <h6 class="mb-1 text-truncate" style="max-width: 150px;">{{ item.campaign.title }}</h6>
+                            <span class="badge bg-info text-dark text-capitalize">{{ item.get_status_display }}</span>
+                          </div>
+                          <a href="{% url 'donations:track_item' item.id %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-geo-alt"></i> Track
+                          </a>
+                        </div>
+                        <div class="mt-2 small text-muted">
+                          <i class="bi bi-clock"></i> {{ item.timestamp|date:"d M" }}
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-0 pt-4 pb-3">
+              <h5 class="mb-0">
+                <i class="bi bi-clock-history me-2"></i>Recent Donations
               </h5>
             </div>
             <div class="card-body">
-              <div class="row g-3">
-                {% for item in active_deliveries %}
-                  <div class="col-md-6">
-                    <div class="p-3 border rounded bg-light">
-                      <div class="d-flex justify-content-between align-items-start">
+              {% if recent_activities %}
+                <div class="list-group list-group-flush">
+                  {% for activity in recent_activities %}
+                    <div class="list-group-item border-0 px-0">
+                      <hr class="mt-0" />
+                      <div class="d-flex justify-content-between align-items-center">
                         <div>
-                          <h6 class="mb-1 text-truncate" style="max-width: 150px;">{{ item.campaign.title }}</h6>
-                          <span class="badge bg-info text-dark text-capitalize">{{ item.get_status_display }}</span>
+                          <h6 class="mb-1">{{ activity.campaign.title }}</h6>
+                          <small class="text-muted">{{ activity.campaign.institution.organization_name }}</small>
                         </div>
-                        <a href="{% url 'donations:track_item' item.id %}" class="btn btn-sm btn-primary">
-                          <i class="bi bi-geo-alt"></i> Track
-                        </a>
-                      </div>
-                      <div class="mt-2 small text-muted">
-                        <i class="bi bi-clock"></i> {{ item.timestamp|date:"d M" }}
+                        <div>
+                          <span class="badge bg-success">₹{{ activity.amount }}</span>
+                          <br />
+                          <small class="text-muted">{{ activity.timestamp|date:"d M, Y" }}</small>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                {% endfor %}
-              </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="text-center py-5 text-muted">
+                  <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                  <p class="mt-3">No donations yet. Start making a difference today!</p>
+                  <a href="{% url 'donations:campaign_list' %}" class="btn btn-success">Browse Campaigns</a>
+                </div>
+              {% endif %}
             </div>
-          </div>
-        {% endif %}
-
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-header bg-white border-0 pt-4 pb-3">
-            <h5 class="mb-0">
-              <i class="bi bi-clock-history me-2"></i>Recent Donations
-            </h5>
-          </div>
-          <div class="card-body">
-            {% if recent_activities %}
-              <div class="list-group list-group-flush">
-                {% for activity in recent_activities %}
-                  <div class="list-group-item border-0 px-0">
-                    <hr class="mt-0" />
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div>
-                        <h6 class="mb-1">{{ activity.campaign.title }}</h6>
-                        <small class="text-muted">{{ activity.campaign.institution.organization_name }}</small>
-                      </div>
-                      <div>
-                        <span class="badge bg-success">₹{{ activity.amount }}</span>
-                        <br />
-                        <small class="text-muted">{{ activity.timestamp|date:"d M, Y" }}</small>
-                      </div>
-                    </div>
-                  </div>
-                {% endfor %}
-              </div>
-            {% else %}
-              <div class="text-center py-5 text-muted">
-                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
-                <p class="mt-3">No donations yet. Start making a difference today!</p>
-                <a href="{% url 'donations:campaign_list' %}" class="btn btn-success">Browse Campaigns</a>
-              </div>
-            {% endif %}
           </div>
         </div>
       </div>

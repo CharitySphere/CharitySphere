@@ -99,6 +99,24 @@ def make_donation(request, campaign_id):
                 payment_method = request.POST.get("payment_method")
                 details = f"Payment via {payment_method}"
 
+                if amount <= 0:
+                    messages.error(request, "Please enter a valid amount or value.")
+                    return redirect(
+                        "donations:campaign_detail", campaign_id=campaign_id
+                    )
+
+                DonationRecord.objects.create(
+                    donor=donor,
+                    campaign=campaign,
+                    amount=amount,
+                    item_details=details,
+                )
+
+                messages.success(
+                    request,
+                    f"Thank you! Your donation has been processed successfully.",
+                )
+
             elif donation_type == "items":
                 amount = float(request.POST.get("estimated_value", 0))
                 details = request.POST.get("item_description")
@@ -123,17 +141,6 @@ def make_donation(request, campaign_id):
                 )
                 return redirect("donations:campaign_detail", campaign_id=campaign_id)
 
-            if amount <= 0:
-                messages.error(request, "Please enter a valid amount or value.")
-                return redirect("donations:campaign_detail", campaign_id=campaign_id)
-
-            DonationRecord.objects.create(
-                donor=donor, campaign=campaign, amount=amount, item_details=details
-            )
-
-            messages.success(
-                request, f"Thank you! Your donation has been processed successfully."
-            )
             return redirect("donations:campaign_detail", campaign_id=campaign_id)
 
     except (UserProfile.DoesNotExist, Donor.DoesNotExist):
@@ -403,21 +410,19 @@ def track_item(request, record_id):
     # Prepare data for the frontend (No calculation in template)
     steps_data = []
     for i, status_slug in enumerate(status_order):
-        steps_data.append({
-            "label": status_slug.replace("_", " ").title(),
-            "is_complete": i < current_idx,
-            "is_current": i == current_idx,
-            "display_number": i + 1
-        })
+        steps_data.append(
+            {
+                "label": status_slug.replace("_", " ").title(),
+                "is_complete": i < current_idx,
+                "is_current": i == current_idx,
+                "display_number": i + 1,
+            }
+        )
 
     return render(
         request,
         "donation/track_item.html",
-        {
-            "record": record,
-            "progress_pct": progress_pct,
-            "steps_data": steps_data
-        },
+        {"record": record, "progress_pct": progress_pct, "steps_data": steps_data},
     )
 
 

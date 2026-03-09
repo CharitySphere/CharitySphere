@@ -45,9 +45,12 @@ def donor_dashboard(request):
     active_campaigns = DonationCampaign.objects.count()
     impact_score = get_impact_score(donor)["total_score"]
 
-    active_deliveries = DonationRecord.objects.filter(
-        donor=donor
-    ).exclude(status="delivered").order_by("-timestamp")
+    active_deliveries = (
+        DonationRecord.objects.filter(donor=donor)
+        .exclude(status="delivered")
+        .exclude(latitude__isnull=True)
+        .order_by("-timestamp")
+    )
 
     # IMPACT METRICS (CATEGORY BREAKDOWN)
     # ===================================
@@ -186,9 +189,11 @@ def institution_dashboard(request):
             campaign__institution=institution
         ).order_by("-timestamp")[:5]
 
-        in_transit_count = DonationRecord.objects.filter(
-            campaign__institution=institution
-        ).exclude(status="delivered").count()
+        in_transit_count = (
+            DonationRecord.objects.filter(campaign__institution=institution)
+            .exclude(status="delivered")
+            .count()
+        )
 
         context = {
             "institution": institution,
