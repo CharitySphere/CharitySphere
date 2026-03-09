@@ -45,6 +45,10 @@ def donor_dashboard(request):
     active_campaigns = DonationCampaign.objects.count()
     impact_score = get_impact_score(donor)["total_score"]
 
+    active_deliveries = DonationRecord.objects.filter(
+        donor=donor
+    ).exclude(status="delivered").order_by("-timestamp")
+
     # IMPACT METRICS (CATEGORY BREAKDOWN)
     # ===================================
     meals = DonationRecord.objects.filter(
@@ -62,6 +66,7 @@ def donor_dashboard(request):
         "active_campaigns": active_campaigns,
         "impact_score": impact_score,
         "recent_activities": recent_activities,
+        "active_deliveries": active_deliveries,
         "meals_count": meals,
         "clothes_count": clothes,
     }
@@ -181,6 +186,10 @@ def institution_dashboard(request):
             campaign__institution=institution
         ).order_by("-timestamp")[:5]
 
+        in_transit_count = DonationRecord.objects.filter(
+            campaign__institution=institution
+        ).exclude(status="delivered").count()
+
         context = {
             "institution": institution,
             "active_campaigns": active_campaigns_count,
@@ -189,6 +198,7 @@ def institution_dashboard(request):
             "pending_apps": pending_apps,
             "pending_invites": pending_invites,
             "recent_donations": recent_donations,
+            "in_transit_count": in_transit_count,
             "v_campaigns": v_campaigns[:3],  # Show a few active volunteer campaigns
         }
 

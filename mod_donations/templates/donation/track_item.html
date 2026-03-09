@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Track Donation - CharitySphere{% endblock %}
+
+{% block content %}
+  <div class="container py-5">
+    <div class="row mb-4">
+      <div class="col-md-8">
+        <h3>Tracking Donation: #{{ record.id }}</h3>
+        <p class="text-muted">{{ record.campaign.title }} | {{ record.item_details|truncatechars:50 }}</p>
+      </div>
+      <div class="col-md-4 text-end">
+        <a href="{% url 'donor_dashboard' %}" class="btn btn-secondary float-end mb-3"><i class="bi bi-arrow-left"></i> Back</a>
+      </div>
+    </div>
+
+    <!-- Progress Meter -->
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body p-5">
+        <div class="position-relative mb-5">
+          <div class="progress position-absolute mt-2 w-100" style="height: 1em;">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress_pct }}%"></div>
+          </div>
+          <div class="position-absolute d-flex justify-content-between w-100">
+            {% for step in steps_data %}
+              <div class="text-center">
+                <div class="rounded-circle {% if step.is_complete or step.is_current %}bg-success{% else %}bg-secondary{% endif %} text-white d-flex align-items-center justify-content-center mx-auto"
+                     style="width: 2em; height: 2em">
+                  {% if step.is_complete %}
+                    <i class="bi bi-check"></i>
+                  {% else %}
+                    {{ step.display_number }}
+                  {% endif %}
+                </div>
+                <small class="d-block mt-2 fw-bold">{{ step.label }}</small>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-white">
+            <strong>Live Location</strong>
+          </div>
+          <div class="card-body p-0">
+            <div id="tracking-map" style="height: 450px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-primary text-white">Status Details</div>
+          <div class="card-body">
+            <h5>
+              Current Status: <span class="text-success">{{ record.get_status_display }}</span>
+            </h5>
+            <p>
+              <strong>Last Known Location:</strong>
+              <br>
+              {{ record.current_location|default:"Awaiting collection..." }}
+            </p>
+            <hr>
+            <p class="small text-muted">Updated on: {{ record.timestamp|date:"M d, Y H:i" }}</p>
+            <p class="small text-muted">Verified Value: ₹{{ record.amount }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Use "string" format or float filter to prevent JS errors if values are None
+      var lat = {{ record.latitude|default:"null" }};
+      var lng = {{ record.longitude|default:"null" }};
+
+      if (lat !== null && lng !== null) {
+        var map = L.map('tracking-map').setView([lat, lng], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        L.marker([lat, lng]).addTo(map)
+          .bindPopup("Item Current Location")
+          .openPopup();
+      } else {
+        document.getElementById('tracking-map').innerHTML = '<div class="p-5 text-center text-muted">Location data not available yet.</div>';
+      }
+    });
+  </script>
+{% endblock %}

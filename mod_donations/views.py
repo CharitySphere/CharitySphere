@@ -102,7 +102,10 @@ def make_donation(request, campaign_id):
             elif donation_type == "items":
                 amount = float(request.POST.get("estimated_value", 0))
                 details = request.POST.get("item_description")
-                location = request.POST.get("current_location", user_profile.address)
+                # Default to profile location if not provided
+                location = donor.user_profile.address
+                lat = donor.user_profile.latitude
+                lng = donor.user_profile.longitude
 
                 DonationRecord.objects.create(
                     donor=donor,
@@ -110,6 +113,8 @@ def make_donation(request, campaign_id):
                     amount=amount,
                     item_details=details,
                     current_location=location,
+                    latitude=lat,
+                    longitude=lng,
                     status="pending",
                 )
 
@@ -375,3 +380,83 @@ def update_item_status(request, record_id):
         )
 
     return redirect("donations:institution_donation_campaigns")
+
+
+@login_required
+def track_item(request, record_id):
+    record = get_object_or_404(DonationRecord, id=record_id)
+    if record.donor.user_profile.user != request.user:
+        messages.error(request, "Unauthorized")
+        return redirect("dashboard")
+
+    # Define the order of statuses
+    status_order = ["pending", "collected", "transit", "received", "delivered"]
+
+    # Calculate current progress
+    try:
+        current_idx = status_order.index(record.status)
+    except ValueError:
+        current_idx = 0
+
+    progress_pct = ((current_idx + 1) / len(status_order)) * 100
+
+    # Prepare data for the frontend (No calculation in template)
+    steps_data = []
+    for i, status_slug in enumerate(status_order):
+        steps_data.append({
+            "label": status_slug.replace("_", " ").title(),
+            "is_complete": i < current_idx,
+            "is_current": i == current_idx,
+            "display_number": i + 1
+        })
+
+    return render(
+        request,
+        "donation/track_item.html",
+        {
+            "record": record,
+            "progress_pct": progress_pct,
+            "steps_data": steps_data
+        },
+    )
+
+
+@login_required
+def manage_transit_items(request):
+    """Institution view to manage all items in progress"""
+    user_profile = get_object_or_404(UserProfile, user=request.user)
+    if user_profile.user_type != "institution":
+        return redirect("dashboard")
+
+    institution = get_object_or_404(Institution, user_profile=user_profile)
+    items_in_transit = (
+        DonationRecord.objects.filter(campaign__institution=institution)
+        .exclude(status="delivered")
+        .order_by("-timestamp")
+    )
+
+    if request.method == "POST":
+        record_id = request.POST.get("record_id")
+        record = get_object_or_404(
+            DonationRecord, id=record_id, campaign__institution=institution
+        )
+
+        record.status = request.POST.get("status")
+        record.current_location = request.POST.get("current_location")
+
+        # Institution can override donor's initial inputs
+        record.amount = request.POST.get("amount")
+        record.item_details = request.POST.get("item_details")
+
+        # Update coordinates if provided (for map tracking)
+        lat = request.POST.get("latitude")
+        lng = request.POST.get("longitude")
+        if lat and lng:
+            record.latitude = lat
+            record.longitude = lng
+
+        record.save()
+        messages.success(request, f"Updated tracking for record #{record.pk}")
+        return redirect("donations:manage_transit_items")
+
+    return render(request, "donation/manage_transit.html", {"items": items_in_transit})

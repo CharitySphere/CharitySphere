@@ -46,9 +46,11 @@ class DonationCampaign(models.Model):
 
 class DonationRecord(models.Model):
     STATUS_CHOICES = [
-        ("pending", "Pending Pickup"),
-        ("shipped", "In Transit"),
-        ("received", "Received"),
+        ("pending", "Pending"),
+        ("collected", "Item Collected"),
+        ("transit", "Item in Transit"),
+        ("received", "Item Received at Institution"),
+        ("delivered", "Item Delivered"),
     ]
 
     donor = models.ForeignKey(Donor, on_delete=models.SET_NULL, null=True)
@@ -57,6 +59,8 @@ class DonationRecord(models.Model):
     item_details = models.TextField(blank=True)  # For physical items
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    # Item Tracking
+    # Tracking Fields
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
-    current_location = models.CharField(max_length=255, blank=True, help_text="Current city or hub")
+    current_location = models.CharField(max_length=255, blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)

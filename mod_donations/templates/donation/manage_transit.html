@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}Transit Management - CharitySphere{% endblock %}
+
+{% block content %}
+  <div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2><i class="bi bi-truck me-2"></i>Transit & Delivery Management</h2>
+      <span class="badge bg-primary">{{ items.count }} Items in Transit</span>
+    </div>
+
+    <div class="card shadow-sm border-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Donor</th>
+              <th>Item & Original Desc</th>
+              <th>Status</th>
+              <th>Current Location</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+              <tr>
+                <td>{{ item.donor.user_profile.user.username }}</td>
+                <td>
+                  <strong>{{ item.campaign.title }}</strong><br>
+                  <small class="text-muted">{{ item.item_details|truncatechars:40 }}</small>
+                </td>
+                <td>
+                  <span class="badge bg-info text-dark text-capitalize">{{ item.get_status_display }}</span>
+                </td>
+                <td>{{ item.current_location|default:"-" }}</td>
+                <td>
+                  <!-- Trigger Button -->
+                  <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ item.id }}">
+                    Update Tracking
+                  </button>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="5" class="text-center py-4 text-muted">No items currently in transit.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALS MUST BE OUTSIDE THE TABLE STRUCTURE -->
+  {% for item in items %}
+    <div class="modal fade" id="editModal{{ item.id }}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <form method="post" class="modal-content">
+          {% csrf_token %}
+          <input type="hidden" name="record_id" value="{{ item.id }}">
+          <div class="modal-header">
+            <h5 class="modal-title">Update Record #{{ item.id }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Delivery Status</label>
+              <select name="status" class="form-select">
+                {% for code, label in item.STATUS_CHOICES %}
+                  <option value="{{ code }}" {% if item.status == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Update Location (City/Hub)</label>
+              <input type="text" name="current_location" class="form-control" value="{{ item.current_location }}">
+            </div>
+            <div class="row mb-3">
+              <div class="col">
+                <label class="form-label">Lat</label>
+                <input type="text" name="latitude" class="form-control" value="{{ item.latitude|default:'' }}">
+              </div>
+              <div class="col">
+                <label class="form-label">Lng</label>
+                <input type="text" name="longitude" class="form-control" value="{{ item.longitude|default:'' }}">
+              </div>
+            </div>
+            <hr>
+            <h6>Override Details</h6>
+            <div class="mb-3">
+              <label class="form-label">Verified Value (₹)</label>
+              <input type="number" name="amount" class="form-control" value="{{ item.amount }}">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Verified Item Description</label>
+              <textarea name="item_details" class="form-control" rows="2">{{ item.item_details }}</textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

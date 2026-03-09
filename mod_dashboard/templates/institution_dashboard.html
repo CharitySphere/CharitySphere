@@ -3,11 +3,16 @@
 {% block title %}Institution Dashboard - CharitySphere{% endblock %}
 
 {% block content %}
+  <style>
+    .bg-color {
+      background: linear-gradient(135deg, #fff6f7 0%, #fff5fa 100%);
+    }
+  </style>
   <div class="container-fluid py-5">
     <!-- Welcome Banner -->
     <div class="row mb-4">
       <div class="col-12">
-        <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #f5576c 0%, #fb93c8 100%);">
+        <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #f5576c 0%, #ef6c85 100%);">
           <div class="card-body text-white p-4">
             <div class="row align-items-center">
               <div class="col-md-8">
@@ -28,6 +33,21 @@
 
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">
+      <div class="col-md-3">
+        <a href="{% url 'donations:manage_transit_items' %}" class="text-decoration-none">
+          <div class="card shadow-sm border-0 h-100 position-relative bg-light">
+            {% if in_transit_count %}
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                {{ in_transit_count }}
+              </span>
+            {% endif %}
+            <div class="card-body text-center p-3">
+              <h3 class="display-6 fw-bold text-primary mb-1">{{ in_transit_count }}</h3>
+              <p class="text-muted small mb-0">Items in Transit</p>
+            </div>
+          </div>
+        </a>
+      </div>
       <div class="col-md-3">
         <div class="card shadow-sm border-0 h-100">
           <div class="card-body text-center p-3">
