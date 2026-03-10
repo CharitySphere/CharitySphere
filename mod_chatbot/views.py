@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from .models import ChatHistory
+from .utils import get_dynamic_system_prompt
 
 client = genai.Client(api_key=os.environ.get('CS_API_KEY'))
 MODEL_ID = 'gemini-3-flash-preview'
@@ -82,48 +83,53 @@ def chat_full_screen(request):
 
 @csrf_exempt
 @login_required
+@csrf_exempt
+@login_required
 def process_chat(request):
     if request.method != "POST":
         return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
 
-    data = json.loads(request.body)
-    user_message = data.get("message", "").strip()
-    language = data.get("language", "English")
-    context_count = int(data.get("context_count", 10))  # How many previous messages to include
-
-    if not user_message:
-        return JsonResponse({"status": "error", "message": "Empty message"}, status=400)
-
-    # Build conversation history context
-    recent_history = ChatHistory.objects.filter(
-        user=request.user
-    ).order_by('-timestamp')[:context_count]
-
-    history_text = ""
-    if recent_history.exists():
-        history_text = "\n\n## Previous Conversation (oldest first):\n"
-        for chat in reversed(list(recent_history)):
-            history_text += f"User: {chat.user_message}\nAssistant: {chat.bot_response}\n---\n"
-
-    prompt = f"{APP_CONTEXT}{history_text}\n\nUser Language: {language}\nUser Message: {user_message}"
-
     try:
+        data = json.loads(request.body)
+        user_message = data.get("message", "").strip()
+        language = data.get("language", "English")
+        context_count = int(data.get("context_count", 10))
+
+        if not user_message:
+            return JsonResponse({"status": "error", "message": "Empty message"}, status=400)
+
+        # 1. Fetch Dynamic System Context based on Profile
+        system_prompt = get_dynamic_system_prompt(request.user)
+
+        # 2. Build conversation history
+        recent_history = ChatHistory.objects.filter(
+            user=request.user
+        ).order_by('-timestamp')[:context_count]
+
+        history_text = ""
+        if recent_history.exists():
+            history_text = "\n\n## Recent Conversation History:\n"
+            for chat in reversed(list(recent_history)):
+                history_text += f"User: {chat.user_message}\nAssistant: {chat.bot_response}\n---\n"
+
+        final_prompt = f"{system_prompt}{history_text}\n\nUser Language: {language}\nUser Message: {user_message}"
+
+        # 3. Call Gemini
         response = client.models.generate_content(
             model=MODEL_ID,
-            contents=prompt,
+            contents=final_prompt,
             config=types.GenerateContentConfig(
-                # This ensures the model returns raw JSON without ```json tags
                 response_mime_type='application/json',
                 temperature=0.7,
             )
         )
 
-        result = {}
-        if response.text:
-            result = json.loads(response.text)
-        bot_text = result.get("response", "I'm having trouble understanding. Could you rephrase that?")
+        # 4. Parse Result
+        result = json.loads(response.text or "{}")
+        bot_text = result.get("response", "I'm here to help, but I had a technical glitch. Could you try again?")
         sentiment = result.get("sentiment", "Neutral")
 
+        # 5. Save to History
         ChatHistory.objects.create(
             user=request.user,
             user_message=user_message,
@@ -137,18 +143,6 @@ def process_chat(request):
             "response": bot_text,
             "sentiment": sentiment
         })
-
-    except json.JSONDecodeError as e:
-        # Fallback: use raw text if JSON parsing fails
-        bot_text = e
-        ChatHistory.objects.create(
-            user=request.user,
-            user_message=user_message,
-            bot_response=bot_text,
-            sentiment="Neutral",
-            language=language
-        )
-        return JsonResponse({"status": "success", "response": bot_text, "sentiment": "Neutral"})
 
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=500)

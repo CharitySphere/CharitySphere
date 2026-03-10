@@ -279,7 +279,7 @@
       </div>
 
       <div>
-        <!-- <div style="font-size: 0.7rem; opacity: 0.8">Selected Language</div> -->
+        <div style="font-size: 0.7rem; opacity: 0.8">Select Your Language</div>
         <select id="widget-lang" title="Select Language">
           {% for lang in request.session.languages|default:"" %}{% endfor %}
         </select>
@@ -410,8 +410,8 @@
     placeholder.value = "";
     placeholder.textContent = "Select your language";
     placeholder.disabled = true;
-    placeholder.selected = true;
-    // if (!savedLang) placeholder.selected = true;
+    // placeholder.selected = true;
+    if (!savedLang) placeholder.selected = true;
     langSelect.appendChild(placeholder);
 
     LANGUAGES.forEach((l) => {
@@ -419,7 +419,7 @@
       opt.value = l;
       opt.textContent = l;
       // if (l === 'English') opt.selected = true;
-      // if (savedLang === l) opt.selected = true;
+      if (savedLang === l) opt.selected = true;
       langSelect.appendChild(opt);
     });
 
@@ -470,10 +470,10 @@
       div.className = `w-msg ${role}`;
       if (role === "bot" && sentiment) div.classList.add(`sentiment-${sentiment}`);
 
-      // Convert URL-like paths to clickable links
+      // Refined regex to capture paths and make them pretty buttons or links
       const linked = text.replace(
         /(\/[\w\-\/]+\/)/g,
-        '<a href="$1" style="color:inherit;text-decoration:underline dotted;">$1</a>',
+        '<a href="$1" class="btn btn-sm btn-outline-primary py-0 px-2 m-1" style="font-size: 0.75rem; border-radius: 10px;">Go to Page ↗</a>',
       );
       div.innerHTML = linked;
 
