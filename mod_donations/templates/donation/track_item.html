@@ -115,30 +115,48 @@ document.addEventListener('DOMContentLoaded', function() {
   const recordId = "{{ record.id }}";
 
   function initMap(lat, lng, statusText) {
-    if (!lat || !lng) {
-      document.getElementById('tracking-map').innerHTML = `
-        <div class="d-flex flex-column align-items-center justify-content-center h-100 bg-light text-muted">
-          <i class="bi bi-geo-fill fs-1 mb-3"></i>
-          <h5>Awaiting Location Data</h5>
-        </div>`;
+    // 1. Validation: Ensure coordinates are valid numbers
+    const latitude = parseFloat(lat);
+    const longitude = parseFloat(lng);
+
+    if (isNaN(latitude) || isNaN(longitude)) {
+      if (!map) { // Only show error if map hasn't been initialized yet
+        document.getElementById('tracking-map').innerHTML = `
+          <div class="d-flex flex-column align-items-center justify-content-center h-100 bg-light text-muted">
+            <i class="bi bi-geo-fill fs-1 mb-3"></i>
+            <h5>Awaiting Location Data</h5>
+          </div>`;
+      }
       return;
     }
 
     if (!map) {
-      map = L.map('tracking-map').setView([lat, lng], 13);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+      // First initialization
+      map = L.map('tracking-map').setView([latitude, longitude], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
 
       const customIcon = L.divIcon({
         html: '<div class="bg-primary rounded-circle border border-white border-3 shadow" style="width:20px;height:20px;"></div>',
         className: 'custom-div-icon', iconSize: [20, 20], iconAnchor: [10, 10]
       });
 
-      marker = L.marker([lat, lng], {icon: customIcon}).addTo(map);
+      marker = L.marker([latitude, longitude], {icon: customIcon}).addTo(map);
+      marker.bindPopup(`<strong>${statusText}</strong>`).openPopup();
     } else {
-      marker.setLatLng([lat, lng]);
-      map.panTo([lat, lng]);
+      // 2. UPDATE: Move marker and RE-CENTER map
+      marker.setLatLng([latitude, longitude]);
+
+      // Use flyTo for a smooth "tracking" animation
+      // Or use map.setView([latitude, longitude], map.getZoom()); for instant centering
+      map.flyTo([latitude, longitude], map.getZoom(), {
+        animate: true,
+        duration: 1.5 // seconds
+      });
+
+      marker.getPopup().setContent(`<strong>${statusText}</strong>`);
     }
-    marker.bindPopup(`<strong>${statusText}</strong>`).openPopup();
   }
 
   function updateUI(data) {
@@ -162,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
         badge.classList.remove('d-none');
         if (data.status === 'transit') {
           hubBox.classList.remove('d-none');
-          step.querySelector('.hub-name').innerText = data.current_location;
+          step.querySelector('.hub-name').innerText = data.current_location || "Processing Center";
         }
       } else {
         badge.classList.add('d-none');
@@ -170,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    // Update Map
+    // Update Map with new coordinates from API
     initMap(data.latitude, data.longitude, data.status_display);
   }
 
@@ -186,13 +204,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Initial Load
-  const initialLat = {{ record.latitude|default:"null" }};
-  const initialLng = {{ record.longitude|default:"null" }};
-  initMap(initialLat, initialLng, "{{ record.get_status_display }}");
+  // Initial Load using template variables
+  const initialLat = "{{ record.latitude|default:'' }}";
+  const initialLng = "{{ record.longitude|default:'' }}";
+  if(initialLat && initialLng) {
+      initMap(initialLat, initialLng, "{{ record.get_status_display }}");
+  }
 
-  // Poll every 2 seconds
-  setInterval(fetchUpdates, 2000);
+  // Poll every 5 seconds (2s is quite fast for GPS updates, 5s is usually enough)
+  setInterval(fetchUpdates, 5000);
 });
 </script>
 {% endblock %}
