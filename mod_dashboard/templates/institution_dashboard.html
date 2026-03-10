@@ -23,7 +23,7 @@
                 <p class="mb-0 opacity-90">Manage your campaigns and connect with donors and volunteers.</p>
               </div>
               <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <a href="{% url 'volunteering:institution_campaigns' %}" class="btn btn-light btn-lg"><i class="bi bi-plus-circle me-2"></i>Create Campaign</a>
+                <a href="{% url 'donations:institution_donation_campaigns' %}" class="btn btn-light btn-lg"><i class="bi bi-plus-circle me-2"></i>Create Campaign</a>
               </div>
             </div>
           </div>
@@ -33,58 +33,72 @@
 
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">
-      <div class="col-md-3">
-        <a href="{% url 'donations:manage_transit_items' %}" class="text-decoration-none">
-          <div class="card shadow-sm border-0 h-100 position-relative bg-light">
-            {% if in_transit_count %}
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
-                {{ in_transit_count }}
+      {% if in_transit_count %}
+        <div class="col-md-3">
+          <a href="{% url 'donations:manage_transit_items' %}" class="text-decoration-none">
+            <div class="card shadow-sm border-0 h-100 position-relative bg-light">
+              {% if in_transit_count %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                  {{ in_transit_count }}
+                </span>
+              {% endif %}
+              <div class="card-body text-center p-3">
+                <h3 class="display-6 fw-bold text-primary mb-1">{{ in_transit_count }}</h3>
+                <p class="text-muted small mb-0">Items in Transit</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% endif %}
+
+      {% if active_campaigns != 0 %}
+        <div class="col-md-3">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center p-3">
+              <h3 class="display-6 fw-bold text-danger mb-1">{{ active_campaigns }}</h3>
+              <p class="text-muted small mb-0">Active Campaigns</p>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      {% if active_volunteers != 0 %}
+        <div class="col-md-3">
+          <div class="card shadow-sm border-0 h-100 position-relative">
+            {% if pending_apps %}
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark">
+                {{ pending_apps }}<span class="visually-hidden">pending apps</span>
               </span>
             {% endif %}
             <div class="card-body text-center p-3">
-              <h3 class="display-6 fw-bold text-primary mb-1">{{ in_transit_count }}</h3>
-              <p class="text-muted small mb-0">Items in Transit</p>
+              <h3 class="display-6 fw-bold text-primary mb-1">{{ active_volunteers }}</h3>
+              <p class="text-muted small mb-0">Total Volunteers</p>
             </div>
           </div>
-        </a>
-      </div>
-      <div class="col-md-3">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-3">
-            <h3 class="display-6 fw-bold text-danger mb-1">{{ active_campaigns }}</h3>
-            <p class="text-muted small mb-0">Active Campaigns</p>
+        </div>
+      {% endif %}
+
+      {% if funds_raised != 0 %}
+        <div class="col-md-3">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center p-3">
+              <h3 class="display-6 fw-bold text-success mb-1">₹{{ funds_raised|floatformat:0 }}</h3>
+              <p class="text-muted small mb-0">Funds Raised</p>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card shadow-sm border-0 h-100 position-relative">
-          {% if pending_apps %}
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark">
-              {{ pending_apps }}<span class="visually-hidden">pending apps</span>
-            </span>
-          {% endif %}
-          <div class="card-body text-center p-3">
-            <h3 class="display-6 fw-bold text-primary mb-1">{{ active_volunteers }}</h3>
-            <p class="text-muted small mb-0">Total Volunteers</p>
+      {% endif %}
+
+      {% if pending_invites != 0 %}
+        <div class="col-md-3">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center p-3">
+              <h3 class="display-6 fw-bold text-info mb-1">{{ pending_invites }}</h3>
+              <p class="text-muted small mb-0">Pending Invites</p>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-3">
-            <h3 class="display-6 fw-bold text-success mb-1">₹{{ funds_raised|floatformat:0 }}</h3>
-            <p class="text-muted small mb-0">Funds Raised</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-3">
-            <h3 class="display-6 fw-bold text-info mb-1">{{ pending_invites }}</h3>
-            <p class="text-muted small mb-0">Pending Invites</p>
-          </div>
-        </div>
-      </div>
+      {% endif %}
     </div>
 
     <!-- Main Content Row -->
@@ -141,11 +155,11 @@
           </div>
           <div class="card-body">
             <div class="d-grid gap-2">
-              <a href="{% url 'volunteering:institution_campaigns' %}" class="btn btn-warning">
-                <i class="bi bi-person-walking me-2"></i>Volunteer Campaigns
-              </a>
               <a href="{% url 'donations:institution_donation_campaigns' %}" class="btn btn-success">
-                <i class="bi bi-cash-stack me-2"></i>Donation Campaigns
+                <i class="bi bi-cash-stack me-2"></i>Manage Donation Campaigns
+              </a>
+              <a href="{% url 'volunteering:institution_campaigns' %}" class="btn btn-warning">
+                <i class="bi bi-person-walking me-2"></i>Request Volunteer Help
               </a>
               <a href="{% url 'volunteering:volunteer_directory' %}" class="btn btn-outline-primary">
                 <i class="bi bi-people-fill me-2"></i>Volunteer Directory
