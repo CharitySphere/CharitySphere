@@ -111,7 +111,7 @@
               <h5 class="mb-0">
                 <i class="bi bi-megaphone me-2"></i>Active Campaigns
               </h5>
-              <a href="{% url 'volunteering:institution_campaigns' %}" class="btn btn-sm btn-primary"><i class="bi bi-plus-circle me-1"></i>New Campaign</a>
+              <a href="{% url 'donations:institution_donation_campaigns' %}" class="btn btn-sm btn-primary"><i class="bi bi-plus-circle me-1"></i>New Campaign</a>
             </div>
           </div>
           <div class="card-body">
@@ -137,7 +137,7 @@
               <div class="text-center py-5 text-muted">
                 <i class="bi bi-megaphone" style="font-size: 3rem;"></i>
                 <p class="mt-3">No active campaigns yet.</p>
-                <a href="{% url 'volunteering:institution_campaigns' %}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Create Your First Campaign</a>
+                <a href="{% url 'donations:institution_donation_campaigns' %}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Create Your First Campaign</a>
               </div>
             {% endif %}
           </div>
