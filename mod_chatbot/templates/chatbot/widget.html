@@ -16,7 +16,9 @@
     color: white;
     font-size: 1.4rem;
     box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -29,7 +31,7 @@
   }
 
   #chat-box {
-    width: 360px;
+    width: 420px;
     height: 520px;
     border-radius: 20px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
@@ -192,7 +194,6 @@
   }
 
   @keyframes typingBounce {
-
     0%,
     60%,
     100% {
@@ -273,26 +274,31 @@
         <i class="bi bi-stars"></i>
       </div>
       <div class="flex-grow-1">
-        <div style="font-weight:600; font-size:0.9rem;">CharitySphere AI</div>
-        <div style="font-size:0.7rem; opacity:0.8;">Always here to help</div>
+        <div style="font-weight: 600; font-size: 0.9rem">CharitySphere AI</div>
+        <div style="font-size: 0.7rem; opacity: 0.8">Always here to help</div>
       </div>
-      <select id="widget-lang" title="Select Language">
-        {% for lang in request.session.languages|default:"" %}{% endfor %}
-      </select>
-      <button style="background:none;
-                     border:none;
-                     color:white;
-                     font-size:1.1rem;
-                     cursor:pointer;
-                     padding:2px 4px"
-              id="widget-close"
-              title="Close">✕</button>
+
+      <div>
+        <!-- <div style="font-size: 0.7rem; opacity: 0.8">Selected Language</div> -->
+        <select id="widget-lang" title="Select Language">
+          {% for lang in request.session.languages|default:"" %}{% endfor %}
+        </select>
+      </div>
+
+      <button
+        style="background: none; border: none; color: white; font-size: 1.1rem; cursor: pointer; padding: 2px 4px"
+        id="widget-close"
+        title="Close"
+      >
+        <i class="bi bi-x-lg"></i>
+      </button>
     </div>
 
     <!-- Messages -->
     <div id="widget-messages">
       <div class="w-msg bot">
-        👋 Hi! I'm the CharitySphere AI. I can help you <strong>donate</strong>, find <strong>volunteer opportunities</strong>, or navigate the platform. What can I do for you?
+        👋 Hi! I'm the CharitySphere AI. I can help you <strong>donate</strong>, find
+        <strong>volunteer opportunities</strong>, or navigate the platform. What can I do for you?
       </div>
     </div>
 
@@ -301,7 +307,7 @@
       <div class="input-row">
         <input type="text" id="widget-input" placeholder="Ask me anything…" autocomplete="off" />
         <button class="send-btn" id="widget-send" title="Send">
-          <i class="bi bi-send-fill" style="font-size:0.8rem;"></i>
+          <i class="bi bi-send-fill" style="font-size: 0.8rem"></i>
         </button>
       </div>
       <div class="footer-links">
@@ -311,7 +317,7 @@
   </div>
 
   <!-- Toggle Button -->
-  <div style="display:flex;justify-content:flex-end;">
+  <div style="display: flex; justify-content: flex-end">
     <button id="chat-toggle-btn" title="Chat with AI">
       <i class="bi bi-stars" id="chat-icon"></i>
     </button>
@@ -319,69 +325,162 @@
 </div>
 
 <script>
-  (function() {
+  (function () {
     // ── Language list ──────────────────────────────────────────────
-    const LANGUAGES = ["Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Assamese", "Azerbaijani", "Basque", "Belarusian", "Bengali", "Bosnian", "Bulgarian", "Catalan", "Chinese (Simplified)", "Chinese (Traditional)", "Croatian", "Czech", "Danish", "Dutch", "English", "Estonian", "Farsi", "Filipino", "Finnish", "French", "Galician", "Georgian", "German", "Greek", "Gujarati", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", "Italian", "Japanese", "Kannada", "Kazakh", "Khmer", "Korean", "Lao", "Latvian", "Lithuanian", "Macedonian", "Malay", "Malayalam", "Marathi", "Mongolian", "Nepali", "Norwegian", "Odia", "Polish", "Portuguese", "Punjabi", "Romanian", "Russian", "Serbian", "Slovak", "Slovenian", "Spanish", "Swahili", "Swedish", "Tamil", "Telugu", "Thai", "Turkish", "Ukrainian", "Urdu", "Uzbek", "Vietnamese", "Zulu"];
+    const LANGUAGES = [
+      "Afrikaans",
+      "Albanian",
+      "Amharic",
+      "Arabic",
+      "Armenian",
+      "Assamese",
+      "Azerbaijani",
+      "Basque",
+      "Belarusian",
+      "Bengali",
+      "Bosnian",
+      "Bulgarian",
+      "Catalan",
+      "Chinese (Simplified)",
+      "Chinese (Traditional)",
+      "Croatian",
+      "Czech",
+      "Danish",
+      "Dutch",
+      "English",
+      "Estonian",
+      "Farsi",
+      "Filipino",
+      "Finnish",
+      "French",
+      "Galician",
+      "Georgian",
+      "German",
+      "Greek",
+      "Gujarati",
+      "Hebrew",
+      "Hindi",
+      "Hungarian",
+      "Icelandic",
+      "Indonesian",
+      "Italian",
+      "Japanese",
+      "Kannada",
+      "Kazakh",
+      "Khmer",
+      "Korean",
+      "Lao",
+      "Latvian",
+      "Lithuanian",
+      "Macedonian",
+      "Malay",
+      "Malayalam",
+      "Marathi",
+      "Mongolian",
+      "Nepali",
+      "Norwegian",
+      "Odia",
+      "Polish",
+      "Portuguese",
+      "Punjabi",
+      "Romanian",
+      "Russian",
+      "Serbian",
+      "Slovak",
+      "Slovenian",
+      "Spanish",
+      "Swahili",
+      "Swedish",
+      "Tamil",
+      "Telugu",
+      "Thai",
+      "Turkish",
+      "Ukrainian",
+      "Urdu",
+      "Uzbek",
+      "Vietnamese",
+      "Zulu",
+    ];
 
-    const langSelect = document.getElementById('widget-lang');
-    LANGUAGES.forEach(l => {
-      const opt = document.createElement('option');
+    const langSelect = document.getElementById("widget-lang");
+    const savedLang = localStorage.getItem("chat-user-language");
+
+    // "Select your language" placeholder
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Select your language";
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    // if (!savedLang) placeholder.selected = true;
+    langSelect.appendChild(placeholder);
+
+    LANGUAGES.forEach((l) => {
+      const opt = document.createElement("option");
       opt.value = l;
       opt.textContent = l;
-      if (l === 'English') opt.selected = true;
+      // if (l === 'English') opt.selected = true;
+      // if (savedLang === l) opt.selected = true;
       langSelect.appendChild(opt);
     });
 
+    // Save Language
+    langSelect.onchange = () => {
+      localStorage.setItem("chat-user-language", langSelect.value);
+    };
+
     // ── DOM refs ────────────────────────────────────────────────────
-    const toggleBtn = document.getElementById('chat-toggle-btn');
-    const chatBox = document.getElementById('chat-box');
-    const closeBtn = document.getElementById('widget-close');
-    const input = document.getElementById('widget-input');
-    const sendBtn = document.getElementById('widget-send');
-    const messages = document.getElementById('widget-messages');
-    const chatIcon = document.getElementById('chat-icon');
-    const fullLink = document.getElementById('widget-full-link');
+    const toggleBtn = document.getElementById("chat-toggle-btn");
+    const chatBox = document.getElementById("chat-box");
+    const closeBtn = document.getElementById("widget-close");
+    const input = document.getElementById("widget-input");
+    const sendBtn = document.getElementById("widget-send");
+    const messages = document.getElementById("widget-messages");
+    const chatIcon = document.getElementById("chat-icon");
+    const fullLink = document.getElementById("widget-full-link");
 
     // ── Toggle ──────────────────────────────────────────────────────
     toggleBtn.onclick = () => {
-      chatBox.classList.toggle('d-none');
-      chatIcon.className = chatBox.classList.contains('d-none') ? 'bi bi-stars' : 'bi bi-x-lg';
+      chatBox.classList.toggle("d-none");
+      chatIcon.className = chatBox.classList.contains("d-none") ? "bi bi-stars" : "bi bi-x-lg";
     };
     closeBtn.onclick = () => {
-      chatBox.classList.add('d-none');
-      chatIcon.className = 'bi bi-stars';
+      chatBox.classList.add("d-none");
+      chatIcon.className = "bi bi-stars";
     };
 
     // UX - auto close mini-chat on enabling full chat
-    fullLink.onclick = e => {
-      chatBox.classList.add('d-none');
-      chatIcon.className = 'bi bi-stars';
+    fullLink.onclick = (e) => {
+      chatBox.classList.add("d-none");
+      chatIcon.className = "bi bi-stars";
     };
 
     // ── Helpers ─────────────────────────────────────────────────────
     const SENTIMENT_EMOJI = {
-      Positive: '😊',
-      Negative: '😔',
-      Neutral: '💬',
-      Frustrated: '😤',
-      Grateful: '🙏',
-      Excited: '🎉',
-      Concerned: '🤔'
+      Positive: "😊",
+      Negative: "😔",
+      Neutral: "💬",
+      Frustrated: "😤",
+      Grateful: "🙏",
+      Excited: "🎉",
+      Concerned: "🤔",
     };
 
     function addMessage(text, role, sentiment = null) {
-      const div = document.createElement('div');
+      const div = document.createElement("div");
       div.className = `w-msg ${role}`;
-      if (role === 'bot' && sentiment) div.classList.add(`sentiment-${sentiment}`);
+      if (role === "bot" && sentiment) div.classList.add(`sentiment-${sentiment}`);
 
       // Convert URL-like paths to clickable links
-      const linked = text.replace(/(\/[\w\-\/]+\/)/g, '<a href="$1" style="color:inherit;text-decoration:underline dotted;">$1</a>');
+      const linked = text.replace(
+        /(\/[\w\-\/]+\/)/g,
+        '<a href="$1" style="color:inherit;text-decoration:underline dotted;">$1</a>',
+      );
       div.innerHTML = linked;
 
-      if (role === 'bot' && sentiment) {
-        const tag = document.createElement('div');
-        tag.className = 'sentiment-tag';
-        tag.textContent = `${SENTIMENT_EMOJI[sentiment] || '💬'} ${sentiment}`;
+      if (role === "bot" && sentiment) {
+        const tag = document.createElement("div");
+        tag.className = "sentiment-tag";
+        tag.textContent = `${SENTIMENT_EMOJI[sentiment] || "💬"} ${sentiment}`;
         div.appendChild(tag);
       }
       messages.appendChild(div);
@@ -389,47 +488,53 @@
     }
 
     function showTyping() {
-      const el = document.createElement('div');
-      el.id = 'widget-typing';
-      el.className = 'typing-indicator';
+      const el = document.createElement("div");
+      el.id = "widget-typing";
+      el.className = "typing-indicator";
       el.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
       messages.appendChild(el);
       messages.scrollTop = messages.scrollHeight;
     }
 
     function removeTyping() {
-      const el = document.getElementById('widget-typing');
+      const el = document.getElementById("widget-typing");
       if (el) el.remove();
     }
 
     // ── Send ────────────────────────────────────────────────────────
     async function send() {
+      if (!langSelect.value) {
+        alert("Please select a language before starting the chat.");
+        langSelect.focus();
+        return;
+      }
+
       const msg = input.value.trim();
       if (!msg) return;
-      addMessage(msg, 'user');
-      input.value = '';
+      addMessage(msg, "user");
+      input.value = "";
       showTyping();
       sendBtn.disabled = true;
 
       try {
         const res = await fetch("{% url 'chatbot:send_message' %}", {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             message: msg,
             language: langSelect.value,
-            context_count: 10
-          })
+            context_count: 10,
+          }),
         });
         const data = await res.json();
         removeTyping();
-        if (data.status === 'success') addMessage(data.response, 'bot', data.sentiment);
-        else addMessage('⚠️ Something went wrong. Please try again.', 'bot');
+        if (data.status === "success") addMessage(data.response, "bot", data.sentiment);
+        else addMessage("⚠️ Something went wrong. Please try again.", "bot");
       } catch {
         removeTyping();
-        addMessage('⚠️ Unable to reach the server.', 'bot');
+        addMessage("⚠️ Unable to reach the server.", "bot");
       } finally {
         sendBtn.disabled = false;
         input.focus();
@@ -437,8 +542,8 @@
     }
 
     sendBtn.onclick = send;
-    input.onkeydown = e => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+    input.onkeydown = (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         send();
       }
