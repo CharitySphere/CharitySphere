@@ -3,9 +3,8 @@
 
 {% block content %}
 <style>
-  /* Stepper Enhancements */
   .tracking-list { position: relative; padding: 0; list-style: none; }
-  .tracking-item { position: relative; padding-bottom: 2rem; border-left: 2px solid #e9ecef; margin-left: 20px; padding-left: 30px; }
+  .tracking-item { position: relative; padding-bottom: 2rem; border-left: 2px solid #e9ecef; margin-left: 20px; padding-left: 30px; transition: all 0.3s ease; }
   .tracking-item:last-child { border-left: none; padding-bottom: 0; }
   .tracking-item::before {
     content: ''; position: absolute; left: -9px; top: 0;
@@ -13,13 +12,20 @@
   }
   .tracking-item.active::before { background: #0d6efd; border-color: #0d6efd; box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2); }
   .tracking-item.complete::before { background: #198754; border-color: #198754; }
-  .tracking-icon { position: absolute; left: -35px; top: -5px; background: white; padding: 2px; }
 
-  .progress-header { background: linear-gradient(to right, #f8f9fa, #ffffff); border-bottom: 1px solid #eee; }
+  .pulse-indicator {
+    width: 10px; height: 10px; background: #0d6efd; border-radius: 50%;
+    display: inline-block; margin-right: 5px;
+    animation: pulse-blue 2s infinite;
+  }
+  @keyframes pulse-blue {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(13, 110, 253, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(13, 110, 253, 0); }
+  }
 </style>
 
 <div class="container py-5">
-  <!-- Header Section -->
   <div class="row mb-4">
     <div class="col-md-8">
       <nav aria-label="breadcrumb">
@@ -29,45 +35,44 @@
         </ol>
       </nav>
       <h2 class="fw-bold mb-0">Donation Journey</h2>
-      <p class="text-muted">Tracking ID: <span class="badge bg-light text-dark border">{{ id }}</span></p>
+      <p class="text-muted">Tracking ID: <span class="badge bg-light text-dark border">{{ id }}</span>
+        <span id="live-badge" class="ms-2 badge bg-success-subtle text-success border border-success-subtle">
+          <span class="pulse-indicator"></span>LIVE
+        </span>
+      </p>
     </div>
     <div class="col-md-4">
       <div class="card shadow-sm border-0">
         <div class="card-body px-3 d-flex align-items-center justify-content-between">
           <div>
-            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.7rem;">Expected Destination</small>
+            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.7rem;">Destination</small>
             <span class="fw-bold text-primary">{{ record.campaign.institution.organization_name }}</span>
           </div>
-          <a href="{% url 'donor_dashboard' %}" class="btn btn-secondary float-end"><i class="bi bi-arrow-left"></i> Back</a>
+          <a href="{% url 'donor_dashboard' %}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back</a>
         </div>
       </div>
     </div>
   </div>
 
   <div class="row g-4">
-    <!-- Left Column: Status Timeline -->
     <div class="col-lg-4">
       <div class="card shadow-sm border-0 h-100">
         <div class="card-header bg-white py-3">
           <h5 class="mb-0 fw-bold"><i class="bi bi-list-check me-2"></i>Status History</h5>
         </div>
         <div class="card-body">
-          <div class="tracking-list">
+          <div class="tracking-list" id="status-timeline">
             {% for step in steps_data %}
-            <div class="tracking-item {% if step.is_complete %}complete{% elif step.is_current %}active{% endif %}">
+            <div class="tracking-item step-item {% if step.is_complete %}complete{% elif step.is_current %}active{% endif %}" data-index="{{ forloop.counter0 }}">
               <div class="d-flex justify-content-between align-items-start">
-                <h6 class="fw-bold mb-1 {% if step.is_current %}text-primary{% endif %}">{{ step.label }}</h6>
-                {% if step.is_current %}
-                  <span class="badge bg-primary pulse-animation">Current</span>
-                {% endif %}
+                <h6 class="fw-bold mb-1 step-label">{{ step.label }}</h6>
+                <span class="badge bg-primary current-badge {% if not step.is_current %}d-none{% endif %}">Current</span>
               </div>
               <p class="small text-muted mb-0">{{ step.description }}</p>
-              {% if step.is_current and record.status == 'transit' %}
-                <div class="mt-2 p-2 bg-light rounded border-start border-3 border-info">
-                  <small class="d-block fw-bold text-info">Current Hub:</small>
-                  <small>{{ record.current_location|default:"Processing Center" }}</small>
-                </div>
-              {% endif %}
+              <div class="hub-info mt-2 p-2 bg-light rounded border-start border-3 border-info {% if not step.is_current or record.status != 'transit' %}d-none{% endif %}">
+                <small class="d-block fw-bold text-info">Current Hub:</small>
+                <small class="hub-name">{{ record.current_location|default:"Processing Center" }}</small>
+              </div>
             </div>
             {% endfor %}
           </div>
@@ -75,15 +80,13 @@
       </div>
     </div>
 
-    <!-- Right Column: Map and Details -->
     <div class="col-lg-8">
-      <!-- Summary Bar -->
-      <div class="card shadow-sm border-0 mb-4 progress-header">
+      <div class="card shadow-sm border-0 mb-4 bg-white">
         <div class="card-body p-4">
-          <div class="row align-items-center">
+          <div class="row align-items-center text-center text-md-start">
             <div class="col-md-4 border-end">
-              <label class="small text-muted text-uppercase d-block">Item Description</label>
-              <span class="fw-semibold">{{ record.item_details|truncatechars:40 }}</span>
+              <label class="small text-muted text-uppercase d-block">Status</label>
+              <span id="display-status" class="fw-semibold text-primary">{{ record.get_status_display }}</span>
             </div>
             <div class="col-md-4 border-end px-md-4">
               <label class="small text-muted text-uppercase d-block">Estimated Value</label>
@@ -91,32 +94,14 @@
             </div>
             <div class="col-md-4 px-md-4">
               <label class="small text-muted text-uppercase d-block">Last Update</label>
-              <span class="fw-semibold">{{ record.timestamp|date:"D, M d | H:i" }}</span>
+              <span id="last-update" class="fw-semibold">{{ record.timestamp|date:"D, M d | H:i" }}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Map Card -->
-      <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-          <h5 class="mb-0 fw-bold"><i class="bi bi-geo-alt-fill me-2 text-danger"></i>Live Tracking Map</h5>
-          <button class="btn btn-sm btn-outline-secondary" onclick="location.reload();">
-            <i class="bi bi-arrow-clockwise"></i> Refresh
-          </button>
-        </div>
-        <div class="card-body p-0">
-          <div id="tracking-map" style="height: 450px; border-bottom-left-radius: .5rem; border-bottom-right-radius: .5rem;"></div>
-        </div>
-      </div>
-
-      <!-- Support Info -->
-      <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center">
-        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
-        <div>
-          <h6 class="alert-heading fw-bold mb-1">Logistics Note</h6>
-          <p class="small mb-0">Coordinates are updated by the institution at each checkpoint. There might be a slight delay in GPS accuracy.</p>
-        </div>
+      <div class="card shadow-sm border-0">
+        <div id="tracking-map" style="height: 500px; border-radius: .5rem;"></div>
       </div>
     </div>
   </div>
@@ -126,33 +111,88 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  var lat = {{ record.latitude|default:"null" }};
-  var lng = {{ record.longitude|default:"null" }};
+  let map, marker;
+  const recordId = "{{ record.id }}";
 
-  if (lat !== null && lng !== null) {
-    var map = L.map('tracking-map').setView([lat, lng], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+  function initMap(lat, lng, statusText) {
+    if (!lat || !lng) {
+      document.getElementById('tracking-map').innerHTML = `
+        <div class="d-flex flex-column align-items-center justify-content-center h-100 bg-light text-muted">
+          <i class="bi bi-geo-fill fs-1 mb-3"></i>
+          <h5>Awaiting Location Data</h5>
+        </div>`;
+      return;
+    }
 
-    var customIcon = L.divIcon({
-      html: '<div class="bg-primary rounded-circle border border-white border-3 shadow" style="width:20px;height:20px;"></div>',
-      className: 'custom-div-icon',
-      iconSize: [20, 20],
-      iconAnchor: [10, 10]
+    if (!map) {
+      map = L.map('tracking-map').setView([lat, lng], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+      const customIcon = L.divIcon({
+        html: '<div class="bg-primary rounded-circle border border-white border-3 shadow" style="width:20px;height:20px;"></div>',
+        className: 'custom-div-icon', iconSize: [20, 20], iconAnchor: [10, 10]
+      });
+
+      marker = L.marker([lat, lng], {icon: customIcon}).addTo(map);
+    } else {
+      marker.setLatLng([lat, lng]);
+      map.panTo([lat, lng]);
+    }
+    marker.bindPopup(`<strong>${statusText}</strong>`).openPopup();
+  }
+
+  function updateUI(data) {
+    // Update basic text
+    document.getElementById('display-status').innerText = data.status_display;
+    document.getElementById('last-update').innerText = data.last_update;
+
+    // Update Timeline Steps
+    const steps = document.querySelectorAll('.step-item');
+    steps.forEach((step, idx) => {
+      step.classList.remove('active', 'complete');
+      const badge = step.querySelector('.current-badge');
+      const hubBox = step.querySelector('.hub-info');
+
+      if (idx < data.step_index) {
+        step.classList.add('complete');
+        badge.classList.add('d-none');
+        hubBox.classList.add('d-none');
+      } else if (idx === data.step_index) {
+        step.classList.add('active');
+        badge.classList.remove('d-none');
+        if (data.status === 'transit') {
+          hubBox.classList.remove('d-none');
+          step.querySelector('.hub-name').innerText = data.current_location;
+        }
+      } else {
+        badge.classList.add('d-none');
+        hubBox.classList.add('d-none');
+      }
     });
 
-    L.marker([lat, lng], {icon: customIcon}).addTo(map)
-      .bindPopup("<div class='text-center'><strong>{{ record.get_status_display }}</strong><br>{{ record.current_location|default:'Processing' }}</div>")
-      .openPopup();
-  } else {
-    document.getElementById('tracking-map').innerHTML = `
-      <div class="d-flex flex-column align-items-center justify-content-center h-100 bg-light text-muted">
-        <i class="bi bi-geo-fill fs-1 mb-3"></i>
-        <h5 class="fw-bold">Waiting for Shipment Update</h5>
-        <p class="small">The institution has not yet logged the physical coordinates for this item.</p>
-      </div>`;
+    // Update Map
+    initMap(data.latitude, data.longitude, data.status_display);
   }
+
+  async function fetchUpdates() {
+    try {
+      const response = await fetch(`/donations/api/track/${recordId}/`);
+      const data = await response.json();
+      if (!data.error) {
+        updateUI(data);
+      }
+    } catch (e) {
+      console.error("Live tracking update failed", e);
+    }
+  }
+
+  // Initial Load
+  const initialLat = {{ record.latitude|default:"null" }};
+  const initialLng = {{ record.longitude|default:"null" }};
+  initMap(initialLat, initialLng, "{{ record.get_status_display }}");
+
+  // Poll every 2 seconds
+  setInterval(fetchUpdates, 2000);
 });
 </script>
 {% endblock %}

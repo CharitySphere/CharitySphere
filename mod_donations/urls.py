@@ -9,6 +9,7 @@ urlpatterns = [
     path('campaigns/<int:campaign_id>/donate/', views.make_donation, name='make_donation'),
     path('history/', views.donation_history, name='donation_history'),
     path('track/<int:record_id>/', views.track_item, name='track_item'),
+    path('api/track/<int:record_id>/', views.get_tracking_api, name='track_item_api'),
     path('institution/donation/<int:donation_id>/status/', views.update_donation_status, name='update_donation_status'),
     path('institution/manage/', views.institution_donation_campaigns, name='institution_donation_campaigns'),
     path('institution/manage/add/', views.manage_donation_campaign, name='create_donation_campaign'),

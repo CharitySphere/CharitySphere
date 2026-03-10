@@ -402,32 +402,32 @@ def track_item(request, record_id):
             "slug": "pending",
             "label": "Ready your package",
             "desc": "Prepare your items for collection or drop-off.",
-            "icon": "bi-box-seam"
+            "icon": "bi-box-seam",
         },
         {
             "slug": "collected",
             "label": "Picked Up",
             "desc": "Item has been collected by our logistics partner.",
-            "icon": "bi-truck-flatbed"
+            "icon": "bi-truck-flatbed",
         },
         {
             "slug": "transit",
             "label": "In Transit",
             "desc": f"Moving towards destination. Currently at: {record.current_location or 'Processing Hub'}",
-            "icon": "bi-geo-alt-fill"
+            "icon": "bi-geo-alt-fill",
         },
         {
             "slug": "received",
             "label": "At Institution",
             "desc": f"Successfully reached {record.campaign.institution.organization_name}.",
-            "icon": "bi-building-check"
+            "icon": "bi-building-check",
         },
         {
             "slug": "delivered",
             "label": "Distributed",
             "desc": "Items have been handed over to the beneficiaries.",
-            "icon": "bi-heart-fill"
-        }
+            "icon": "bi-heart-fill",
+        },
     ]
 
     status_order = [s["slug"] for s in status_configs]
@@ -441,14 +441,16 @@ def track_item(request, record_id):
 
     steps_data = []
     for i, config in enumerate(status_configs):
-        steps_data.append({
-            "label": config["label"],
-            "description": config["desc"],
-            "icon": config["icon"],
-            "is_complete": i < current_idx,
-            "is_current": i == current_idx,
-            "display_number": i + 1,
-        })
+        steps_data.append(
+            {
+                "label": config["label"],
+                "description": config["desc"],
+                "icon": config["icon"],
+                "is_complete": i < current_idx,
+                "is_current": i == current_idx,
+                "display_number": i + 1,
+            }
+        )
 
     return render(
         request,
@@ -458,8 +460,43 @@ def track_item(request, record_id):
             "record": record,
             "progress_pct": progress_pct,
             "steps_data": steps_data,
-            "current_step": status_configs[current_idx]
+            "current_step": status_configs[current_idx],
         },
+    )
+
+
+@login_required
+def get_tracking_api(request, record_id):
+    """API endpoint for live tracking updates"""
+    record = get_object_or_404(DonationRecord, id=record_id)
+
+    # Security: Only the donor or the involved institution can see this
+    is_donor = record.donor.user_profile.user == request.user
+    is_institution = record.campaign.institution.user_profile.user == request.user
+
+    if not (is_donor or is_institution):
+        return JsonResponse({"error": "Unauthorized"}, status=403)
+
+    # Re-calculate the status sequence logic
+    status_order = ["pending", "collected", "transit", "received", "delivered"]
+    try:
+        current_idx = status_order.index(record.status)
+    except ValueError:
+        current_idx = 0
+
+    progress_pct = (current_idx / (len(status_order) - 1)) * 100
+
+    return JsonResponse(
+        {
+            "status": record.status,
+            "status_display": record.get_status_display(),
+            "current_location": record.current_location or "Processing Center",
+            "latitude": float(record.latitude) if record.latitude else None,
+            "longitude": float(record.longitude) if record.longitude else None,
+            "progress_pct": progress_pct,
+            "last_update": record.timestamp.strftime("%a, %b %d | %H:%M"),
+            "step_index": current_idx,
+        }
     )
 
 
