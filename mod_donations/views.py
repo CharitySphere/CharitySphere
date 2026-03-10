@@ -454,6 +454,7 @@ def track_item(request, record_id):
         request,
         "donation/track_item.html",
         {
+            "id": f"CS-00{record.pk}-{record.timestamp.strftime('%Y%m%d')}",
             "record": record,
             "progress_pct": progress_pct,
             "steps_data": steps_data,
