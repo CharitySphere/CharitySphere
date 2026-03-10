@@ -5,57 +5,155 @@
   <section class="vh-100 d-flex align-items-center justify-content-center">
     <div class="container py-5">
       <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-          <div class="card shadow-sm border-0 p-3">
-            <div class="card-body">
-              <div class="mb-4">
-                <div class="progress mb-3" style="height: 5px;">
-                  <div class="progress-bar w-100 bg-success" role="progressbar"></div>
-                </div>
-                <h2 class="h4 fw-bold">Almost Ready</h2>
-                <p class="text-muted small">Step 3 of 3: Final details for your profile.</p>
+        <div class="card shadow-sm border-0 p-3">
+          <div class="card-body">
+            <div class="mb-4">
+              <div class="progress mb-3" style="height: 5px;">
+                <div class="progress-bar w-100 bg-success" role="progressbar"></div>
               </div>
-
-              <form method="post">
-                {% csrf_token %}
-
-                {% if user_type == "donor" %}
-                  <div class="text-center py-4">
-                    <i class="bi bi-heart-pulse text-danger display-1"></i>
-                    <p class="mt-3">Ready to start your journey as a donor? No extra details needed right now.</p>
-                  </div>
-
-                {% elif user_type == "volunteer" %}
-                  <div class="mb-3">
-                    <label class="form-label small fw-bold">Your Skills</label>
-                    <textarea name="skills" class="form-control" placeholder="e.g. Teaching, Driving, Cooking" rows="3"></textarea>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label small fw-bold">Weekly Availability</label>
-                    <input type="text" name="availability" class="form-control" placeholder="e.g. Weekends, 4 hours/week">
-                  </div>
-
-                {% elif user_type == "institution" %}
-                  <div class="mb-3">
-                    <label class="form-label small fw-bold">Organization Name</label>
-                    <input type="text" name="organization_name" class="form-control" placeholder="Full Legal Name">
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label small fw-bold">Government Registration Number</label>
-                    <input type="text" name="registration_number" class="form-control" placeholder="NGO-12345678">
-                  </div>
-                {% endif %}
-
-                <div class="d-grid gap-2 mt-4">
-                  <button type="submit" class="btn btn-success btn-lg">Complete Registration</button>
-                  <a href="{% url 'signup_step_2' %}" class="btn btn-link btn-sm text-muted">Go Back</a>
-                </div>
-              </form>
+              <h2 class="h4 fw-bold">Complete Your Profile</h2>
+              <p class="text-muted small">Final details to help CharitySphere connect you with those in need.</p>
             </div>
+
+            <form method="post">
+              {% csrf_token %}
+
+              <section class="d-flex flex-row gap-4">
+                <!-- Role Specific Fields -->
+                <article class="card bg-light border-0 mb-4 flex-grow-1">
+                  <div class="card-body">
+                    <h6 class="fw-bold mb-3">
+                      <i class="bi bi-person-badge me-2"></i>Account Information
+                    </h6>
+
+                    {% if user_type == "donor" %}
+                      <div class="text-center py-2">
+                        <i class="bi bi-heart-pulse text-danger fs-1"></i>
+                        <p class="mt-2 mb-0 small">Ready to start your journey as a donor!</p>
+                      </div>
+
+                    {% elif user_type == "volunteer" %}
+                      <div class="mb-3">
+                        <label class="form-label small fw-bold">Your Skills</label>
+                        <textarea name="skills" class="form-control" placeholder="e.g. Teaching, Driving, Cooking" rows="2" required></textarea>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-bold">Weekly Availability</label>
+                        <input type="text" name="availability" class="form-control" placeholder="e.g. Weekends, 4 hours/week" required>
+                      </div>
+
+                    {% elif user_type == "institution" %}
+                      <div class="mb-3">
+                        <label class="form-label small fw-bold">Organization Name</label>
+                        <input type="text" name="organization_name" class="form-control" placeholder="Full Legal Name" required>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-bold">Government Registration Number</label>
+                        <input type="text" name="registration_number" class="form-control" placeholder="NGO-12345678" required>
+                      </div>
+                    {% endif %}
+
+                  </div>
+                </article>
+
+                <!-- Location Fields -->
+                <article class="card bg-light border-0 mb-4 flex-grow-1">
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-3">
+                      <i class="bi bi-geo-alt-fill me-2"></i>Location & Address
+                    </h6>
+
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold">Physical Address</label>
+                      <textarea class="form-control" name="address" rows="2" placeholder="Street, City, Zip Code" required></textarea>
+                      <div class="form-text text-muted">This address will be used for item pickups and coordination.</div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold">Pin Your Location</label>
+                      <div id="map-selector" style="height: 250px;" class="rounded shadow-sm mb-2"></div>
+                      <p class="x-small text-muted" style="font-size: 0.8rem;">
+                        <i class="bi bi-info-circle me-1"></i> Click on the map or drag the marker to your precise location.
+                      </p>
+                    </div>
+
+                    <div class="row g-2">
+                      <div class="col-6">
+                        <label class="form-label small text-muted">Latitude</label>
+                        <input type="text" class="form-control form-control-sm" id="id_lat" name="latitude" readonly required>
+                      </div>
+                      <div class="col-6">
+                        <label class="form-label small text-muted">Longitude</label>
+                        <input type="text" class="form-control form-control-sm" id="id_lng" name="longitude" readonly required>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </section>
+
+              <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-success btn-lg">Complete Registration</button>
+                <a href="{% url 'signup_step_2' %}" class="btn btn-link btn-sm text-muted">Go Back</a>
+              </div>
+            </form>
           </div>
         </div>
+
       </div>
     </div>
   </section>
 
+  <!-- Leaflet JS & CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Default center: Center of India
+      const defaultLat = 20.5937;
+      const defaultLng = 78.9629;
+
+      const map = L.map('map-selector').setView([defaultLat, defaultLng], 5);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Marker logic
+      let marker = L.marker([defaultLat, defaultLng], {
+        draggable: true
+      }).addTo(map);
+
+      function updateFields(lat, lng) {
+        document.getElementById('id_lat').value = lat.toFixed(6);
+        document.getElementById('id_lng').value = lng.toFixed(6);
+      }
+
+      // Update on marker drag
+      marker.on('dragend', function(e) {
+        const position = marker.getLatLng();
+        updateFields(position.lat, position.lng);
+      });
+
+      // Update on map click
+      map.on('click', function(e) {
+        marker.setLatLng(e.latlng);
+        updateFields(e.latlng.lat, e.latlng.lng);
+      });
+
+      // Try to get user's current location via Browser API for convenience
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          map.setView([userLat, userLng], 15);
+          marker.setLatLng([userLat, userLng]);
+          updateFields(userLat, userLng);
+        });
+      }
+
+      // Initial field values
+      updateFields(defaultLat, defaultLng);
+    });
+  </script>
 {% endblock %}

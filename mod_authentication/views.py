@@ -58,7 +58,7 @@ def signup_step_2(request):
 
 
 def signup_step_3(request):
-    """Step 3: Role-specific details and Manual Creation"""
+    """Step 3: Role-specific details + Location and Manual Creation"""
     user_type = request.session.get("signup_user_type")
     account_data = request.session.get("signup_account_data")
 
@@ -75,15 +75,24 @@ def signup_step_3(request):
                     password=account_data["password"],
                 )
 
-                # 2. Create the UserProfile
-                profile = UserProfile.objects.create(user=user, user_type=user_type)
+                # 2. Extract Location Data from POST
+                address = request.POST.get("address")
+                lat = request.POST.get("latitude")
+                lng = request.POST.get("longitude")
 
-                # 3. Create Specific Role Model manually from POST
+                # 3. Create the UserProfile
+                profile = UserProfile.objects.create(
+                    user=user,
+                    user_type=user_type,
+                    address=address,
+                    latitude=lat if lat else None,
+                    longitude=lng if lng else None,
+                )
+
+                # 4. Create Specific Role Model
                 redirect_url = "login"
                 if user_type == "donor":
-                    Donor.objects.create(
-                        user_profile=profile,
-                    )
+                    Donor.objects.create(user_profile=profile)
                     redirect_url = "donor_dashboard"
 
                 elif user_type == "volunteer":
