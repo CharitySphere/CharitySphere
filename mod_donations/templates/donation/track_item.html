@@ -2,92 +2,157 @@
 {% block title %}Track Donation - CharitySphere{% endblock %}
 
 {% block content %}
-  <div class="container py-5">
-    <div class="row mb-4">
-      <div class="col-md-8">
-        <h3>Tracking Donation: #{{ record.id }}</h3>
-        <p class="text-muted">{{ record.campaign.title }} | {{ record.item_details|truncatechars:50 }}</p>
-      </div>
-      <div class="col-md-4 text-end">
-        <a href="{% url 'donor_dashboard' %}" class="btn btn-secondary float-end mb-3"><i class="bi bi-arrow-left"></i> Back</a>
+<style>
+  /* Stepper Enhancements */
+  .tracking-list { position: relative; padding: 0; list-style: none; }
+  .tracking-item { position: relative; padding-bottom: 2rem; border-left: 2px solid #e9ecef; margin-left: 20px; padding-left: 30px; }
+  .tracking-item:last-child { border-left: none; padding-bottom: 0; }
+  .tracking-item::before {
+    content: ''; position: absolute; left: -9px; top: 0;
+    width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid #dee2e6;
+  }
+  .tracking-item.active::before { background: #0d6efd; border-color: #0d6efd; box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2); }
+  .tracking-item.complete::before { background: #198754; border-color: #198754; }
+  .tracking-icon { position: absolute; left: -35px; top: -5px; background: white; padding: 2px; }
+
+  .progress-header { background: linear-gradient(to right, #f8f9fa, #ffffff); border-bottom: 1px solid #eee; }
+</style>
+
+<div class="container py-5">
+  <!-- Header Section -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-2">
+          <li class="breadcrumb-item"><a href="{% url 'donor_dashboard' %}" class="text-decoration-none">Dashboard</a></li>
+          <li class="breadcrumb-item active">Package Tracking</li>
+        </ol>
+      </nav>
+      <h2 class="fw-bold mb-0">Donation Journey</h2>
+      <p class="text-muted">Tracking ID: <span class="badge bg-light text-dark border">#CS-{{ record.id }}</span></p>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body px-3 d-flex align-items-center justify-content-between">
+          <div>
+            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.7rem;">Expected Destination</small>
+            <span class="fw-bold text-primary">{{ record.campaign.institution.organization_name }}</span>
+          </div>
+          <a href="{% url 'donor_dashboard' %}" class="btn btn-secondary float-end"><i class="bi bi-arrow-left"></i> Back</a>
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- Progress Meter -->
-    <div class="card shadow-sm border-0 mb-4">
-      <div class="card-body p-5">
-        <div class="position-relative mb-5">
-          <div class="progress position-absolute mt-2 w-100" style="height: 1em;">
-            <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress_pct }}%"></div>
-          </div>
-          <div class="position-absolute d-flex justify-content-between w-100">
+  <div class="row g-4">
+    <!-- Left Column: Status Timeline -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-white py-3">
+          <h5 class="mb-0 fw-bold"><i class="bi bi-list-check me-2"></i>Status History</h5>
+        </div>
+        <div class="card-body">
+          <div class="tracking-list">
             {% for step in steps_data %}
-              <div class="text-center">
-                <div class="rounded-circle {% if step.is_complete or step.is_current %}bg-success{% else %}bg-secondary{% endif %} text-white d-flex align-items-center justify-content-center mx-auto"
-                     style="width: 2em; height: 2em">
-                  {% if step.is_complete %}
-                    <i class="bi bi-check"></i>
-                  {% else %}
-                    {{ step.display_number }}
-                  {% endif %}
-                </div>
-                <small class="d-block mt-2 fw-bold">{{ step.label }}</small>
+            <div class="tracking-item {% if step.is_complete %}complete{% elif step.is_current %}active{% endif %}">
+              <div class="d-flex justify-content-between align-items-start">
+                <h6 class="fw-bold mb-1 {% if step.is_current %}text-primary{% endif %}">{{ step.label }}</h6>
+                {% if step.is_current %}
+                  <span class="badge bg-primary pulse-animation">Current</span>
+                {% endif %}
               </div>
+              <p class="small text-muted mb-0">{{ step.description }}</p>
+              {% if step.is_current and record.status == 'transit' %}
+                <div class="mt-2 p-2 bg-light rounded border-start border-3 border-info">
+                  <small class="d-block fw-bold text-info">Current Hub:</small>
+                  <small>{{ record.current_location|default:"Processing Center" }}</small>
+                </div>
+              {% endif %}
+            </div>
             {% endfor %}
           </div>
         </div>
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-lg-8">
-        <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-white">
-            <strong>Live Location</strong>
-          </div>
-          <div class="card-body p-0">
-            <div id="tracking-map" style="height: 450px;"></div>
+    <!-- Right Column: Map and Details -->
+    <div class="col-lg-8">
+      <!-- Summary Bar -->
+      <div class="card shadow-sm border-0 mb-4 progress-header">
+        <div class="card-body p-4">
+          <div class="row align-items-center">
+            <div class="col-md-4 border-end">
+              <label class="small text-muted text-uppercase d-block">Item Description</label>
+              <span class="fw-semibold">{{ record.item_details|truncatechars:40 }}</span>
+            </div>
+            <div class="col-md-4 border-end px-md-4">
+              <label class="small text-muted text-uppercase d-block">Estimated Value</label>
+              <span class="fw-semibold text-success">₹{{ record.amount }}</span>
+            </div>
+            <div class="col-md-4 px-md-4">
+              <label class="small text-muted text-uppercase d-block">Last Update</label>
+              <span class="fw-semibold">{{ record.timestamp|date:"D, M d | H:i" }}</span>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-lg-4">
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-primary text-white">Status Details</div>
-          <div class="card-body">
-            <h5>
-              Current Status: <span class="text-success">{{ record.get_status_display }}</span>
-            </h5>
-            <p>
-              <strong>Last Known Location:</strong>
-              <br>
-              {{ record.current_location|default:"Awaiting collection..." }}
-            </p>
-            <hr>
-            <p class="small text-muted">Updated on: {{ record.timestamp|date:"M d, Y H:i" }}</p>
-            <p class="small text-muted">Verified Value: ₹{{ record.amount }}</p>
-          </div>
+
+      <!-- Map Card -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 fw-bold"><i class="bi bi-geo-alt-fill me-2 text-danger"></i>Live Tracking Map</h5>
+          <button class="btn btn-sm btn-outline-secondary" onclick="location.reload();">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+          </button>
+        </div>
+        <div class="card-body p-0">
+          <div id="tracking-map" style="height: 450px; border-bottom-left-radius: .5rem; border-bottom-right-radius: .5rem;"></div>
+        </div>
+      </div>
+
+      <!-- Support Info -->
+      <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center">
+        <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+        <div>
+          <h6 class="alert-heading fw-bold mb-1">Logistics Note</h6>
+          <p class="small mb-0">Coordinates are updated by the institution at each checkpoint. There might be a slight delay in GPS accuracy.</p>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Use "string" format or float filter to prevent JS errors if values are None
-      var lat = {{ record.latitude|default:"null" }};
-      var lng = {{ record.longitude|default:"null" }};
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var lat = {{ record.latitude|default:"null" }};
+  var lng = {{ record.longitude|default:"null" }};
 
-      if (lat !== null && lng !== null) {
-        var map = L.map('tracking-map').setView([lat, lng], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        L.marker([lat, lng]).addTo(map)
-          .bindPopup("Item Current Location")
-          .openPopup();
-      } else {
-        document.getElementById('tracking-map').innerHTML = '<div class="p-5 text-center text-muted">Location data not available yet.</div>';
-      }
+  if (lat !== null && lng !== null) {
+    var map = L.map('tracking-map').setView([lat, lng], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    var customIcon = L.divIcon({
+      html: '<div class="bg-primary rounded-circle border border-white border-3 shadow" style="width:20px;height:20px;"></div>',
+      className: 'custom-div-icon',
+      iconSize: [20, 20],
+      iconAnchor: [10, 10]
     });
-  </script>
+
+    L.marker([lat, lng], {icon: customIcon}).addTo(map)
+      .bindPopup("<div class='text-center'><strong>{{ record.get_status_display }}</strong><br>{{ record.current_location|default:'Processing' }}</div>")
+      .openPopup();
+  } else {
+    document.getElementById('tracking-map').innerHTML = `
+      <div class="d-flex flex-column align-items-center justify-content-center h-100 bg-light text-muted">
+        <i class="bi bi-geo-fill fs-1 mb-3"></i>
+        <h5 class="fw-bold">Waiting for Shipment Update</h5>
+        <p class="small">The institution has not yet logged the physical coordinates for this item.</p>
+      </div>`;
+  }
+});
+</script>
 {% endblock %}

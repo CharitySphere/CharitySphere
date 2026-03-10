@@ -2,105 +2,212 @@
 {% block title %}Transit Management - CharitySphere{% endblock %}
 
 {% block content %}
-  <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2><i class="bi bi-truck me-2"></i>Transit & Delivery Management</h2>
-      <span class="badge bg-primary">{{ items.count }} Items in Transit</span>
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-0"><i class="bi bi-truck me-2 text-primary"></i>Logistics Management</h2>
+      <p class="text-muted">Manage real-time tracking updates for physical donations</p>
     </div>
-
-    <div class="card shadow-sm border-0">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Donor</th>
-              <th>Item & Original Desc</th>
-              <th>Status</th>
-              <th>Current Location</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in items %}
-              <tr>
-                <td>{{ item.donor.user_profile.user.username }}</td>
-                <td>
-                  <strong>{{ item.campaign.title }}</strong><br>
-                  <small class="text-muted">{{ item.item_details|truncatechars:40 }}</small>
-                </td>
-                <td>
-                  <span class="badge bg-info text-dark text-capitalize">{{ item.get_status_display }}</span>
-                </td>
-                <td>{{ item.current_location|default:"-" }}</td>
-                <td>
-                  <!-- Trigger Button -->
-                  <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ item.id }}">
-                    Update Tracking
-                  </button>
-                </td>
-              </tr>
-            {% empty %}
-              <tr>
-                <td colspan="5" class="text-center py-4 text-muted">No items currently in transit.</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    <div class="text-end">
+      <div class="h3 fw-bold mb-0 text-primary">{{ items.count }}</div>
+      <small class="text-muted text-uppercase fw-bold">Active Deliveries</small>
     </div>
   </div>
 
-  <!-- MODALS MUST BE OUTSIDE THE TABLE STRUCTURE -->
-  {% for item in items %}
-    <div class="modal fade" id="editModal{{ item.id }}" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog">
-        <form method="post" class="modal-content">
-          {% csrf_token %}
-          <input type="hidden" name="record_id" value="{{ item.id }}">
-          <div class="modal-header">
-            <h5 class="modal-title">Update Record #{{ item.id }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
+  <div class="card shadow-sm border-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">Item & Donor</th>
+            <th>Target Campaign</th>
+            <th>Current Status</th>
+            <th>Current Hub</th>
+            <th class="text-end pe-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td class="ps-4">
+              <div class="fw-bold text-dark">#{{ item.id }} - {{ item.item_details|truncatechars:25 }}</div>
+              <small class="text-muted"><i class="bi bi-person me-1"></i>{{ item.donor.user_profile.user.username }}</small>
+            </td>
+            <td>
+              <div class="small fw-semibold">{{ item.campaign.title }}</div>
+              <span class="badge bg-light text-dark border">₹{{ item.amount }} Est. Value</span>
+            </td>
+            <td>
+              {% if item.status == 'pending' %}
+                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Pending</span>
+              {% elif item.status == 'transit' %}
+                <span class="badge bg-info text-dark"><i class="bi bi-truck me-1"></i>In Transit</span>
+              {% elif item.status == 'received' %}
+                <span class="badge bg-success"><i class="bi bi-building-check me-1"></i>Arrived</span>
+              {% else %}
+                <span class="badge bg-secondary">{{ item.get_status_display }}</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="small"><i class="bi bi-geo-alt text-danger me-1"></i>{{ item.current_location|default:"Not Logged" }}</div>
+            </td>
+            <td class="text-end pe-4">
+              <button class="btn btn-primary btn-sm px-3 shadow-sm"
+                      data-bs-toggle="modal"
+                      data-bs-target="#editModal{{ item.id }}"
+                      onclick="initModalMap('{{ item.id }}', {{ item.latitude|default:'null' }}, {{ item.longitude|default:'null' }})">
+                Update Tracking
+              </button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center py-5">
+              <i class="bi bi-box-seam fs-1 text-muted d-block mb-3"></i>
+              <p class="text-muted">No items currently require tracking updates.</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% for item in items %}
+<div class="modal fade" id="editModal{{ item.id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <form method="post" class="modal-content border-0 shadow-lg">
+      {% csrf_token %}
+      <input type="hidden" name="record_id" value="{{ item.id }}">
+
+      <div class="modal-header border-0 bg-dark text-white p-4">
+        <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Tracking Update: #{{ item.id }}</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body p-4">
+        <div class="row g-4">
+          <!-- Logistics Section -->
+          <div class="col-md-7">
+            <h6 class="fw-bold mb-3 text-uppercase small text-muted">Location & GPS</h6>
+
+            <!-- Map Preview Container -->
+            <div id="map_container_{{ item.id }}" class="rounded border mb-3 shadow-sm" style="height: 250px; background: #f8f9fa;">
+              <!-- Map will be initialized here via JS -->
+            </div>
+
             <div class="mb-3">
-              <label class="form-label">Delivery Status</label>
-              <select name="status" class="form-select">
+              <label class="form-label small fw-bold">Search/Update Hub Name</label>
+              <div class="input-group">
+                <input type="text" name="current_location" id="loc_input_{{ item.id }}"
+                       class="form-control" value="{{ item.current_location }}"
+                       placeholder="e.g., Central Warehouse, Delhi">
+                <button class="btn btn-dark" type="button" onclick="lookupLocation('{{ item.id }}')">
+                  <i class="bi bi-search me-1"></i> Find
+                </button>
+              </div>
+            </div>
+
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="form-label small">Latitude</label>
+                <input type="text" name="latitude" id="lat_{{ item.id }}" class="form-control form-control-sm" value="{{ item.latitude|default:'' }}" readonly>
+              </div>
+              <div class="col-6">
+                <label class="form-label small">Longitude</label>
+                <input type="text" name="longitude" id="lng_{{ item.id }}" class="form-control form-control-sm" value="{{ item.longitude|default:'' }}" readonly>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status & Verification Section -->
+          <div class="col-md-5 border-start">
+            <h6 class="fw-bold mb-3 text-uppercase small text-muted">Status Update</h6>
+
+            <div class="mb-4">
+              <label class="form-label small fw-bold">Current Delivery Status</label>
+              <select name="status" class="form-select border-primary shadow-sm">
                 {% for code, label in item.STATUS_CHOICES %}
                   <option value="{{ code }}" {% if item.status == code %}selected{% endif %}>{{ label }}</option>
                 {% endfor %}
               </select>
             </div>
+
+            <h6 class="fw-bold mb-3 text-uppercase small text-muted">Verification</h6>
             <div class="mb-3">
-              <label class="form-label">Update Location (City/Hub)</label>
-              <input type="text" name="current_location" class="form-control" value="{{ item.current_location }}">
-            </div>
-            <div class="row mb-3">
-              <div class="col">
-                <label class="form-label">Lat</label>
-                <input type="text" name="latitude" class="form-control" value="{{ item.latitude|default:'' }}">
-              </div>
-              <div class="col">
-                <label class="form-label">Lng</label>
-                <input type="text" name="longitude" class="form-control" value="{{ item.longitude|default:'' }}">
-              </div>
-            </div>
-            <hr>
-            <h6>Override Details</h6>
-            <div class="mb-3">
-              <label class="form-label">Verified Value (₹)</label>
+              <label class="form-label small fw-bold">Verified Value (₹)</label>
               <input type="number" name="amount" class="form-control" value="{{ item.amount }}">
             </div>
-            <div class="mb-3">
-              <label class="form-label">Verified Item Description</label>
-              <textarea name="item_details" class="form-control" rows="2">{{ item.item_details }}</textarea>
+            <div class="mb-0">
+              <label class="form-label small fw-bold">Condition Notes</label>
+              <textarea name="item_details" class="form-control" rows="4">{{ item.item_details }}</textarea>
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-success">Save Changes</button>
-          </div>
-        </form>
+        </div>
       </div>
-    </div>
-  {% endfor %}
+
+      <div class="modal-footer border-0 bg-light p-4">
+        <button type="button" class="btn btn-link text-muted text-decoration-none me-auto" data-bs-dismiss="modal">Discard Changes</button>
+        <button type="submit" class="btn btn-success px-5 fw-bold shadow">Save & Push Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endfor %}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  let modalMaps = {};
+  let modalMarkers = {};
+
+  function initModalMap(itemId, lat, lng) {
+    // Delay slightly to ensure Modal is rendered for Leaflet to find the container
+    setTimeout(() => {
+      if (modalMaps[itemId]) {
+        modalMaps[itemId].invalidateSize();
+        return;
+      }
+
+      const defaultLat = lat || 20.5937;
+      const defaultLng = lng || 78.9629;
+
+      const map = L.map('map_container_' + itemId).setView([defaultLat, defaultLng], lat ? 12 : 4);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+      modalMaps[itemId] = map;
+
+      if (lat && lng) {
+        modalMarkers[itemId] = L.marker([lat, lng]).addTo(map);
+      }
+    }, 300);
+  }
+
+  async function lookupLocation(itemId) {
+    const query = document.getElementById('loc_input_' + itemId).value;
+    if (!query) return;
+
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        const lat = parseFloat(data[0].lat);
+        const lon = parseFloat(data[0].lon);
+        const formattedName = data[0].display_name.split(',')[0];
+
+        document.getElementById('lat_' + itemId).value = lat.toFixed(6);
+        document.getElementById('lng_' + itemId).value = lon.toFixed(6);
+        document.getElementById('loc_input_' + itemId).value = formattedName;
+
+        const map = modalMaps[itemId];
+        if (modalMarkers[itemId]) map.removeLayer(modalMarkers[itemId]);
+
+        modalMarkers[itemId] = L.marker([lat, lon]).addTo(map);
+        map.setView([lat, lon], 13);
+      }
+    } catch (e) { console.error('Geocoding error:', e); }
+  }
+</script>
 {% endblock %}

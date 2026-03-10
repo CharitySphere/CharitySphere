@@ -396,33 +396,69 @@ def track_item(request, record_id):
         messages.error(request, "Unauthorized")
         return redirect("dashboard")
 
-    # Define the order of statuses
-    status_order = ["pending", "collected", "transit", "received", "delivered"]
+    # Define the status sequence with enriched metadata
+    status_configs = [
+        {
+            "slug": "pending",
+            "label": "Ready your package",
+            "desc": "Prepare your items for collection or drop-off.",
+            "icon": "bi-box-seam"
+        },
+        {
+            "slug": "collected",
+            "label": "Picked Up",
+            "desc": "Item has been collected by our logistics partner.",
+            "icon": "bi-truck-flatbed"
+        },
+        {
+            "slug": "transit",
+            "label": "In Transit",
+            "desc": f"Moving towards destination. Currently at: {record.current_location or 'Processing Hub'}",
+            "icon": "bi-geo-alt-fill"
+        },
+        {
+            "slug": "received",
+            "label": "At Institution",
+            "desc": f"Successfully reached {record.campaign.institution.organization_name}.",
+            "icon": "bi-building-check"
+        },
+        {
+            "slug": "delivered",
+            "label": "Distributed",
+            "desc": "Items have been handed over to the beneficiaries.",
+            "icon": "bi-heart-fill"
+        }
+    ]
 
-    # Calculate current progress
+    status_order = [s["slug"] for s in status_configs]
+
     try:
         current_idx = status_order.index(record.status)
     except ValueError:
         current_idx = 0
 
-    progress_pct = ((current_idx + 1) / len(status_order)) * 100
+    progress_pct = ((current_idx) / (len(status_order) - 1)) * 100
 
-    # Prepare data for the frontend (No calculation in template)
     steps_data = []
-    for i, status_slug in enumerate(status_order):
-        steps_data.append(
-            {
-                "label": status_slug.replace("_", " ").title(),
-                "is_complete": i < current_idx,
-                "is_current": i == current_idx,
-                "display_number": i + 1,
-            }
-        )
+    for i, config in enumerate(status_configs):
+        steps_data.append({
+            "label": config["label"],
+            "description": config["desc"],
+            "icon": config["icon"],
+            "is_complete": i < current_idx,
+            "is_current": i == current_idx,
+            "display_number": i + 1,
+        })
 
     return render(
         request,
         "donation/track_item.html",
-        {"record": record, "progress_pct": progress_pct, "steps_data": steps_data},
+        {
+            "record": record,
+            "progress_pct": progress_pct,
+            "steps_data": steps_data,
+            "current_step": status_configs[current_idx]
+        },
     )
 
 
