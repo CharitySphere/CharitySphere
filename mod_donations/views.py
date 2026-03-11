@@ -423,9 +423,15 @@ def track_item(request, record_id):
             "icon": "bi-geo-alt-fill",
         },
         {
+            "slug": "reached",
+            "label": "Reached Destination",
+            "desc": "Volunteer has reached the institution location.",
+            "icon": "bi-geo-fill",
+        },
+        {
             "slug": "received",
             "label": "At Institution",
-            "desc": f"Successfully reached {record.campaign.institution.organization_name}.",
+            "desc": f"Successfully verified by {record.campaign.institution.organization_name}.",
             "icon": "bi-building-check",
         },
         {
@@ -511,36 +517,24 @@ def manage_transit_items(request):
     if user_profile.user_type not in ["institution", "volunteer"]:
         return redirect("dashboard")
 
-    # Determine queryset based on user type
+    base_query = DonationRecord.objects.all()
     if user_profile.user_type == "institution":
         institution = get_object_or_404(Institution, user_profile=user_profile)
-        items_in_transit = (
-            DonationRecord.objects.filter(campaign__institution=institution)
-            .exclude(status="delivered")
-            .order_by("-timestamp")
-        )
-    else:
-        # Volunteers see all items that aren't delivered to help with logistics
-        items_in_transit = (
-            DonationRecord.objects.exclude(status="delivered")
-            .order_by("-timestamp")
-        )
+        base_query = base_query.filter(campaign__institution=institution)
+
+    items_in_transit = base_query.exclude(status="delivered").order_by("-timestamp")
+    delivered_items = base_query.filter(status="delivered").order_by("-timestamp")
 
     if request.method == "POST":
         record_id = request.POST.get("record_id")
-        # Ensure institutions can only update their own items, but volunteers can update any transit item
         if user_profile.user_type == "institution":
             institution = get_object_or_404(Institution, user_profile=user_profile)
-            record = get_object_or_404(
-                DonationRecord, id=record_id, campaign__institution=institution
-            )
+            record = get_object_or_404(DonationRecord, id=record_id, campaign__institution=institution)
         else:
             record = get_object_or_404(DonationRecord, id=record_id)
 
         record.status = request.POST.get("status")
         record.current_location = request.POST.get("current_location")
-
-        # Update logistics details
         record.amount = request.POST.get("amount")
         record.item_details = request.POST.get("item_details")
 
@@ -551,10 +545,11 @@ def manage_transit_items(request):
             record.longitude = lng
 
         record.save()
-        messages.success(request, f"Updated tracking for record CS-00{record.pk}-{record.timestamp.strftime('%Y%m%d')}")
+        messages.success(request, f"Updated tracking for record CS-00{record.pk}")
         return redirect("donations:manage_transit_items")
 
     return render(request, "donation/manage_transit.html", {
         "items": items_in_transit,
+        "delivered_items": delivered_items,
         "is_volunteer": user_profile.user_type == "volunteer"
     })

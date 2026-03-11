@@ -14,7 +14,11 @@
     </div>
   </div>
 
-  <div class="card shadow-sm border-0">
+  <!-- Active Transit Items -->
+  <div class="card shadow-sm border-0 mb-5">
+    <div class="card-header bg-white py-3">
+      <h5 class="mb-0 fw-bold text-primary">Active Items</h5>
+    </div>
     <div class="table-responsive">
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
@@ -39,12 +43,16 @@
               <span class="badge bg-light text-dark border">₹{{ item.amount }} Est. Value</span>
             </td>
             <td>
-              {% if item.status == 'pending' %}
+              {% if item.status == 'reached' %}
+                <span class="badge bg-primary"><i class="bi bi-geo-fill me-1"></i>Reached Institution</span>
+              {% elif item.status == 'received' %}
+                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Received (Confirmed)</span>
+              {% elif item.status == 'pending' %}
                 <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Pending</span>
+              {% elif item.status == 'collected' %}
+                <span class="badge bg-info text-dark"><i class="bi bi-box-seam me-1"></i>Collected</span>
               {% elif item.status == 'transit' %}
                 <span class="badge bg-info text-dark"><i class="bi bi-truck me-1"></i>In Transit</span>
-              {% elif item.status == 'received' %}
-                <span class="badge bg-success"><i class="bi bi-building-check me-1"></i>Arrived</span>
               {% else %}
                 <span class="badge bg-secondary">{{ item.get_status_display }}</span>
               {% endif %}
@@ -53,20 +61,58 @@
               <div class="small"><i class="bi bi-geo-alt text-danger me-1"></i>{{ item.current_location|default:"Not Logged" }}</div>
             </td>
             <td class="text-end pe-4">
-              <button class="btn btn-primary btn-sm px-3 shadow-sm"
-                      data-bs-toggle="modal"
-                      data-bs-target="#editModal{{ item.id }}"
-                      onclick="initModalMap('{{ item.id }}', {{ item.latitude|default:'null' }}, {{ item.longitude|default:'null' }})">
-                Update Tracking
-              </button>
+              {% if is_volunteer and item.status == 'received' %}
+                <button class="btn btn-secondary btn-sm px-3 shadow-sm" disabled title="Confirmed by Institution">
+                  Locked
+                </button>
+              {% else %}
+                <button class="btn btn-primary btn-sm px-3 shadow-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editModal{{ item.id }}"
+                        onclick="initModalMap('{{ item.id }}', {{ item.latitude|default:'null' }}, {{ item.longitude|default:'null' }})">
+                  Update Tracking
+                </button>
+              {% endif %}
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="5" class="text-center py-5">
-              <i class="bi bi-box-seam fs-1 text-muted d-block mb-3"></i>
-              <p class="text-muted">No items currently require tracking updates.</p>
-            </td>
+            <td colspan="5" class="text-center py-5 text-muted">No items currently require tracking updates.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Delivered Items Section -->
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-success text-white py-3">
+      <h5 class="mb-0 fw-bold"><i class="bi bi-check2-all me-2"></i>Completed Deliveries</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">Item ID</th>
+            <th>Donor</th>
+            <th>Campaign</th>
+            <th>Final Value</th>
+            <th class="pe-4 text-end">Completion Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in delivered_items %}
+          <tr class="table-success-subtle">
+            <td class="ps-4 fw-bold">#{{ item.id }}</td>
+            <td>{{ item.donor.user_profile.user.username }}</td>
+            <td>{{ item.campaign.title|truncatechars:30 }}</td>
+            <td><span class="fw-bold text-success">₹{{ item.amount }}</span></td>
+            <td class="pe-4 text-end text-muted small">{{ item.timestamp|date:"d M Y, H:i" }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center py-4 text-muted small">No delivered items in history.</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -89,53 +135,42 @@
 
       <div class="modal-body p-4">
         <div class="row g-4">
-          <!-- Logistics Section -->
           <div class="col-md-7">
             <h6 class="fw-bold mb-3 text-uppercase small text-muted">Location & GPS</h6>
-
-            <!-- Map Preview Container -->
-            <div id="map_container_{{ item.id }}" class="rounded border mb-3 shadow-sm" style="height: 250px; background: #f8f9fa;">
-              <!-- Map will be initialized here via JS -->
-            </div>
-
+            <div id="map_container_{{ item.id }}" class="rounded border mb-3 shadow-sm" style="height: 250px; background: #f8f9fa;"></div>
             <div class="mb-3">
-              <label class="form-label small fw-bold">Search/Update Hub Name</label>
+              <label class="form-label small fw-bold">Current Hub/Location</label>
               <div class="input-group">
-                <input type="text" name="current_location" id="loc_input_{{ item.id }}"
-                       class="form-control" value="{{ item.current_location }}"
-                       placeholder="e.g., Central Warehouse, Delhi">
-                <button class="btn btn-dark" type="button" onclick="lookupLocation('{{ item.id }}')">
-                  <i class="bi bi-search me-1"></i> Find
-                </button>
+                <input type="text" name="current_location" id="loc_input_{{ item.id }}" class="form-control" value="{{ item.current_location }}">
+                <button class="btn btn-dark" type="button" onclick="lookupLocation('{{ item.id }}')"><i class="bi bi-search"></i></button>
               </div>
             </div>
-
             <div class="row g-2">
-              <div class="col-6">
-                <label class="form-label small">Latitude</label>
-                <input type="text" name="latitude" id="lat_{{ item.id }}" class="form-control form-control-sm" value="{{ item.latitude|default:'' }}" readonly>
-              </div>
-              <div class="col-6">
-                <label class="form-label small">Longitude</label>
-                <input type="text" name="longitude" id="lng_{{ item.id }}" class="form-control form-control-sm" value="{{ item.longitude|default:'' }}" readonly>
-              </div>
+              <div class="col-6"><input type="hidden" name="latitude" id="lat_{{ item.id }}" value="{{ item.latitude|default:'' }}"><small class="text-muted">Lat: {{ item.latitude|default:'--' }}</small></div>
+              <div class="col-6"><input type="hidden" name="longitude" id="lng_{{ item.id }}" value="{{ item.longitude|default:'' }}"><small class="text-muted">Lng: {{ item.longitude|default:'--' }}</small></div>
             </div>
           </div>
 
-          <!-- Status & Verification Section -->
           <div class="col-md-5 border-start">
             <h6 class="fw-bold mb-3 text-uppercase small text-muted">Status Update</h6>
-
             <div class="mb-4">
-              <label class="form-label small fw-bold">Current Delivery Status</label>
-              <select name="status" class="form-select border-primary shadow-sm">
+              <label class="form-label small fw-bold">Select Status</label>
+              <select name="status" class="form-select border-primary">
                 {% for code, label in item.STATUS_CHOICES %}
-                  <option value="{{ code }}" {% if item.status == code %}selected{% endif %}>{{ label }}</option>
+                  {% if is_volunteer %}
+                    {# Volunteers can move items up to 'reached' #}
+                    {% if code in 'pending,collected,transit,reached' or item.status == code %}
+                      <option value="{{ code }}" {% if item.status == code %}selected{% endif %}>{{ label }}</option>
+                    {% endif %}
+                  {% else %}
+                    {# Institutions take over from 'reached' to 'received' and 'delivered' #}
+                    {% if code in 'reached,received,delivered' or item.status == code %}
+                      <option value="{{ code }}" {% if item.status == code %}selected{% endif %}>{{ label }}</option>
+                    {% endif %}
+                  {% endif %}
                 {% endfor %}
               </select>
             </div>
-
-            <h6 class="fw-bold mb-3 text-uppercase small text-muted">Verification</h6>
             <div class="mb-3">
               <label class="form-label small fw-bold">Verified Value (₹)</label>
               <input type="number" name="amount" class="form-control" value="{{ item.amount }}">
@@ -147,9 +182,7 @@
           </div>
         </div>
       </div>
-
       <div class="modal-footer border-0 bg-light p-4">
-        <button type="button" class="btn btn-link text-muted text-decoration-none me-auto" data-bs-dismiss="modal">Discard Changes</button>
         <button type="submit" class="btn btn-success px-5 fw-bold shadow">Save & Push Update</button>
       </div>
     </form>
@@ -164,7 +197,6 @@
   let modalMarkers = {};
 
   function initModalMap(itemId, lat, lng) {
-    // Delay slightly to ensure Modal is rendered for Leaflet to find the container
     setTimeout(() => {
       if (modalMaps[itemId]) {
         modalMaps[itemId].invalidateSize();

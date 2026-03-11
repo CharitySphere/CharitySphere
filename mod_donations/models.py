@@ -49,6 +49,7 @@ class DonationRecord(models.Model):
         ("pending", "Pending"),
         ("collected", "Item Collected"),
         ("transit", "Item in Transit"),
+        ("reached", "Reached Institution"),
         ("received", "Item Received at Institution"),
         ("delivered", "Item Delivered"),
     ]
