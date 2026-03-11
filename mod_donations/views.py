@@ -372,9 +372,15 @@ def delete_donation_campaign(request, campaign_id):
 
 @login_required
 def update_item_status(request, record_id):
-    """Commit 2: Institution updates the location/status of a physical donation"""
+    """Update the location/status of a physical donation (Used by Inst. or Vol.)"""
     record = get_object_or_404(DonationRecord, id=record_id)
-    if record.campaign.institution.user_profile.user != request.user:
+    user_profile = get_object_or_404(UserProfile, user=request.user)
+
+    # Authorization: Institution owner OR any volunteer
+    is_owner = record.campaign.institution.user_profile.user == request.user
+    is_volunteer = user_profile.user_type == "volunteer"
+
+    if not (is_owner or is_volunteer):
         return JsonResponse({"error": "Unauthorized"}, status=403)
 
     if request.method == "POST":
@@ -456,7 +462,7 @@ def track_item(request, record_id):
         request,
         "donation/track_item.html",
         {
-            "id": f"CS-00{record.pk}-{record.timestamp.strftime('%Y%m%d')}",
+            "id": f"#{record.pk}",
             "record": record,
             "progress_pct": progress_pct,
             "steps_data": steps_data,
@@ -467,17 +473,17 @@ def track_item(request, record_id):
 
 @login_required
 def get_tracking_api(request, record_id):
-    """API endpoint for live tracking updates"""
+    """API endpoint for live tracking updates (Donor, Institution, or Volunteer)"""
     record = get_object_or_404(DonationRecord, id=record_id)
+    user_profile = get_object_or_404(UserProfile, user=request.user)
 
-    # Security: Only the donor or the involved institution can see this
     is_donor = record.donor.user_profile.user == request.user
     is_institution = record.campaign.institution.user_profile.user == request.user
+    is_volunteer = user_profile.user_type == "volunteer"
 
-    if not (is_donor or is_institution):
+    if not (is_donor or is_institution or is_volunteer):
         return JsonResponse({"error": "Unauthorized"}, status=403)
 
-    # Re-calculate the status sequence logic
     status_order = ["pending", "collected", "transit", "received", "delivered"]
     try:
         current_idx = status_order.index(record.status)
@@ -486,48 +492,58 @@ def get_tracking_api(request, record_id):
 
     progress_pct = (current_idx / (len(status_order) - 1)) * 100
 
-    return JsonResponse(
-        {
-            "status": record.status,
-            "status_display": record.get_status_display(),
-            "current_location": record.current_location or "Processing Center",
-            "latitude": float(record.latitude) if record.latitude else None,
-            "longitude": float(record.longitude) if record.longitude else None,
-            "progress_pct": progress_pct,
-            "last_update": record.timestamp.strftime("%a, %b %d | %H:%M"),
-            "step_index": current_idx,
-        }
-    )
+    return JsonResponse({
+        "status": record.status,
+        "status_display": record.get_status_display(),
+        "current_location": record.current_location or "Processing Center",
+        "latitude": float(record.latitude) if record.latitude else None,
+        "longitude": float(record.longitude) if record.longitude else None,
+        "progress_pct": progress_pct,
+        "last_update": record.timestamp.strftime("%a, %b %d | %H:%M"),
+        "step_index": current_idx,
+    })
 
 
 @login_required
 def manage_transit_items(request):
-    """Institution view to manage all items in progress"""
+    """Institution+Volunteer view to manage all items in progress"""
     user_profile = get_object_or_404(UserProfile, user=request.user)
-    if user_profile.user_type != "institution":
+    if user_profile.user_type not in ["institution", "volunteer"]:
         return redirect("dashboard")
 
-    institution = get_object_or_404(Institution, user_profile=user_profile)
-    items_in_transit = (
-        DonationRecord.objects.filter(campaign__institution=institution)
-        .exclude(status="delivered")
-        .order_by("-timestamp")
-    )
+    # Determine queryset based on user type
+    if user_profile.user_type == "institution":
+        institution = get_object_or_404(Institution, user_profile=user_profile)
+        items_in_transit = (
+            DonationRecord.objects.filter(campaign__institution=institution)
+            .exclude(status="delivered")
+            .order_by("-timestamp")
+        )
+    else:
+        # Volunteers see all items that aren't delivered to help with logistics
+        items_in_transit = (
+            DonationRecord.objects.exclude(status="delivered")
+            .order_by("-timestamp")
+        )
 
     if request.method == "POST":
         record_id = request.POST.get("record_id")
-        record = get_object_or_404(
-            DonationRecord, id=record_id, campaign__institution=institution
-        )
+        # Ensure institutions can only update their own items, but volunteers can update any transit item
+        if user_profile.user_type == "institution":
+            institution = get_object_or_404(Institution, user_profile=user_profile)
+            record = get_object_or_404(
+                DonationRecord, id=record_id, campaign__institution=institution
+            )
+        else:
+            record = get_object_or_404(DonationRecord, id=record_id)
 
         record.status = request.POST.get("status")
         record.current_location = request.POST.get("current_location")
 
-        # Institution can override donor's initial inputs
+        # Update logistics details
         record.amount = request.POST.get("amount")
         record.item_details = request.POST.get("item_details")
 
-        # Update coordinates if provided (for map tracking)
         lat = request.POST.get("latitude")
         lng = request.POST.get("longitude")
         if lat and lng:
@@ -535,7 +551,10 @@ def manage_transit_items(request):
             record.longitude = lng
 
         record.save()
-        messages.success(request, f"Updated tracking for record #{record.pk}")
+        messages.success(request, f"Updated tracking for record CS-00{record.pk}-{record.timestamp.strftime('%Y%m%d')}")
         return redirect("donations:manage_transit_items")
 
-    return render(request, "donation/manage_transit.html", {"items": items_in_transit})
+    return render(request, "donation/manage_transit.html", {
+        "items": items_in_transit,
+        "is_volunteer": user_profile.user_type == "volunteer"
+    })

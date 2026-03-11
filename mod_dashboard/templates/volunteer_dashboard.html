@@ -36,36 +36,38 @@
 
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-4">
-            <div class="mb-2" style="font-size: 2.5rem; color: #4f8ffe;">
-              <i class="bi bi-calendar-check"></i>
-            </div>
+          <div class="card-body text-center p-3">
             <h3 class="display-6 fw-bold text-primary mb-1">{{ upcoming_events }}</h3>
-            <p class="text-muted mb-0">Ongoing Tasks</p>
+            <p class="text-muted small mb-0">Ongoing Tasks</p>
           </div>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-4">
-            <div class="mb-2" style="font-size: 2.5rem; color: #20c997;">
-              <i class="bi bi-award"></i>
-            </div>
+          <div class="card-body text-center p-3">
             <h3 class="display-6 fw-bold text-success mb-1">{{ completed_projects }}</h3>
-            <p class="text-muted mb-0">Completed Projects</p>
+            <p class="text-muted small mb-0">Completed Projects</p>
           </div>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body text-center p-4">
-            <div class="mb-2" style="font-size: 2.5rem; color: #feca57;">
-              <i class="bi bi-lightning-fill"></i>
+      <!-- New Logistics Stat -->
+      <div class="col-md-3">
+        <a href="{% url 'donations:manage_transit_items' %}" class="text-decoration-none">
+          <div class="card shadow-sm border-0 h-100 bg-primary bg-opacity-10">
+            <div class="card-body text-center p-3">
+              <h3 class="display-6 fw-bold text-primary mb-1"><i class="bi bi-truck"></i></h3>
+              <p class="text-primary small mb-0 fw-bold">Manage Transit</p>
             </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body text-center p-3">
             <h3 class="display-6 fw-bold text-warning mb-1">{{ impact_points }}</h3>
-            <p class="text-muted mb-0">Impact Points</p>
+            <p class="text-muted small mb-0">Impact Points</p>
           </div>
         </div>
       </div>
@@ -74,7 +76,6 @@
     <div class="row g-4">
       <!-- Main Column -->
       <div class="col-lg-8">
-
         <!-- My Assigned Tasks -->
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-header bg-white border-0 pt-4">
@@ -158,6 +159,31 @@
 
       <!-- Sidebar -->
       <div class="col-lg-4">
+        <!-- Quick Actions -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-white border-0 pt-4 pb-3">
+            <h5 class="mb-0">
+              <i class="bi bi-lightning-charge me-2"></i>Quick Actions
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-grid gap-2">
+              <a href="{% url 'donations:manage_transit_items' %}" class="btn btn-primary">
+                <i class="bi bi-truck me-2"></i>Logistics Management
+              </a>
+              <a href="{% url 'volunteering:campaign_list' %}" class="btn btn-outline-success">
+                <i class="bi bi-search me-2"></i>Browse Campaigns
+              </a>
+              <a href="{% url 'volunteering:org_invitations' %}" class="btn btn-outline-dark">
+                <i class="bi bi-envelope-open me-2"></i>Org Invitations
+              </a>
+              <a href="{% url 'profile_settings' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-gear me-2"></i>Settings
+              </a>
+            </div>
+          </div>
+        </div>
+
         <!-- My Applications Status -->
         <div class="card shadow-sm border-0 mb-4">
           <div class="card-header bg-white border-0 pt-4">
@@ -181,45 +207,6 @@
             {% else %}
               <p class="small text-muted text-center">No active applications.</p>
             {% endif %}
-          </div>
-        </div>
-
-        <!-- Available Individual Tasks -->
-        <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-white border-0 pt-4">
-            <h5 class="mb-0">
-              <i class="bi bi-geo-alt me-2"></i>Nearby Tasks
-            </h5>
-          </div>
-          <div class="card-body">
-            {% if available_tasks %}
-              {% for t in available_tasks %}
-                <div class="mb-3 pb-2 border-bottom">
-                  <div class="fw-bold small">{{ t.title }}</div>
-                  <div class="text-muted small">
-                    <i class="bi bi-clock me-1"></i>{{ t.date }}
-                  </div>
-                  <a href="{% url 'volunteering:volunteer_for_task' t.id %}" class="btn btn-link btn-sm p-0">Volunteer</a>
-                </div>
-              {% endfor %}
-            {% else %}
-              <p class="small text-muted text-center">No open tasks available.</p>
-            {% endif %}
-          </div>
-        </div>
-
-        <!-- Quick Links -->
-        <div class="card shadow-sm border-0 bg-light">
-          <div class="card-body">
-            <h6 class="fw-bold mb-3">Resources</h6>
-            <div class="d-grid gap-2">
-              <a href="{% url 'volunteering:org_invitations' %}" class="btn btn-sm btn-outline-dark text-start">
-                <i class="bi bi-envelope-open me-2"></i>View Org Invitations
-              </a>
-              <a href="{% url 'profile_settings' %}" class="btn btn-sm btn-outline-dark text-start">
-                <i class="bi bi-gear me-2"></i>Update Preferences
-              </a>
-            </div>
           </div>
         </div>
       </div>

@@ -30,7 +30,8 @@
           {% for item in items %}
           <tr>
             <td class="ps-4">
-              <div class="fw-bold text-dark">#{{ item.id }} - {{ item.item_details|truncatechars:25 }}</div>
+              <div class="fw-bold text-dark">#{{ item.id }}</div>
+              <div class="small">{{ item.item_details|truncatechars:25 }}</div>
               <small class="text-muted"><i class="bi bi-person me-1"></i>{{ item.donor.user_profile.user.username }}</small>
             </td>
             <td>
