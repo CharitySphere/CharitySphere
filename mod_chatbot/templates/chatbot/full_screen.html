@@ -41,22 +41,6 @@
       text-align: center;
     }
 
-    .clear-btn {
-      width: 100%;
-      padding: 8px;
-      background: rgba(243, 139, 168, 0.12);
-      border: 1px solid rgba(243, 139, 168, 0.3);
-      color: #f38ba8;
-      border-radius: 10px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .clear-btn:hover {
-      background: rgba(243, 139, 168, 0.22);
-    }
-
     /* ── Main Chat Area ─────────────────────────────────────── */
     .chat-main {
       flex: 1;
@@ -114,6 +98,9 @@
     .lang-selector {
       margin-left: auto;
       position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .lang-selector select {
@@ -130,7 +117,7 @@
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%234a4a8a' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 10px center;
-      min-width: 160px;
+      min-width: 180px;
     }
 
     .lang-selector select:focus {
@@ -212,33 +199,13 @@
     }
 
     /* Sentiment border palette */
-    .bubble.ai.s-Positive {
-      border-left: 3px solid #22c55e;
-    }
-
-    .bubble.ai.s-Negative {
-      border-left: 3px solid #ef4444;
-    }
-
-    .bubble.ai.s-Neutral {
-      border-left: 3px solid #94a3b8;
-    }
-
-    .bubble.ai.s-Frustrated {
-      border-left: 3px solid #f97316;
-    }
-
-    .bubble.ai.s-Grateful {
-      border-left: 3px solid #a855f7;
-    }
-
-    .bubble.ai.s-Excited {
-      border-left: 3px solid #eab308;
-    }
-
-    .bubble.ai.s-Concerned {
-      border-left: 3px solid #3b82f6;
-    }
+    .bubble.ai.s-Positive { border-left: 3px solid #22c55e; }
+    .bubble.ai.s-Negative { border-left: 3px solid #ef4444; }
+    .bubble.ai.s-Neutral { border-left: 3px solid #94a3b8; }
+    .bubble.ai.s-Frustrated { border-left: 3px solid #f97316; }
+    .bubble.ai.s-Grateful { border-left: 3px solid #a855f7; }
+    .bubble.ai.s-Excited { border-left: 3px solid #eab308; }
+    .bubble.ai.s-Concerned { border-left: 3px solid #3b82f6; }
 
     .bubble-meta {
       font-size: 0.65rem;
@@ -268,66 +235,13 @@
       letter-spacing: 0.05em;
     }
 
-    .sb-Positive {
-      background: #dcfce7;
-      color: #15803d;
-    }
-
-    .sb-Negative {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
-
-    .sb-Neutral {
-      background: #f1f5f9;
-      color: #475569;
-    }
-
-    .sb-Frustrated {
-      background: #ffedd5;
-      color: #c2410c;
-    }
-
-    .sb-Grateful {
-      background: #f3e8ff;
-      color: #7e22ce;
-    }
-
-    .sb-Excited {
-      background: #fef9c3;
-      color: #854d0e;
-    }
-
-    .sb-Concerned {
-      background: #dbeafe;
-      color: #1d4ed8;
-    }
-
-    .day-divider {
-      text-align: center;
-      font-size: 0.7rem;
-      color: #9ca3af;
-      position: relative;
-      margin: 4px 0;
-    }
-
-    .day-divider::before,
-    .day-divider::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: 42%;
-      height: 1px;
-      background: #e5e7eb;
-    }
-
-    .day-divider::before {
-      left: 0;
-    }
-
-    .day-divider::after {
-      right: 0;
-    }
+    .sb-Positive { background: #dcfce7; color: #15803d; }
+    .sb-Negative { background: #fee2e2; color: #b91c1c; }
+    .sb-Neutral { background: #f1f5f9; color: #475569; }
+    .sb-Frustrated { background: #ffedd5; color: #c2410c; }
+    .sb-Grateful { background: #f3e8ff; color: #7e22ce; }
+    .sb-Excited { background: #fef9c3; color: #854d0e; }
+    .sb-Concerned { background: #dbeafe; color: #1d4ed8; }
 
     /* ── Typing Indicator ───────────────────────────────────── */
     .typing-row {
@@ -355,25 +269,12 @@
       animation: tBounce 1.2s infinite;
     }
 
-    .t-dot:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .t-dot:nth-child(3) {
-      animation-delay: 0.4s;
-    }
+    .t-dot:nth-child(2) { animation-delay: 0.2s; }
+    .t-dot:nth-child(3) { animation-delay: 0.4s; }
 
     @keyframes tBounce {
-
-      0%,
-      60%,
-      100% {
-        transform: translateY(0)
-      }
-
-      30% {
-        transform: translateY(-6px)
-      }
+      0%, 60%, 100% { transform: translateY(0) }
+      30% { transform: translateY(-6px) }
     }
 
     /* ── Input Bar ──────────────────────────────────────────── */
@@ -508,6 +409,8 @@
       .bubble {
         max-width: 85%;
       }
+      .chat-topbar { padding: 12px; }
+      .lang-selector select { min-width: 130px; }
     }
   </style>
 
@@ -525,12 +428,13 @@
         </div>
         <div class="lang-selector">
           <select id="full-lang" title="Select Language">
-            {% for lang in languages %}
-              <option value="{{ lang }}" {% if lang == "English" %}selected{% endif %}>{{ lang }}</option>
-            {% endfor %}
+            <!-- Populated via JS -->
           </select>
+          <button id="clear-history-btn" class="btn btn-outline-danger btn-sm" title="Clear Conversation">
+            <i class="bi bi-trash3"></i>
+          </button>
         </div>
-        <a href="javascript:history.back()" class="btn btn-secondary">
+        <a href="javascript:history.back()" class="btn btn-secondary btn-sm">
           <i class="bi bi-arrow-left"></i> Back
         </a>
       </div>
@@ -597,22 +501,45 @@
 
   <script>
     (function() {
+      // ── Language list (Synced with widget) ───────────────────────
+      const LANGUAGES = [
+        "Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Assamese", "Azerbaijani", "Basque", "Belarusian", "Bengali", "Bosnian", "Bulgarian", "Catalan", "Chinese (Simplified)", "Chinese (Traditional)", "Croatian", "Czech", "Danish", "Dutch", "English", "Estonian", "Farsi", "Filipino", "Finnish", "French", "Galician", "Georgian", "German", "Greek", "Gujarati", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", "Italian", "Japanese", "Kannada", "Kazakh", "Khmer", "Korean", "Lao", "Latvian", "Lithuanian", "Macedonian", "Malay", "Malayalam", "Marathi", "Mongolian", "Nepali", "Norwegian", "Odia", "Polish", "Portuguese", "Punjabi", "Romanian", "Russian", "Serbian", "Slovak", "Slovenian", "Spanish", "Swahili", "Swedish", "Tamil", "Telugu", "Thai", "Turkish", "Ukrainian", "Urdu", "Uzbek", "Vietnamese", "Zulu",
+      ];
+
+      const langSel = document.getElementById('full-lang');
+      const savedLang = localStorage.getItem("chat-user-language");
+
+      // Initialize Language Selector
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "Select your language";
+      placeholder.disabled = true;
+      if (!savedLang) placeholder.selected = true;
+      langSel.appendChild(placeholder);
+
+      LANGUAGES.forEach((l) => {
+        const opt = document.createElement("option");
+        opt.value = l;
+        opt.textContent = l;
+        if (savedLang === l) opt.selected = true;
+        langSel.appendChild(opt);
+      });
+
+      langSel.onchange = () => {
+        localStorage.setItem("chat-user-language", langSel.value);
+      };
+
+      // ── DOM refs ──────────────────────────────────────────────────
       const messagesEl = document.getElementById('full-messages');
       const inputEl = document.getElementById('full-input');
       const sendBtn = document.getElementById('full-send');
-      const langSel = document.getElementById('full-lang');
       const clearBtn = document.getElementById('clear-history-btn');
       const emptyState = document.getElementById('empty-state');
       const qpContainer = document.getElementById('quick-prompts');
 
       const SENTIMENT_EMOJI = {
-        Positive: '😊',
-        Negative: '😔',
-        Neutral: '💬',
-        Frustrated: '😤',
-        Grateful: '🙏',
-        Excited: '🎉',
-        Concerned: '🤔'
+        Positive: '😊', Negative: '😔', Neutral: '💬', Frustrated: '😤',
+        Grateful: '🙏', Excited: '🎉', Concerned: '🤔'
       };
 
       // Auto-resize textarea
@@ -621,7 +548,7 @@
         inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
       });
 
-      // Scroll to bottom on load
+      // Scroll to bottom
       function scrollBottom() {
         messagesEl.scrollTop = messagesEl.scrollHeight;
       }
@@ -632,39 +559,34 @@
         scrollBottom();
       };
 
-      // Linkify paths in bot text
       function linkify(text) {
-        return text.replace(/(\/[\w\-\/]+\/)/g, '<a href="$1" style="color:#667eea;font-weight:500;">$1</a>');
+        return text.replace(/(\/[\w\-\/]+\/)/g, '<a href="$1" style="color:#667eea;font-weight:500;">Go to Page ↗</a>');
       }
 
       function addMessage(text, role, sentiment = null, time = null) {
-        // Remove empty state
         if (emptyState) emptyState.remove();
 
         const row = document.createElement('div');
         row.className = `msg-row ${role === 'user' ? 'user' : ''}`;
 
-        const timeStr = time || new Date().toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit'
-        });
+        const timeStr = time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         if (role === 'user') {
           row.innerHTML = `
-        <div class="bubble me">
-          ${escHtml(text)}
-          <div class="bubble-meta">${timeStr} · ${langSel.value}</div>
-        </div>
-        <div class="msg-avatar me"><i class="bi bi-person-fill"></i></div>`;
+            <div class="bubble me">
+              ${escHtml(text)}
+              <div class="bubble-meta">${timeStr} · ${langSel.value}</div>
+            </div>
+            <div class="msg-avatar me"><i class="bi bi-person-fill"></i></div>`;
         } else {
           const sentClass = sentiment ? `s-${sentiment}` : '';
           const badge = sentiment ? `<span class="sentiment-badge sb-${sentiment}">${SENTIMENT_EMOJI[sentiment] || ''} ${sentiment}</span>` : '';
           row.innerHTML = `
-        <div class="msg-avatar ai"><i class="bi bi-stars"></i></div>
-        <div class="bubble ai ${sentClass}">
-          <span>${linkify(escHtml(text))}</span>
-          <div class="bubble-meta">${timeStr} ${badge}</div>
-        </div>`;
+            <div class="msg-avatar ai"><i class="bi bi-stars"></i></div>
+            <div class="bubble ai ${sentClass}">
+              <span>${linkify(escHtml(text))}</span>
+              <div class="bubble-meta">${timeStr} ${badge}</div>
+            </div>`;
         }
 
         messagesEl.appendChild(row);
@@ -673,6 +595,7 @@
       }
 
       function escHtml(s) {
+        if (!s) return "";
         return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/\n/g, '<br>');
       }
 
@@ -681,10 +604,10 @@
         row.id = 'typing-row';
         row.className = 'typing-row';
         row.innerHTML = `
-      <div class="msg-avatar ai"><i class="bi bi-stars"></i></div>
-      <div class="typing-bubble">
-        <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
-      </div>`;
+          <div class="msg-avatar ai"><i class="bi bi-stars"></i></div>
+          <div class="typing-bubble">
+            <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+          </div>`;
         messagesEl.appendChild(row);
         scrollBottom();
       }
@@ -705,6 +628,12 @@
 
       // Send
       async function send() {
+        if (!langSel.value) {
+          alert("Please select a language before starting the chat.");
+          langSel.focus();
+          return;
+        }
+
         const msg = inputEl.value.trim();
         if (!msg || sendBtn.disabled) return;
 
@@ -717,9 +646,7 @@
         try {
           const res = await fetch("{% url 'chatbot:send_message' %}", {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               message: msg,
               language: langSel.value,
@@ -764,11 +691,11 @@
           const data = await res.json();
           if (data.status === 'success') {
             messagesEl.innerHTML = `
-          <div class="empty-state" id="empty-state">
-            <div class="icon"><i class="bi bi-chat-heart-fill"></i></div>
-            <h5>Conversation Cleared</h5>
-            <p>Start fresh — ask me anything about CharitySphere!</p>
-          </div>`;
+              <div class="empty-state" id="empty-state">
+                <div class="icon"><i class="bi bi-chat-heart-fill"></i></div>
+                <h5>Conversation Cleared</h5>
+                <p>Start fresh — ask me anything about CharitySphere!</p>
+              </div>`;
           }
         } catch {
           alert('Failed to clear history.');
