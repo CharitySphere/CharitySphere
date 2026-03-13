@@ -412,6 +412,38 @@
       .chat-topbar { padding: 12px; }
       .lang-selector select { min-width: 130px; }
     }
+
+    .mic-btn-full {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: none;
+      flex-shrink: 0;
+      background: #f1f5f9;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 1.1rem;
+    }
+
+    .mic-btn-full:hover {
+      background: #e2e8f0;
+    }
+
+    .mic-btn-full.recording {
+      background: #fee2e2;
+      color: #ef4444;
+      animation: pulseMic 1.5s infinite;
+    }
+
+    @keyframes pulseMic {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
   </style>
 
   <div class="chat-shell container-fluid">
@@ -486,12 +518,16 @@
           <button class="qp-btn" data-msg="How does CharitySphere work?">ℹ️ How it works</button>
           <button class="qp-btn" data-msg="I want to help as an institution">🏢 Institution setup</button>
         </div>
-        <div class="input-wrapper">
-          <textarea id="full-input" rows="1" placeholder="Ask me anything… (Shift+Enter for new line)"></textarea>
-          <button class="send-btn-full" id="full-send" title="Send message">
-            <i class="bi bi-send-fill"></i>
-          </button>
-        </div>
+      <div class="input-wrapper">
+        <!-- Add Mic Button Here -->
+        <button class="mic-btn-full" id="full-mic" title="Voice Typing">
+          <i class="bi bi-mic-fill"></i>
+        </button>
+        <textarea id="full-input" rows="1" placeholder="Ask me anything… (Shift+Enter for new line)"></textarea>
+        <button class="send-btn-full" id="full-send" title="Send message">
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </div>
         <div class="input-hint">
           Conversation history (last 10 messages) is used as context · <a href="#" id="scroll-bottom-link" style="color:#667eea;text-decoration:none;">Scroll to bottom ↓</a>
         </div>
@@ -706,6 +742,53 @@
         const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
         return v ? v[2] : null;
       }
+
+      // ── Voice Typing Logic ──────────────────────────────────────────
+      const micBtn = document.getElementById("full-mic");
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        micBtn.style.display = 'none'; // Hide if browser doesn't support it
+      } else {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        micBtn.classList.add('recording');
+        inputEl.placeholder = "Listening...";
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        inputEl.value = transcript;
+        // Trigger the auto-resize of textarea
+        inputEl.dispatchEvent(new Event('input'));
+      };
+
+      recognition.onerror = () => {
+        micBtn.classList.remove('recording');
+        inputEl.placeholder = "Ask me anything… (Shift+Enter for new line)";
+      };
+
+      recognition.onend = () => {
+        micBtn.classList.remove('recording');
+        inputEl.placeholder = "Ask me anything… (Shift+Enter for new line)";
+      };
+
+      micBtn.onclick = () => {
+        if (micBtn.classList.contains('recording')) {
+          recognition.stop();
+        } else {
+          // Attempt to set lang based on selection (very basic mapping)
+          // You can expand this mapping for more languages if needed
+          if (langSel.value === 'English') recognition.lang = 'en-US';
+            else if (langSel.value === 'Hindi') recognition.lang = 'hi-IN';
+              else if (langSel.value === 'Spanish') recognition.lang = 'es-ES';
+          recognition.start();
+        }
+      };
+    }
     })();
   </script>
 {% endblock %}
