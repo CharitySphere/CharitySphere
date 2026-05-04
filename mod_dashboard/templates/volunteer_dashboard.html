@@ -36,6 +36,7 @@
 
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">
+      {% if upcoming_events != 0 %}
       <div class="col-md-3">
         <div class="card shadow-sm border-0 h-100">
           <div class="card-body text-center p-3">
@@ -44,6 +45,8 @@
           </div>
         </div>
       </div>
+      {% endif %}
+      {% if completed_projects != 0 %}
       <div class="col-md-3">
         <div class="card shadow-sm border-0 h-100">
           <div class="card-body text-center p-3">
@@ -52,6 +55,7 @@
           </div>
         </div>
       </div>
+      {% endif %}
       <!-- New Logistics Stat -->
       <div class="col-md-3">
         <a href="{% url 'donations:manage_transit_items' %}" class="text-decoration-none">
@@ -63,6 +67,7 @@
           </div>
         </a>
       </div>
+      {% if impact_points != 0 %}
       <div class="col-md-3">
         <div class="card shadow-sm border-0 h-100">
           <div class="card-body text-center p-3">
@@ -71,6 +76,7 @@
           </div>
         </div>
       </div>
+      {% endif %}
     </div>
 
     <div class="row g-4">
